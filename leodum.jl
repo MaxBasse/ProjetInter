@@ -1,7 +1,9 @@
 #Chouette
 # les foufous de sochaux
-function supersympaLeoDum()
-    println("Arthur Lanouille")
-end
+import Pkg
+Pkg.add("JSON")
+using JSON
+donnees = JSON.parsefile("data.json")
 
-supersympaLeoDum()
+println(donnees)
+print(donnees["questions"][1]["title_q"])
