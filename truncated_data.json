@@ -1,0 +1,265 @@
+{
+  "questions": [
+    {
+      "title_q": "Quelle est l'allure générale de la plante ?",
+      "answers": [
+        {
+          "title_a": "Herbacées",
+          "unlock_questions": [
+            {
+              "title_q": "Où voyez-vous les feuilles ?",
+              "answers": [
+                {
+                  "title_a": "Uniquement en rosette",
+                  "unlock_questions": []
+                },
+                {
+                  "title_a": "En rosette et sur la tige",
+                  "unlock_questions": [
+                    {
+                      "title_q": "Les tiges sont-elles dressées ?",
+                      "answers": [
+                        {
+                          "title_a": "oui, une tige dressée",
+                          "unlock_questions": []
+                        },
+                        {
+                          "title_a": "non, elles sont rampantes",
+                          "unlock_questions": []
+                        },
+                        {
+                          "title_a": "non, elles sont grimpantes",
+                          "unlock_questions": []
+                        }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 1,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "Les tiges sont-elles ramifiées ?",
+                      "answers": [
+                        {
+                          "title_a": "non, plante 'en touffe'",
+                          "unlock_questions": []
+                        },
+                        {
+                          "title_a": "non, une seule tige non ramifiée",
+                          "unlock_questions": []
+                        },
+                        { "title_a": "oui", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 2,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "Les tiges sont-elles poilues ?",
+                      "answers": [
+                        { "title_a": "oui", "unlock_questions": [] },
+                        { "title_a": "non", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 1,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "Les tiges sont-elles creuses ?",
+                      "answers": [
+                        { "title_a": "oui", "unlock_questions": [] },
+                        { "title_a": "non", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 3,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "Les tiges sont elles rigides, comme du bois, à la base ?",
+                      "answers": [
+                        { "title_a": "oui", "unlock_questions": [] },
+                        { "title_a": "non", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 2,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "Quelle forme a la section de la tige ?",
+                      "answers": [
+                        { "title_a": "arrondie", "unlock_questions": [] },
+                        { "title_a": "carrée", "unlock_questions": [] },
+                        { "title_a": "triangulaire", "unlock_questions": [] },
+                        { "title_a": "autre", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 3,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "De quelle couleur sont les tiges ?",
+                      "answers": [
+                        { "title_a": "vertes", "unlock_questions": [] },
+                        { "title_a": "rouges", "unlock_questions": [] },
+                        {
+                          "title_a": "marron, couleur du bois",
+                          "unlock_questions": []
+                        },
+                        { "title_a": "gris", "unlock_questions": [] },
+                        { "title_a": "autre", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 1,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "Y a-t-il des taches sur les tiges ?",
+                      "answers": [
+                        { "title_a": "oui", "unlock_questions": [] },
+                        { "title_a": "non", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 1,
+                      "tags": []
+                    }
+                  ]
+                },
+                {
+                  "title_a": "Uniquement sur la tige",
+                  "unlock_questions": [
+                    {
+                      "title_q": "Les tiges sont-elles dressées ?",
+                      "answers": [
+                        {
+                          "title_a": "oui, une tige dressée",
+                          "unlock_questions": []
+                        },
+                        {
+                          "title_a": "non, elles sont rampantes",
+                          "unlock_questions": []
+                        },
+                        {
+                          "title_a": "non, elles sont grimpantes",
+                          "unlock_questions": []
+                        }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 1,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "Les tiges sont-elles ramifiées ?",
+                      "answers": [
+                        {
+                          "title_a": "non, plante 'en touffe'",
+                          "unlock_questions": []
+                        },
+                        {
+                          "title_a": "non, une seule tige non ramifiée",
+                          "unlock_questions": []
+                        },
+                        { "title_a": "oui", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 2,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "Les tiges sont-elles poilues ?",
+                      "answers": [
+                        { "title_a": "oui", "unlock_questions": [] },
+                        { "title_a": "non", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 1,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "Les tiges sont-elles creuses ?",
+                      "answers": [
+                        { "title_a": "oui", "unlock_questions": [] },
+                        { "title_a": "non", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 3,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "Les tiges sont elles rigides, comme du bois, à la base ?",
+                      "answers": [
+                        { "title_a": "oui", "unlock_questions": [] },
+                        { "title_a": "non", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 2,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "Quelle forme a la section de la tige ?",
+                      "answers": [
+                        { "title_a": "arrondie", "unlock_questions": [] },
+                        { "title_a": "carrée", "unlock_questions": [] },
+                        { "title_a": "triangulaire", "unlock_questions": [] },
+                        { "title_a": "autre", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 3,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "De quelle couleur sont les tiges ?",
+                      "answers": [
+                        { "title_a": "vertes", "unlock_questions": [] },
+                        { "title_a": "rouges", "unlock_questions": [] },
+                        {
+                          "title_a": "marron, couleur du bois",
+                          "unlock_questions": []
+                        },
+                        { "title_a": "gris", "unlock_questions": [] },
+                        { "title_a": "autre", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 1,
+                      "tags": []
+                    },
+                    {
+                      "title_q": "Y a-t-il des taches sur les tiges ?",
+                      "answers": [
+                        { "title_a": "oui", "unlock_questions": [] },
+                        { "title_a": "non", "unlock_questions": [] }
+                      ],
+                      "difficulty_understanding": 1,
+                      "difficulty_answering": 1,
+                      "tags": []
+                    }
+                  ]
+                }
+              ],
+              "difficulty_understanding": 1,
+              "difficulty_answering": 100,
+              "tags": []
+            }
+          ]
+        },
+        {
+          "title_a": "Ligneux",
+          "unlock_questions": [
+            {
+              "title_q": "Quelle est l'allure de la plante?",
+              "answers": [
+                { "title_a": "Arbre", "unlock_questions": [] },
+                { "title_a": "Buisson", "unlock_questions": [] },
+                { "title_a": "Liane", "unlock_questions": [] }
+              ],
+              "difficulty_understanding": 1,
+              "difficulty_answering": 1,
+              "tags": []
+            }
+          ]
+        }
+      ],
+      "difficulty_understanding": 1,
+      "difficulty_answering": 0,
+      "tags": []
+    }
+  ]
+}
