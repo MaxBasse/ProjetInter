@@ -60,6 +60,7 @@ function extract_characteristics(choices)
     d = Dict{String, Float64}()
 
     for choice in choices
+        # recupere les caractéristiques de la question
         q = String(choice["id_question"])
         for opt in choice["options"]
             answer = String(opt[1])
@@ -72,6 +73,7 @@ function extract_characteristics(choices)
             subqs = opt[3]
             if !isempty(subqs)
                 subdict = extract_characteristics(subqs)
+                # recursivité pour faire de meme avec les questions imbriquées
                 merge!(d, subdict)
             end
         end
@@ -95,14 +97,14 @@ function build_species_matrix(collection)
         push!(rows, d)
     end
 
-    # Trouver toutes les colonnes possibles
+    # sur toutes les colonnes, trouver toutes les clés possibles
     all_keys = Set{String}()
     for r in rows
         union!(all_keys, keys(r))
     end
     all_keys = collect(all_keys)
 
-    # Construire les lignes complètes avec missing si clé absente
+    # Construire les lignes complètes correspondant au especes
     complete_rows = []
     for r in rows
         d_complete = Dict{String,Any}()
@@ -114,7 +116,7 @@ function build_species_matrix(collection)
 
     df = DataFrame(complete_rows)
 
-    # Remplacer les missing par 0.0 sauf pour "espece"
+    # Remplacer les missing par 0.0 sauf pour "espece" (gestion d'une erreur)
     for c in names(df)
         if c != "espece"
             df[!, c] = coalesce.(df[!, c], 0.0)
@@ -126,6 +128,7 @@ end
 
 
 function clean_species_matrix(df::DataFrame)
+    #en gros nettoyer les noms des colonnes pour meilleure lisiibilité (mais ca ne sera meme pas suffisant)
     rename!(df, "espece" => :Species)
 
     newnames = Symbol[]
@@ -173,6 +176,7 @@ end
 
 
 function encode_characteristics(df::DataFrame)
+    # fonction qui encode chaque caracterisituque par un entier (comme ca on comprend mieux la matrice)
     # garder Species à part
     features = filter(!=(:Species), names(df))
 
@@ -192,7 +196,7 @@ function encode_characteristics(df::DataFrame)
     return df_encoded, mapping
 end
 
-# Exemple d'utilisation
+# utilisation
 
 collection = donnees["collection"]
 
