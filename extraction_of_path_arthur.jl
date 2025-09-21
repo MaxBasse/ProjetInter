@@ -171,11 +171,41 @@ end
 
 
 
+
+function encode_characteristics(df::DataFrame)
+    # garder Species à part
+    features = filter(!=(:Species), names(df))
+
+    # dictionnaire : entier => nom original (toujours Symbol)
+    mapping = Dict{Int,Symbol}()
+    for (i, feat) in enumerate(features)
+        mapping[i] = Symbol(feat)  # conversion explicite
+    end
+
+    # renommer les colonnes (en laissant Species inchangé)
+    rename_map = Dict{Symbol,Symbol}()
+    for (i, feat) in enumerate(features)
+        rename_map[Symbol(feat)] = Symbol("c$(i)")  # ex: c1, c2...
+    end
+    df_encoded = rename(df, rename_map)
+
+    return df_encoded, mapping
+end
+
 # Exemple d'utilisation
 
 collection = donnees["collection"]
 
 df = build_species_matrix(collection)
 df_clean = clean_species_matrix(df)
-df_clean[1, :]
+df_encoded, mapping = encode_characteristics(df_clean)
+
+println("Première ligne encodée :")
+println(df_encoded[1, :])
+
+println("\nCorrespondance :")
+for (i, feat) in sort(collect(mapping))
+    println("caractéristique $i = $(feat)")
+end
+
 
