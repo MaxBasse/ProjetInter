@@ -211,5 +211,3 @@ println("\nCorrespondance :")
 for (i, feat) in sort(collect(mapping))
     println("caractéristique $i = $(feat)")
 end
-
-
