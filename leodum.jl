@@ -1,7 +1,5 @@
 include("extraction_of_path_arthur.jl")
-include("felou.jl")
-include("juju.jl")
-include("parser.jl")
+
 
 # Importation des données JSON (parse)
 import Pkg
@@ -18,10 +16,10 @@ df_encoded, mapping = encode_characteristics(df_clean)
 println("Première ligne encodée :")
 println(df_encoded[1, :])
 
-println("\nCorrespondance :")
-for (i, feat) in sort(collect(mapping))
-    println("caractéristique $i = $(feat)")
-end
+#println("\nCorrespondance :")
+#for (i, feat) in sort(collect(mapping))
+#    println("caractéristique $i = $(feat)")
+#end
 
 # Test de compréhension du jeu de données
 #println(donnees)
@@ -33,9 +31,9 @@ print(donnees["collection"][24]["latin"])
 function verif_species_has_caract(df_caract_species::DataFrame, 
     name_species::String, list_caract::Vector{String})
     
-    # On trouve la ligne correspondant à l'espèce en cherchant le nom de celle ci dans la colonne Species
+    # On trouve la ligne correspondant à l'espèce en cherchant le nom de celle ci dans la colonne species
     # Findfirst donne l'indice de la première ligne possédant "name_species"
-    row_index = findfirst(==("$(name_species)"), df_caract_species[:, :Species])
+    row_index = findfirst(==("$(name_species)"), df_caract_species[:, :species])
 
     # Erreur si l'espèce ne fait pas partie de notre base de données 
     if row_index === nothing
@@ -46,12 +44,12 @@ function verif_species_has_caract(df_caract_species::DataFrame,
     for c in list_caract
 
         # Gestion de l'erreur où la caractéristiques n'existe pas dans nos données (aucune info dessus donc)
-        if !haskey(df, c)
+        if !(c in names(df_caract_species))
             error("Caractéristique $c n'existe pas dans le DataFrame")
         end
 
         # Si l'espèce ne possède pas la caracteristique (proba=0 de l'avoir) alors on renvoie false 
-        if df[row_idx, c] == 0
+        if df[row_index, c] == 0
             println("$(name_species) ne possède pas la caractéristique : $(c)")
             return false
         end
@@ -61,5 +59,11 @@ function verif_species_has_caract(df_caract_species::DataFrame,
     return true
 end
 
+# test 1 sur la caractéristique 3 = combien_de_ptales_voyezvous_5_ou_10 (vraie avec proba 1)
+println(verif_species_has_caract(df_clean, "Viola tricolor", ["combien_de_ptales_voyezvous_5_ou_10"]))
 
+# test 2 avec la caractéristique 2 = la_corolle_ensemble_des_ptales_est_papilionace_ou_fumarie (Faux)
+print(verif_species_has_caract(df_clean, "Viola tricolor", ["combien_de_ptales_voyezvous_5_ou_10", "la_corolle_ensemble_des_ptales_est_papilionace_ou_fumarie"]))
 
+#test 3 sur la caractéristique 100 = quelle_forme_a_la_section_de_la_tige_arrondie (vrai avec proba 0.5)
+print(verif_species_has_caract(df_clean, "Viola tricolor", ["combien_de_ptales_voyezvous_5_ou_10", "quelle_forme_a_la_section_de_la_tige_arrondie"]))
