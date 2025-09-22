@@ -206,6 +206,28 @@ function give_caracteristics(specy::String)
     end
 end
 
+function give_species_with_characteristic(feature::String)
+    collection = donnees["collection"]
+    df = build_species_matrix(collection)
+    df_clean, row, col = clean_species_matrix(df)   # row = noms des espèces, col = noms des caractéristiques
+
+    # trouver l'indice de la caractéristique
+    j = findfirst(==feature, col)
+    if j === nothing
+        error("Caractéristique $feature non trouvée !")
+    end
+
+    # parcourir toutes les espèces et récupérer celles où la valeur > 0
+    for i in 1:length(row)
+        if df_clean[i, j+1] > 0   # +1 car la colonne 1 = Species
+            println(row[i], " : ", df_clean[i, j+1])
+        end
+    end
+end
+
+
+
+
 
 give_caracteristics("Senecio vulgaris")
 
