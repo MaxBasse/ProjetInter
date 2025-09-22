@@ -90,6 +90,9 @@ Construit une matrice espèce × caractéristiques
 function build_species_matrix(collection)
     rows = []
     for species in collection
+        # pour toutes les especes on récupere les caractéristiques dans un dictionnaire cle valeur 
+        # ou la clé est le nom de la caractéristique et la valeur le score (la probabilité que l'espèce ait cette caractéristique)
+        # on ajoute aussi le nom de l'espèce en valeur de la clé espece
         latin = String(species["latin"])
         d = Dict{String,Any}()
         d["espece"] = latin
@@ -98,13 +101,15 @@ function build_species_matrix(collection)
     end
 
     # sur toutes les colonnes, trouver toutes les clés possibles
+    # les dico n'ont actuellement pas tous les memes cle 
+    # on crée donc une liste de toutes les cles que l'on va ajouter aux dico
     all_keys = Set{String}()
     for r in rows
         union!(all_keys, keys(r))
     end
     all_keys = collect(all_keys)
 
-    # Construire les lignes complètes correspondant au especes
+    # Complete les dicos avec les cles manquantes
     complete_rows = []
     for r in rows
         d_complete = Dict{String,Any}()
@@ -117,6 +122,8 @@ function build_species_matrix(collection)
     df = DataFrame(complete_rows)
 
     # Remplacer les missing par 0.0 sauf pour "espece" (gestion d'une erreur)
+    # a voir ce qu'on fait despece qui n'est pas une caracterisituque mais on en a besoin pour savoir ce qu'on traite
+    
     for c in names(df)
         if c != "espece"
             df[!, c] = coalesce.(df[!, c], 0.0)
