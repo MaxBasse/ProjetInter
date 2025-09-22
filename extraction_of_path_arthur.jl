@@ -186,18 +186,29 @@ function clean_species_matrix(df::DataFrame)
 end
 
 
+function give_caracteristics(specy::String)
+    collection = donnees["collection"]
+    df = build_species_matrix(collection)
+    df_clean, col = clean_species_matrix(df)   # bien récupérer row 
+    row=names(df_clean)
+    # trouver l'indice de l'espèce
+    i = findfirst(==(specy), col)
+    if i === nothing
+        error("Espèce $specy non trouvée !")
+    end
+    # récupérer la ligne correspondante
+    ligne = df_clean[i, :]
+    ligne_vec = collect(ligne)  # conversion en vecteur pour avoir des indices entiers
+    # indices des caractéristiques > 0
+    indices = findall(x -> x > 0, ligne_vec)
+    for index in indices
+        println(row[index], " : ", ligne_vec[index])
+    end
+end
 
 
+give_caracteristics("Senecio vulgaris")
 
-
-# utilisation
-
-collection = donnees["collection"];
-
-df = build_species_matrix(collection);
-df_clean,col = clean_species_matrix(df);
-print(col);
-print(names(df_clean));
 
 
 
