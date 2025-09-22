@@ -201,10 +201,9 @@ df_clean, col, row = clean_species_matrix(df)
 # Sauvegarde du DataFrame en CSV
 using CSV
 
-CSV.write("species_matrix.csv", df_clean; header=false)
+println("\nCorrespondance :")
+for (i, feat) in sort(collect(mapping))
+    println("caractéristique $i = $(feat)")
+end
 
 
-
-# Affichage
-#println("Première ligne : ", col)
-#println("Première colonne : ", row)

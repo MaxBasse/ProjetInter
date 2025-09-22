@@ -4,6 +4,8 @@ using PrettyPrint
 data = JSON.parsefile("data.json")
 
 
+
+
 function get_characteristics(species_name, data)
     species = filter(x -> x["latin"] == species_name, data["collection"])[1]
     isempty(species) && return []
