@@ -4,10 +4,11 @@ using JSON
 donnees = JSON.parsefile("data.json")
 donnees_tronquees = JSON.parsefile("truncated_data.json")
 
+#Test de lecture des données
 #println(donnees)
-println(donnees["questions"][1]["title_q"])
-println(donnees["questions"][1]["answers"][1]["title_a"])
-println(donnees["questions"][2]["title_q"])
+#println(donnees["questions"][1]["title_q"])
+#println(donnees["questions"][1]["answers"][1]["title_a"])
+#println(donnees["questions"][2]["title_q"])
 
 
 
@@ -82,3 +83,41 @@ end
 
 
 
+
+
+#Forme de l'arbre : 
+#Dictionnaire avec id=1ère question et valeur = dictionnaire avec id=réponse et valeurs=questions correspondant aux questions suivantes
+
+#Idée que je me fais de l'algorithme pour créer l'arbre :
+
+#avoir une variable "questions_accessibles" qui listes les questions que l'on a le droit de pousser
+#avoir une variable "especes_restantes" qui liste les espèces qui peuvent encore correspondre aux réponses données
+
+#tant que length(especes_restantes)>1 ou questions toutes posées
+    #calculer le score de chaque question
+    #choisir la question avec le meilleur score, la poser, puis explorer les possibilités de réponse
+    #une fois la questions choisie, on a un noeud et les réponses à cette question sont les transitions vers les futures réponses
+    #on remet à jour "espèces restantes" et "questions accessibles"
+
+#une fois qu'on a fini un chemin, on met le nom de l'espèce comme valeur finale 
+#et on revient au noeud précédent pour explorer les autres possibilités
+
+#utiliser la récursivité ? C'est le mieux je pense mais la je vois pas comment gérer "question_accessibles" et "especes_restantes"
+
+
+#Pseudo-code donné dans le rapport de stage :
+"""
+Algorithme 1 : ID3(Q,S,maxdepth)
+Entr´ees : Q ⊆ P(V), S un ensemble d’especes, maxdepth un entier
+Sorties : un arbre de d´ecision pour Q et S de taille inf´erieure `a maxdepth
+1 FunRec Recurse(I ) :
+2 σ ← etat(I)
+3 si caracteres = ∅ ou |I| = maxdepth alors
+4 retourner Feuille(σ)
+5 si ∃ s ∈ σ, σ(s) > .8 alors
+6 retourner Feuille(σ)
+7 i ← caract`ere `a scoreσ minimal
+8 enfants ← [ (k, Recurse(I ∪ {(i, k)}])) pour k ∈ Vi ]
+9 retourner Noeud(σ, i, enfants)
+10 Recurse(∅,+∞)
+"""
