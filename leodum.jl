@@ -23,9 +23,9 @@ println(df_encoded[1, :])
 
 # Test de compréhension du jeu de données
 #println(donnees)
-println(donnees["questions"][1]["answers"][1]["title_a"])
+#println(donnees["questions"][1]["answers"][1]["title_a"])
 
-print(donnees["collection"][24]["latin"])
+#print(donnees["collection"][24]["latin"])
 
 # Fonction de vérification d'appartenance d'une caractéristique pour une espèce
 function verif_species_has_caract(df_caract_species::DataFrame, 
@@ -63,7 +63,7 @@ end
 println(verif_species_has_caract(df_clean, "Viola tricolor", ["combien_de_ptales_voyezvous_5_ou_10"]))
 
 # test 2 avec la caractéristique 2 = la_corolle_ensemble_des_ptales_est_papilionace_ou_fumarie (Faux)
-print(verif_species_has_caract(df_clean, "Viola tricolor", ["combien_de_ptales_voyezvous_5_ou_10", "la_corolle_ensemble_des_ptales_est_papilionace_ou_fumarie"]))
+println(verif_species_has_caract(df_clean, "Viola tricolor", ["combien_de_ptales_voyezvous_5_ou_10", "la_corolle_ensemble_des_ptales_est_papilionace_ou_fumarie"]))
 
 #test 3 sur la caractéristique 100 = quelle_forme_a_la_section_de_la_tige_arrondie (vrai avec proba 0.5)
-print(verif_species_has_caract(df_clean, "Viola tricolor", ["combien_de_ptales_voyezvous_5_ou_10", "quelle_forme_a_la_section_de_la_tige_arrondie"]))
+println(verif_species_has_caract(df_clean, "Viola tricolor", ["combien_de_ptales_voyezvous_5_ou_10", "quelle_forme_a_la_section_de_la_tige_arrondie"]))
