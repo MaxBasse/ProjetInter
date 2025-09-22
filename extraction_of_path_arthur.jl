@@ -3,6 +3,7 @@ import Pkg
 Pkg.add("JSON")
 using JSON
 donnees = JSON.parsefile("data.json")
+using DataFrames
 
 #println(donnees)
 #println(donnees["questions"][1]["title_q"])
@@ -90,6 +91,9 @@ Construit une matrice espèce × caractéristiques
 function build_species_matrix(collection)
     rows = []
     for species in collection
+        # pour toutes les especes on récupere les caractéristiques dans un dictionnaire cle valeur 
+        # ou la clé est le nom de la caractéristique et la valeur le score (la probabilité que l'espèce ait cette caractéristique)
+        # on ajoute aussi le nom de l'espèce en valeur de la clé espece
         latin = String(species["latin"])
         d = Dict{String,Any}()
         d["espece"] = latin
@@ -98,13 +102,15 @@ function build_species_matrix(collection)
     end
 
     # sur toutes les colonnes, trouver toutes les clés possibles
+    # les dico n'ont actuellement pas tous les memes cle 
+    # on crée donc une liste de toutes les cles que l'on va ajouter aux dico
     all_keys = Set{String}()
     for r in rows
         union!(all_keys, keys(r))
     end
     all_keys = collect(all_keys)
 
-    # Construire les lignes complètes correspondant au especes
+    # Complete les dicos avec les cles manquantes
     complete_rows = []
     for r in rows
         d_complete = Dict{String,Any}()
@@ -117,6 +123,8 @@ function build_species_matrix(collection)
     df = DataFrame(complete_rows)
 
     # Remplacer les missing par 0.0 sauf pour "espece" (gestion d'une erreur)
+    # a voir ce qu'on fait despece qui n'est pas une caracterisituque mais on en a besoin pour savoir ce qu'on traite
+    
     for c in names(df)
         if c != "espece"
             df[!, c] = coalesce.(df[!, c], 0.0)
@@ -168,48 +176,62 @@ function clean_species_matrix(df::DataFrame)
             end
         end
     end
+    
 
-    return df
+    df = select(df, :species, Not(:species))
+
+    col=df[:,1]
+    df=df[:,2:end]
+    return df, col
 end
 
 
+function give_caracteristics(specy::String)
+    collection = donnees["collection"]
+    df = build_species_matrix(collection)
+    df_clean, col = clean_species_matrix(df)   # bien récupérer row 
+    row=names(df_clean)
+    # trouver l'indice de l'espèce
+    i = findfirst(==(specy), col)
+    if i === nothing
+        error("Espèce $specy non trouvée !")
+    end
+    # récupérer la ligne correspondante
+    ligne = df_clean[i, :]
+    ligne_vec = collect(ligne)  # conversion en vecteur pour avoir des indices entiers
+    # indices des caractéristiques > 0
+    indices = findall(x -> x > 0, ligne_vec)
+    for index in indices
+        println(row[index], " : ", ligne_vec[index])
+    end
+end
 
+function give_species_with_characteristic(feature::String)
+    collection = donnees["collection"]
+    df = build_species_matrix(collection)
+    df_clean, row, col = clean_species_matrix(df)   # row = noms des espèces, col = noms des caractéristiques
 
-function encode_characteristics(df::DataFrame)
-    # fonction qui encode chaque caracterisituque par un entier (comme ca on comprend mieux la matrice)
-    # garder Species à part
-    features = filter(!=(:Species), names(df))
-
-    # dictionnaire : entier => nom original (toujours Symbol)
-    mapping = Dict{Int,Symbol}()
-    for (i, feat) in enumerate(features)
-        mapping[i] = Symbol(feat)  # conversion explicite
+    # trouver l'indice de la caractéristique
+    j = findfirst(==feature, col)
+    if j === nothing
+        error("Caractéristique $feature non trouvée !")
     end
 
-    # renommer les colonnes (en laissant Species inchangé)
-    rename_map = Dict{Symbol,Symbol}()
-    for (i, feat) in enumerate(features)
-        rename_map[Symbol(feat)] = Symbol("c$(i)")  # ex: c1, c2...
+    # parcourir toutes les espèces et récupérer celles où la valeur > 0
+    for i in 1:length(row)
+        if df_clean[i, j+1] > 0   # +1 car la colonne 1 = Species
+            println(row[i], " : ", df_clean[i, j+1])
+        end
     end
-    df_encoded = rename(df, rename_map)
-
-    return df_encoded, mapping
 end
 
-# utilisation
 
-collection = donnees["collection"]
 
-df = build_species_matrix(collection)
-df_clean = clean_species_matrix(df)
-df_encoded, mapping = encode_characteristics(df_clean)
 
-println("Première ligne encodée :")
-println(df_encoded[1, :])
 
-println("\nCorrespondance :")
-for (i, feat) in sort(collect(mapping))
-    println("caractéristique $i = $(feat)")
-end
+give_caracteristics("Senecio vulgaris")
+
+
+
 
 
