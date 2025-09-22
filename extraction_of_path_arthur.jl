@@ -3,6 +3,7 @@ import Pkg
 Pkg.add("JSON")
 using JSON
 donnees = JSON.parsefile("data.json")
+using DataFrames
 
 #println(donnees)
 #println(donnees["questions"][1]["title_q"])
@@ -179,10 +180,9 @@ function clean_species_matrix(df::DataFrame)
 
     df = select(df, :species, Not(:species))
 
-    col=df[1,:];
-    row=df[:,1];
-    df=df[:,2:end];
-    return df, row, col
+    col=df[:,1]
+    df=df[:,2:end]
+    return df, col
 end
 
 
@@ -195,9 +195,10 @@ end
 collection = donnees["collection"];
 
 df = build_species_matrix(collection);
-df_clean,col,row = clean_species_matrix(df);
+df_clean,col = clean_species_matrix(df);
 print(col);
-print(row);
+print(names(df_clean));
+
 
 
 
