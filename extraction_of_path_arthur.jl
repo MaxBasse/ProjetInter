@@ -1,8 +1,13 @@
-
+using PrettyTables
 import Pkg
+
 Pkg.add("JSON")
+Pkg.add("CSV")
+
+using CSV
 using JSON
 donnees = JSON.parsefile("data.json")
+
 
 #println(donnees)
 #println(donnees["questions"][1]["title_q"])
@@ -123,7 +128,7 @@ function build_species_matrix(collection)
 
     # Remplacer les missing par 0.0 sauf pour "espece" (gestion d'une erreur)
     # a voir ce qu'on fait despece qui n'est pas une caracterisituque mais on en a besoin pour savoir ce qu'on traite
-    
+
     for c in names(df)
         if c != "espece"
             df[!, c] = coalesce.(df[!, c], 0.0)
@@ -134,39 +139,32 @@ function build_species_matrix(collection)
 end
 
 
+using DataFrames
+using DataFrames
+
 function clean_species_matrix(df::DataFrame)
-    #en gros nettoyer les noms des colonnes pour meilleure lisiibilité (mais ca ne sera meme pas suffisant)
-    rename!(df, "espece" => :Species)
+    # Nettoyage des noms de colonnes
+    seen = Set{Symbol}()
+    rename_map = Dict{Symbol, Symbol}()
 
-    newnames = Symbol[]
     for name in names(df)
-        if name == :Species
-            push!(newnames, :Species)
-        else
-            s = String(name)
+        s = String(name)
+        # Supprimer tout après "::" puis remplacer les espaces par "_" et nettoyer caractères spéciaux
+        clean_str = replace(s, r"::.*" => "")           # supprimer tout après ::
+        clean_str = replace(clean_str, " " => "_")      # remplacer espaces par _
+        clean_str = replace(clean_str, r"[^A-Za-z0-9_]" => "")  # enlever caractères spéciaux
+        clean_sym = Symbol(clean_str)
 
-            # Séparer question et modalité
-            parts = split(s, "::")
-            question = replace(parts[1], r"[^A-Za-z0-9 ]" => "")  # nettoyer caractères spéciaux
-            question = lowercase(strip(question))
-            question = replace(question, " " => "_")
-
-            if length(parts) > 1
-                modality = replace(parts[2], r"[^A-Za-z0-9 ]" => "")
-                modality = lowercase(strip(modality))
-                modality = replace(modality, " " => "_")
-                clean = "$(question)_$(modality)"
-            else
-                clean = question
-            end
-
-            push!(newnames, Symbol(clean))
+        if clean_sym ∉ seen
+            rename_map[Symbol(name)] = clean_sym
+            push!(seen, clean_sym)
         end
     end
 
-    rename!(df, Dict(names(df) .=> newnames))
+    rename!(df, rename_map)
 
-    # Convertir en Int si binaire
+
+    # 3️⃣ Convertir colonnes binaires en Int
     for c in names(df)
         if c != :Species && eltype(df[!, c]) <: Float64
             vals = unique(df[!, c])
@@ -176,47 +174,37 @@ function clean_species_matrix(df::DataFrame)
         end
     end
 
-    return df
+    # 4️⃣ Sauvegarder première ligne et première colonne
+    df = select(df, :espece, Not(:espece))
+    col = copy(df[1, :])
+    row = copy(df[:, 1])
+
+    # 5️⃣ Supprimer première ligne et première colonne
+    df_clean = df[:,2:end]
+
+    return df_clean, col, row
 end
 
 
 
 
-function encode_characteristics(df::DataFrame)
-    # fonction qui encode chaque caracterisituque par un entier (comme ca on comprend mieux la matrice)
-    # garder Species à part
-    features = filter(!=(:Species), names(df))
 
-    # dictionnaire : entier => nom original (toujours Symbol)
-    mapping = Dict{Int,Symbol}()
-    for (i, feat) in enumerate(features)
-        mapping[i] = Symbol(feat)  # conversion explicite
-    end
 
-    # renommer les colonnes (en laissant Species inchangé)
-    rename_map = Dict{Symbol,Symbol}()
-    for (i, feat) in enumerate(features)
-        rename_map[Symbol(feat)] = Symbol("c$(i)")  # ex: c1, c2...
-    end
-    df_encoded = rename(df, rename_map)
 
-    return df_encoded, mapping
-end
 
-# utilisation
 
 collection = donnees["collection"]
 
 df = build_species_matrix(collection)
-df_clean = clean_species_matrix(df)
-df_encoded, mapping = encode_characteristics(df_clean)
+df_clean, col, row = clean_species_matrix(df)
 
-println("Première ligne encodée :")
-println(df_encoded[1, :])
+# Sauvegarde du DataFrame en CSV
+using CSV
 
-println("\nCorrespondance :")
-for (i, feat) in sort(collect(mapping))
-    println("caractéristique $i = $(feat)")
-end
+CSV.write("species_matrix.csv", df_clean; header=false)
 
 
+
+# Affichage
+#println("Première ligne : ", col)
+#println("Première colonne : ", row)
