@@ -16,18 +16,20 @@ df_encoded, mapping = encode_characteristics(df_clean)
 println("Première ligne encodée :")
 println(df_encoded[1, :])
 
-#println("\nCorrespondance :")
-#for (i, feat) in sort(collect(mapping))
-#    println("caractéristique $i = $(feat)")
-#end
 
-# Test de compréhension du jeu de données
-#println(donnees)
-#println(donnees["questions"][1]["answers"][1]["title_a"])
 
-#print(donnees["collection"][24]["latin"])
 
-# Fonction de vérification d'appartenance d'une caractéristique pour une espèce
+
+"""
+verif_species_has_caract : Fonction de vérification d'appartenance d'une caractéristique pour une espèce
+
+Arguments :
+- df_caract_species (DataFrame) : matrice des espèces (lignes) et de leurs caracteristiques (colonnes) avec leur proba
+- name_species (String) : nom de l'espèce dont on veut vérifier la possession ou non de caractéristiques données
+- list_caract (Vector{String}) : liste de caractéristiques dont on veut vérifier l'existence pour une espèce donnée
+
+Sortie : Retourne un bouléen (True/False) concernant l'existence de la liste des caractéristiques pour l'espèce donnée 
+"""
 function verif_species_has_caract(df_caract_species::DataFrame, 
     name_species::String, list_caract::Vector{String})
     
@@ -59,6 +61,9 @@ function verif_species_has_caract(df_caract_species::DataFrame,
     return true
 end
 
+"""
+# Différents tests pour la construction de la fonction : verif_species_has_caract
+
 # test 1 sur la caractéristique 3 = combien_de_ptales_voyezvous_5_ou_10 (vraie avec proba 1)
 println(verif_species_has_caract(df_clean, "Viola tricolor", ["combien_de_ptales_voyezvous_5_ou_10"]))
 
@@ -67,3 +72,24 @@ println(verif_species_has_caract(df_clean, "Viola tricolor", ["combien_de_ptales
 
 #test 3 sur la caractéristique 100 = quelle_forme_a_la_section_de_la_tige_arrondie (vrai avec proba 0.5)
 println(verif_species_has_caract(df_clean, "Viola tricolor", ["combien_de_ptales_voyezvous_5_ou_10", "quelle_forme_a_la_section_de_la_tige_arrondie"]))
+"""
+
+
+
+
+# Je code maintenant la fonction qui servira à mettre à jour la liste des espèces restantes après chaque branche 
+# emprunté, c'est à dire après chaque réponse donnée.
+
+"""
+remaining_species_update : Fonction de mise à jour de la liste des espèces restantes pouvant être l'espèce à 
+identifié d'après les réponses de toutes les précédentes questions
+
+Arguments :
+- df_caract_species (DataFrame) : matrice des espèces (lignes) et de leurs caracteristiques (colonnes) avec leur proba
+- especes_restantes : liste des espèces restantes avant la réponse donnée
+
+Sortie : Retourne la liste des espèces restantes qui répondent à l'ensemble des critères obtenues jusque cet instant
+"""
+function remaining_species_update()
+
+end
