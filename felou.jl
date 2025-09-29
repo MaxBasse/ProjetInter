@@ -1,9 +1,12 @@
-import Pkg
-Pkg.add("JSON")
 using JSON
+using CSV
+using DataFrames
+
+
 donnees = JSON.parsefile("data.json")
 donnees_tronquees = JSON.parsefile("truncated_data.json")
-
+donnees_matrice = CSV.read("species_matrix.csv", DataFrame, header=false)
+println(donnees_matrice[1,:])
 #Test de lecture des données
 #println(donnees)
 #println(donnees["questions"][1]["title_q"])
@@ -41,10 +44,9 @@ end
 
 
 
-liste_questions=liste_question2(donnees_tronquees["questions"])
+liste_questions=liste_question(donnees_tronquees["questions"])
 println(length(liste_questions))
 
-f
 
 #fonction qui calcule le score pour une question, à un moment donné du parcours de l'arbre
     # But : rendre le nombre d'espèces qui sont éliminées par cette question (dans le but de le maximiser)
@@ -86,7 +88,7 @@ end
 
 
 #Forme de l'arbre : 
-#Dictionnaire avec id=1ère question et valeur = dictionnaire avec id=réponse et valeurs=questions correspondant aux questions suivantes
+#Dictionnaire de dictionaire... Avec id=1ère question et valeur = dictionnaire avec id=réponse et valeurs=questions correspondant aux questions suivantes, etc
 
 #Idée que je me fais de l'algorithme pour créer l'arbre :
 
@@ -94,7 +96,7 @@ end
 #avoir une variable "especes_restantes" qui liste les espèces qui peuvent encore correspondre aux réponses données
 
 #tant que length(especes_restantes)>1 ou questions toutes posées
-    #calculer le score de chaque question
+    #calculer le score de chaque question (avec la fonction score_question(especes_restantes, question, matrice))
     #choisir la question avec le meilleur score, la poser, puis explorer les possibilités de réponse
     #une fois la questions choisie, on a un noeud et les réponses à cette question sont les transitions vers les futures réponses
     #on remet à jour "espèces restantes" et "questions accessibles"
@@ -104,9 +106,66 @@ end
 
 #utiliser la récursivité ? C'est le mieux je pense mais la je vois pas comment gérer "question_accessibles" et "especes_restantes"
 
+#= Pseudo code donné par chat
+
+fonction construire_arbre(questions_accessibles, especes_restantes, matrice):
+
+    # Cas d'arrêt 1 : une seule espèce restante → feuille
+    si longueur(especes_restantes) == 1:
+        retourner nom_de_cette_espece(especes_restantes)
+
+    # Cas d'arrêt 2 : aucune question restante → feuille ambiguë
+    si questions_accessibles est vide:
+        retourner liste_des_especes(especes_restantes)
+
+    # Étape 1 : évaluer chaque question possible
+    scores = dictionnaire_vide()
+    pour chaque q dans questions_accessibles:
+        scores[q] = score_question(especes_restantes, q, matrice)
+        # (fonction externe : score_question → calcule la capacité de la question
+        # à bien séparer les espèces restantes, par ex. entropie ou équilibre des réponses)
+
+    # Étape 2 : choisir la meilleure question
+    meilleure_question = argmax(scores)
+
+    # Étape 3 : créer un nœud (clé = meilleure_question)
+    noeud = dictionnaire()
+    noeud["id_question"] = meilleure_question
+    noeud["branches"] = dictionnaire()
+
+    # Étape 4 : explorer chaque réponse possible à cette question
+    reponses_possibles = reponses_de_question(meilleure_question, especes_restantes, matrice)
+    # (fonction externe : retourne la liste des réponses distinctes présentes
+    # pour les espèces encore candidates)
+
+    pour chaque r dans reponses_possibles:
+        # Mettre à jour la liste des espèces compatibles avec cette réponse
+        nouvelles_especes = filtrer_especes(especes_restantes, meilleure_question, r, matrice)
+        # (fonction externe : ne garde que les espèces qui donnent la réponse r à la question choisie)
+
+        # Mettre à jour la liste des questions accessibles
+        nouvelles_questions = maj_questions(questions_accessibles, meilleure_question, nouvelles_especes)
+        # (fonction externe : enlève la question déjà posée, et éventuellement ajoute d'autres
+        # qui ne deviennent pertinentes que maintenant)
+
+        # Récursion : construire le sous-arbre pour cette réponse
+        sous_arbre = construire_arbre(nouvelles_questions, nouvelles_especes, matrice)
+
+        # Ajouter cette branche dans le dictionnaire
+        noeud["branches"][r] = sous_arbre
+
+    retourner noeud
+=#
+
+
+
+
+
+
 
 #Pseudo-code donné dans le rapport de stage :
-"""
+
+#=
 Algorithme 1 : ID3(Q,S,maxdepth)
 Entr´ees : Q ⊆ P(V), S un ensemble d’especes, maxdepth un entier
 Sorties : un arbre de d´ecision pour Q et S de taille inf´erieure `a maxdepth
@@ -120,4 +179,5 @@ Sorties : un arbre de d´ecision pour Q et S de taille inf´erieure `a maxdepth
 8 enfants ← [ (k, Recurse(I ∪ {(i, k)}])) pour k ∈ Vi ]
 9 retourner Noeud(σ, i, enfants)
 10 Recurse(∅,+∞)
-"""
+=#
+ 
