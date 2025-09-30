@@ -1,7 +1,7 @@
 include("extraction_of_path_arthur.jl")
 
 
-# Importation des données JSON (parse)
+# Importation des données JSON initiales (parse)
 import Pkg
 Pkg.add("JSON")
 using JSON
@@ -9,12 +9,11 @@ donnees = JSON.parsefile("data.json")
 collection = donnees["collection"]
 questions = donnees["questions"]
 
+
+# Je construis la matrice espèces/caractéristique avec les fonctions de Arthur pour l'utiliser dans mes fonctions
 df = build_species_matrix(collection)
 df_clean = clean_species_matrix(df)
 df_encoded, mapping = encode_characteristics(df_clean)
-
-println("Première ligne encodée :")
-println(df_encoded[1, :])
 
 
 
@@ -85,11 +84,27 @@ remaining_species_update : Fonction de mise à jour de la liste des espèces res
 identifié d'après les réponses de toutes les précédentes questions
 
 Arguments :
-- df_caract_species (DataFrame) : matrice des espèces (lignes) et de leurs caracteristiques (colonnes) avec leur proba
-- especes_restantes : liste des espèces restantes avant la réponse donnée
+- df_caract_species (DataFrame) : matrice des espèces (lignes) et de leurs caracteristiques (colonnes) 
+avec leur proba
+- remaining_species (Vector{String}) : liste des espèces restantes avant la réponse donnée
+- answer_carac (String) : réponse à la question posée (et donc une caractéristique donnée)
 
-Sortie : Retourne la liste des espèces restantes qui répondent à l'ensemble des critères obtenues jusque cet instant
+Sortie : Retourne la liste des espèces restantes qui répondent à l'ensemble des critères obtenues 
+jusque cet instant
 """
-function remaining_species_update()
+function remaining_species_update(df_caract_species::DataFrame, 
+    remaining_species::Vector{String}, answer_carac::String)
 
+    # On créé notre nouvelle liste vide d'espèces restantes qu'on va remplir (vecteur de string)
+    new_remaining_species = String[] 
+    
+    # pour toutes les espèces restantes, on vérifie si elles sont en accord avec la réponse à la dernière 
+    # question (nouvelle caractéristique). Si c'est le cas, on ajoute l'espèce à notre nouvelle liste.
+    for sp in remaining_species
+        if verif_species_has_caract(df_caract_species, sp, answer_carac)
+            push!(new_remaining_species, sp)
+        end
+    end
+
+    return new_remaining_species
 end
