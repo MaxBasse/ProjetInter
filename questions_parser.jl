@@ -1,19 +1,3 @@
-#=using JSON
-
-data = JSON.parsefile("truncated_data.json")
-questions = data["questions"]
-
-function question_to_vect(questions)
-    Vector{}
-    for question in questions
-        label = question["title_q"]
-        for 
-        println(label)
-        println()
-    end
-end
-question_to_vect(questions)
-=#
 using JSON
 
 data = JSON.parsefile("truncated_data.json")
@@ -57,6 +41,5 @@ for (id, pair) in id_to_pair
     println(id, " => ", pair[1], " : ", pair[2])
 end
 
-println(pair_map)
-println()
-println(id_to_pair)
+
+println(length(pair_map))
