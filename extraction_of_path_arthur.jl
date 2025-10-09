@@ -59,7 +59,7 @@ et retourne un Dict(question::réponse => score)
 """
 function extract_characteristics(choices)
     d = Dict{String, Float64}()
-
+    # dico de la forme : "question::réponse" → score.
     for choice in choices
         # recupere les caractéristiques de la question
         q = String(choice["id_question"])
@@ -148,12 +148,12 @@ function clean_species_matrix(df::DataFrame)
 
             # Séparer question et modalité
             parts = split(s, "::")
-            question = replace(parts[1], r"[^A-Za-z0-9 ]" => "")  # nettoyer caractères spéciaux
+            question = parts[1]  
             question = lowercase(strip(question))
             question = replace(question, " " => "_")
 
             if length(parts) > 1
-                modality = replace(parts[2], r"[^A-Za-z0-9 ]" => "")
+                modality = parts[2]  
                 modality = lowercase(strip(modality))
                 modality = replace(modality, " " => "_")
                 clean = "$(question)_$(modality)"
@@ -215,13 +215,15 @@ function list_species(collection)
     return tab
 end
 
-collection = donnees["collection"]
-print(list_species(collection))
+#collection = donnees["collection"]
+#println(list_species(collection))
 
 
 
-#give_caracteristics("Senecio vulgaris")
+#df, col=clean_species_matrix(build_species_matrix(collection))
 
+#println(names(df))
+give_caracteristics("Bellis perennis")
 
 
 
