@@ -183,6 +183,8 @@ function clean_species_matrix(df::DataFrame)
     col=df[:,1]
     df=df[:,2:end]
     return df, col
+    print(col)
+    print(names(df))
 end
 
 
