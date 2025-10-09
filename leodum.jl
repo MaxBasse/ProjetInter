@@ -29,7 +29,7 @@ Arguments :
 
 Sortie : Retourne un bouléen (True/False) concernant l'existence de la liste des caractéristiques pour l'espèce donnée 
 """
-function verif_species_has_caract(df_caract_species::DataFrame, 
+function verif_species_has_caract(df_caract_species::DataFrame,  
     name_species::String, list_caract::Vector{String})
     
     # On trouve la ligne correspondant à l'espèce en cherchant le nom de celle ci dans la colonne species
