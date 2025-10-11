@@ -87,18 +87,19 @@ end
 
 
 #Fonction MAJ accessibles_questions et asked_questions
-#Attention, peut être nécessité de faire 2 fonctions pour affecter à 2 variables ?
+#Prend en arguments accessibles_questions, asked_questions et l'id de la question/réponse courante
+#rend accessibles_questions et asked_questions (mis à jour) sous forme de tuple 
 
 function update_accessibles_questions(accessibles_questions, asked_questions, id_Q_R)
     current_question = question_id(id_Q_R)  #fct à coder
     asked_questions=asked_questions + current_question
-    res = accessibles_questions - current_question
-    for q in unlock_questions[id_Q_R]
+    accessibles_questions = accessibles_questions - current_question
+    for q in question_unlock[id_Q_R]    #question_unlock correspond à une liste donnée au début
         if !(q in asked_questions)
-            res = res + Q
+            accessibles_questions = accessibles_questions + Q
         end
     end
-    return res
+    return accessibles_questions, asked_questions
 end
 
 
