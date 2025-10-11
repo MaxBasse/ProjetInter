@@ -16,11 +16,11 @@ df_clean = clean_species_matrix(df)
 df_encoded, mapping = encode_characteristics(df_clean)
 
 
-
+# ANCIENNE VERSION DES FONCTIONS (NOUVELLES VERSIONS LIGNE 112) :
 
 
 """
-verif_species_has_caract : Fonction de vérification d'appartenance d'une caractéristique pour une espèce
+verif_species_has_caract_old : Fonction de vérification d'appartenance d'une caractéristique pour une espèce
 
 Arguments :
 - df_caract_species (DataFrame) : matrice des espèces (lignes) et de leurs caracteristiques (colonnes) avec leur proba
@@ -29,7 +29,7 @@ Arguments :
 
 Sortie : Retourne un bouléen (True/False) concernant l'existence de la liste des caractéristiques pour l'espèce donnée 
 """
-function verif_species_has_caract(df_caract_species::DataFrame,  
+function verif_species_has_caract_old(df_caract_species::DataFrame,  
     name_species::String, list_caract::Vector{String})
     
     # On trouve la ligne correspondant à l'espèce en cherchant le nom de celle ci dans la colonne species
@@ -80,7 +80,7 @@ println(verif_species_has_caract(df_clean, "Viola tricolor", ["combien_de_ptales
 # emprunté, c'est à dire après chaque réponse donnée.
 
 """
-remaining_species_update : Fonction de mise à jour de la liste des espèces restantes pouvant être l'espèce à 
+remaining_species_update_old : Fonction de mise à jour de la liste des espèces restantes pouvant être l'espèce à 
 identifié d'après les réponses de toutes les précédentes questions
 
 Arguments :
@@ -92,7 +92,7 @@ avec leur proba
 Sortie : Retourne la liste des espèces restantes qui répondent à l'ensemble des critères obtenues 
 jusque cet instant
 """
-function remaining_species_update(df_caract_species::DataFrame, 
+function remaining_species_update_old(df_caract_species::DataFrame, 
     remaining_species::Vector{String}, answer_carac::String)
 
     # On créé notre nouvelle liste vide d'espèces restantes qu'on va remplir (vecteur de string)
@@ -101,10 +101,85 @@ function remaining_species_update(df_caract_species::DataFrame,
     # pour toutes les espèces restantes, on vérifie si elles sont en accord avec la réponse à la dernière 
     # question (nouvelle caractéristique). Si c'est le cas, on ajoute l'espèce à notre nouvelle liste.
     for sp in remaining_species
-        if verif_species_has_caract(df_caract_species, sp, answer_carac)
+        if verif_species_has_caract_old(df_caract_species, sp, answer_carac)
             push!(new_remaining_species, sp)
         end
     end
 
     return new_remaining_species
 end
+
+# NOUVELLE VERSION ADAPTEE AUX FORMATS DES DONNEES :
+
+"""
+verif_species_has_caract : Fonction de vérification d'appartenance d'une caractéristique pour une espèce
+
+Arguments :
+- df_caract_species (DataFrame) : matrice des espèces (lignes) et de leurs caracteristiques (colonnes) avec leur proba
+- species_id (Int) : identifiant (index de ligne) de l’espèce à vérifier
+- caract_ids (Vector{Int}) : identifiants (index de colonnes) des caractéristiques à tester
+
+Sortie :
+- Booléen (true si l’espèce possède toutes les caractéristiques demandées, false sinon)
+"""
+function verif_species_has_caract(df_caract_species::DataFrame,
+                                  species_id::Int,
+                                  caract_ids::Vector{Int})
+
+    # vérifs d'erreurs d'identifiants
+    if species_id > nrow(df_caract_species)
+        error("Identifiant d'espèce $(species_id) hors limites du DataFrame.")
+    end
+
+    if any(x -> x > ncol(df_caract_species), caract_ids)
+        error("Un ou plusieurs identifiants de caractéristiques sont hors limites du DataFrame.")
+    end
+
+    # On parcourt chaque caractéristique demandée pour vérifier si l'espèce la possède
+    for c_id in caract_ids
+        prob = df_caract_species[species_id, c_id]
+
+        # Si proba = 0, l'espèce ne possède pas cette caractéristique
+        if prob == 0
+            return false
+        end
+    end
+
+    # Si toutes les caractéristiques sont présentes (proba > 0)
+    return true
+end
+
+
+
+"""
+remaining_species_update : Fonction de mise à jour de la liste des espèces restantes pouvant être l'espèce à 
+identifié d'après les réponses de toutes les précédentes questions
+
+Arguments :
+- df_caract_species (DataFrame) : matrice des espèces (lignes) et de leurs caracteristiques (colonnes) 
+avec leur proba
+- remaining_species (Vector{Int}) : identifiants des espèces encore possibles
+- answer_carac_id (Int) : identifiant de la caractéristique correspondant à la réponse donnée
+
+Sortie :
+- new_remaining_species (Vector{Int}) : liste mise à jour des espèces compatibles
+"""
+
+function remaining_species_update(df_caract_species::DataFrame,
+                                remaining_species::Vector{Int},
+                                answer_carac_id::Int)
+
+    # On créé notre nouvelle liste vide d'espèces restantes qu'on va remplir 
+    new_remaining_species = Int[]
+
+    # On teste chaque espèce restante
+    for sp_id in remaining_species
+        # Si l'espèce possède la caractéristique associée à la réponse donnée
+        if verif_species_has_caract(df_caract_species, sp_id, [answer_carac_id])
+            push!(new_remaining_species, sp_id)
+        end
+    end
+
+    return new_remaining_species
+end
+
