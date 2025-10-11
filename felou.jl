@@ -6,7 +6,8 @@ using DataFrames
 donnees = JSON.parsefile("data.json")
 donnees_tronquees = JSON.parsefile("truncated_data.json")
 donnees_matrice = CSV.read("species_matrix.csv", DataFrame, header=false)
-println(donnees_matrice[1,:])
+#println(donnees_matrice[1,:])
+
 #Test de lecture des données
 #println(donnees)
 #println(donnees["questions"][1]["title_q"])
@@ -45,6 +46,7 @@ end
 
 
 liste_questions=liste_question(donnees_tronquees["questions"])
+#println(liste_questions)
 println(length(liste_questions))
 
 
@@ -82,6 +84,24 @@ function score_question(especes_restantes, question, matrice)
     return min(score)
 
 end
+
+
+#Fonction MAJ accessibles_questions et asked_questions
+#Prend en arguments accessibles_questions, asked_questions et l'id de la question/réponse courante
+#rend accessibles_questions et asked_questions (mis à jour) sous forme de tuple 
+
+function update_accessibles_questions(accessibles_questions, asked_questions, id_Q_R)
+    current_question = question_id(id_Q_R)  #fct à coder
+    asked_questions=asked_questions + current_question
+    accessibles_questions = accessibles_questions - current_question
+    for q in question_unlock[id_Q_R]    #question_unlock correspond à une liste donnée au début
+        if !(q in asked_questions)
+            accessibles_questions = accessibles_questions + Q
+        end
+    end
+    return accessibles_questions, asked_questions
+end
+
 
 
 
