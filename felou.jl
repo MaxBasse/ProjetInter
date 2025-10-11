@@ -6,7 +6,8 @@ using DataFrames
 donnees = JSON.parsefile("data.json")
 donnees_tronquees = JSON.parsefile("truncated_data.json")
 donnees_matrice = CSV.read("species_matrix.csv", DataFrame, header=false)
-println(donnees_matrice[1,:])
+#println(donnees_matrice[1,:])
+
 #Test de lecture des données
 #println(donnees)
 #println(donnees["questions"][1]["title_q"])
@@ -45,6 +46,7 @@ end
 
 
 liste_questions=liste_question(donnees_tronquees["questions"])
+#println(liste_questions)
 println(length(liste_questions))
 
 
@@ -82,6 +84,23 @@ function score_question(especes_restantes, question, matrice)
     return min(score)
 
 end
+
+
+#Fonction MAJ accessibles_questions et asked_questions
+#Attention, peut être nécessité de faire 2 fonctions pour affecter à 2 variables ?
+
+function update_accessibles_questions(accessibles_questions, asked_questions, id_Q_R)
+    current_question = question_id(id_Q_R)  #fct à coder
+    asked_questions=asked_questions + current_question
+    res = accessibles_questions - current_question
+    for q in unlock_questions[id_Q_R]
+        if !(q in asked_questions)
+            res = res + Q
+        end
+    end
+    return res
+end
+
 
 
 
