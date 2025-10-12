@@ -54,15 +54,13 @@ function glouglouton(df_caract_species::DataFrame,
                                                  answer_id)
 
 
-        # Mise à jour la liste des questions accessibles (fonction ?)
-        new_accessible = accessible_questions_update(accessible_questions,
+        # Mise à jour la liste des questions accessibles et des questions posées
+        (new_accessible,new_asked_questions) = accessible_questions_update(accessible_questions, 
+                                                     asked_questions,
                                                      best_question,
                                                      answer_id,
                                                      question_unlock)
 
-         # Mise à jour de la liste des questions posées pour cette branche/réponse
-        new_asked_questions = copy(asked_questions)
-        push!(new_asked_questions, best_question)
 
         # Appel récursif : sous-arbre correspondant à cette réponse
         subtree = glouglouton(df_caract_species,
