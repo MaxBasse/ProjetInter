@@ -1,5 +1,10 @@
-include("leodum.jl")
-include("felou.jl")
+#include("leodum.jl")
+include("fonctions_annexes.jl")
+#include("data_parsing.jl")
+#include("questions_parser.jl")
+
+using DataFrames
+using Random
 
 """
 glouglouton : fonction main de l'algo glouton avec des dictionnaire dedictionnaire (cf pseudo-code en photo)
@@ -77,5 +82,30 @@ function glouglouton(df_caract_species::DataFrame,
     return node
     
 
+end
 
+
+#Test du Glouglouton avec des données aléatoires
+
+# Créer une matrice 8x10 de 0 et 1 aléatoires
+data = rand(0:1, 8, 10)
+df = DataFrame(data, :auto)
+
+# Créer un vecteur de 5 éléments, chacun contenant un vecteur de 2 valeurs
+vals = shuffle(1:10)
+questions_answers = [vals[2i-1:2i] for i in 1:5]
+questions_answers = Vector{Vector{Int64}}(questions_answers)
+
+question_unlock = [[3, 4], [5], [], [3,5], [], [], [4], [], [], []]
+question_unlock = Vector{Vector{Int64}}(question_unlock)
+
+asked_questions = Vector{Int}()
+accessible_questions = Int[1,2]
+remaining_species = collect(1:8)
+
+arbre=glouglouton(df,remaining_species,accessible_questions,questions_answers,question_unlock,asked_questions)
+arbre_json=JSON.json(arbre, 4)
+
+open("arbre.json", "w") do f
+    write(f, arbre_json)
 end
