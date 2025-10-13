@@ -1,10 +1,13 @@
 #include("leodum.jl")
+include("questions_parser.jl")
+include("data_parsing.jl")
 include("fonctions_annexes.jl")
-#include("data_parsing.jl")
-#include("questions_parser.jl")
+
+
 
 using DataFrames
 using Random
+using JSON
 
 """
 glouglouton : fonction main de l'algo glouton avec des dictionnaire dedictionnaire (cf pseudo-code en photo)
@@ -21,7 +24,7 @@ avec leur proba
 Sortie : Retourne notre arbre (noeuds = questions / branches = réponses / feuilles = espèces)
 """
 
-function glouglouton(df_caract_species::DataFrame, 
+function glouglouton(df_caract_species::BitMatrix, 
                     remaining_species::Vector{Int}, 
                     accessible_questions::Vector{Int},
                     questions_answers::Vector{Vector{Int}},
@@ -75,8 +78,11 @@ function glouglouton(df_caract_species::DataFrame,
                               question_unlock,
                               new_asked_questions)
 
-        # On ajoute la branche au noeud
-        node["branches"][answer_id] = subtree
+        # On ajoute la branche au noeud seulement s'il n'est pas vide
+        if !(haskey(subtree, "species") && isempty(subtree["species"]))
+            node["branches"][answer_id] = subtree
+        end
+
     end
 
     return node
@@ -84,7 +90,7 @@ function glouglouton(df_caract_species::DataFrame,
 
 end
 
-
+#=
 #Test du Glouglouton avec des données aléatoires
 
 # Créer une matrice 8x10 de 0 et 1 aléatoires
@@ -103,7 +109,45 @@ asked_questions = Vector{Int}()
 accessible_questions = Int[1,2]
 remaining_species = collect(1:8)
 
-arbre=glouglouton(df,remaining_species,accessible_questions,questions_answers,question_unlock,asked_questions)
+arbre_test=glouglouton(df,remaining_species,accessible_questions,questions_answers,question_unlock,asked_questions)
+arbre_json_test=JSON.json(arbre_test, 4)
+
+open("arbre_test.json", "w") do f
+    write(f, arbre_json_test)
+end
+=#
+
+## Test du glouton sur nos données
+
+#Initialisation des données
+remaining_species=collect(1:size(species_matrix)[1])
+asked_questions = Vector{Int}()
+
+accessible_questions = Vector{Int}()
+data = JSON.parsefile("data.json")
+for q in data["questions"]
+    push!(accessible_questions, findfirst(==(q["title_q"]), vect_question))
+end
+
+
+for answer_id in vect_question_carac[35]
+    new_remaining_species = remaining_species_update(species_matrix, remaining_species, answer_id)
+    println("Answer ", answer_id, " → remaining_species = ", new_remaining_species)
+end
+
+new_species_matrix = copy(species_matrix)
+for reponses in vect_question_carac
+    rowsums = vec(sum(new_species_matrix[:, reponses], dims=2))
+    for i in axes(new_species_matrix, 1)
+        if rowsums[i] == 0
+            new_species_matrix[i, reponses] .= 1
+        end
+    end
+end
+
+
+#Application de l'algo
+arbre=glouglouton(new_species_matrix, remaining_species, accessible_questions, vect_question_carac, vect_unlock_q, asked_questions)
 arbre_json=JSON.json(arbre, 4)
 
 open("arbre.json", "w") do f
