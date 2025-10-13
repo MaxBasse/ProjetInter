@@ -1,23 +1,26 @@
 include("questions_parser.jl")
 
-#=
-println("Vecteur des caractéristiques (question, réponse) :")
-for (i, carac) in enumerate(vect_carac)
-    println(carac, " -> Index: ", i)
+nb_species = length(data["collection"])
+nb_carac = length(vect_carac)
+vect_species = Vector{String}(undef, nb_species)
+
+species_matrix = falses(nb_species, nb_carac)
+for (i, species) in enumerate(data["collection"])
+    latin = String(species["latin"])
+    vect_species[i] = latin
+    sp_carac = extract_characteristics(species["choices"])
+    for j in 1:nb_carac
+        species_matrix[i,j] = sp_carac[j]
+    end
 end
 
-println("\nVecteur des questions :")
-for (i, question) in enumerate(vect_question)
-    println(question, " -> Index: ", i)
-end
-
-println("\nUnlocked questions : ")
-for (i, questions) in enumerate(vect_unlock_q)
-    println("Question ", i, " débloque les questions : ", questions)
-    println("Question ", i, " est : ", vect_question[i])
-end
-=#
-
+"""
+Function used to extract the characteristics of a species
+    args:
+        choices : choices of the species to process
+    returns:
+        d : boolean vector of size nb_carac indicating which characteristics are present
+"""
 function extract_characteristics(choices)
     d = falses(nb_carac) 
     # dico de la forme : "question::réponse" → score.
@@ -42,29 +45,3 @@ function extract_characteristics(choices)
     end
     return d
 end
-
-nb_species = length(data["collection"])
-nb_carac = length(vect_carac)
-vect_species = Vector{String}(undef, nb_species)
-
-species_matrix = falses(nb_species, nb_carac)
-for (i, species) in enumerate(data["collection"])
-    latin = String(species["latin"])
-    vect_species[i] = latin
-    sp_carac = extract_characteristics(species["choices"])
-    for j in 1:nb_carac
-        species_matrix[i,j] = sp_carac[j]
-    end
-end
-
-println("\n")
-println(findall(==(true), species_matrix[1,:]))
-println("Nombre de caractéristiques pour l'espèce 1 : ", count(==(true), species_matrix[1,:]))
-println("\n")
-
-println("Espèce 1 ", vect_species[1], " a les caractéristiques suivantes : \n")
-for i in findall(==(true), species_matrix[1,:])
-    println("Caractéristique $i : ", vect_carac[i])
-end
-
-
