@@ -3,16 +3,7 @@ include("questions_parser.jl")
 nb_species = length(data["collection"])
 nb_carac = length(vect_carac)
 vect_species = Vector{String}(undef, nb_species)
-
 species_matrix = falses(nb_species, nb_carac)
-for (i, species) in enumerate(data["collection"])
-    latin = String(species["latin"])
-    vect_species[i] = latin
-    sp_carac = extract_characteristics(species["choices"])
-    for j in 1:nb_carac
-        species_matrix[i,j] = sp_carac[j]
-    end
-end
 
 """
 Function used to extract the characteristics of a species
@@ -44,4 +35,13 @@ function extract_characteristics(choices)
         end
     end
     return d
+end
+
+for (i, species) in enumerate(data["collection"])
+    latin = String(species["latin"])
+    vect_species[i] = latin
+    sp_carac = extract_characteristics(species["choices"])
+    for j in 1:nb_carac
+        species_matrix[i,j] = sp_carac[j]
+    end
 end
