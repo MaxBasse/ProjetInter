@@ -182,9 +182,8 @@ function clean_species_matrix(df::DataFrame)
 
     col=df[:,1]
     df=df[:,2:end]
-    return df, col
-    print(col)
-    print(names(df))
+    return df, col, names(df)
+
 end
 
 
@@ -217,7 +216,7 @@ function list_species(collection)
     return tab
 end
 
-#collection = donnees["collection"]
+collection = donnees["collection"]
 #println(list_species(collection))
 
 
@@ -225,7 +224,17 @@ end
 #df, col=clean_species_matrix(build_species_matrix(collection))
 
 #println(names(df))
-give_caracteristics("Bellis perennis")
+#give_caracteristics("Bellis perennis")
+
+
+using DataFrames, CSV
+
+df = build_species_matrix(collection)
+df_clean, col, row = clean_species_matrix(df)
+
+CSV.write("species_matrix.csv", df_clean; writeheader=false)
+CSV.write("species_column.csv", DataFrame(Species = col))
+CSV.write("characteristics_row.csv", DataFrame(Characteristic = row))
 
 
 
