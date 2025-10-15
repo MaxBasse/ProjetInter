@@ -45,3 +45,12 @@ for (i, species) in enumerate(data["collection"])
         species_matrix[i,j] = sp_carac[j]
     end
 end
+
+for i in 1:nb_carac
+    println("Caractéristique $i : $(vect_carac[i])")
+end
+
+for i in 1:length(vect_question)
+    println("Espèce $i : $(vect_question[i])")
+    println("Réponses de la question $i : $(vect_question_carac[i])")
+end

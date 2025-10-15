@@ -19,6 +19,7 @@ function process_question(q)
     qtext = q["title_q"]
     if !(qtext in vect_question)
             push!(vect_question, qtext)
+            push!(vect_question_carac, Int[])
     end
     
     for a in q["answers"]
@@ -28,12 +29,21 @@ function process_question(q)
             push!(vect_unlock_q, Int[])
             push!(vect_carac, key)
         end
+
+        idCarac = findfirst(==(key), vect_carac)
+        idQ = findfirst(==(qtext), vect_question)
+
+        if !(idCarac in vect_question_carac[idQ])
+            push!(vect_question_carac[idQ], idCarac)
+        end
+
         # Récursivité sur les sous-questions 
         if haskey(a, "unlock_questions")    
             for subq in a["unlock_questions"]
                 process_question(subq)
-                idCarac = findfirst(==(key), vect_carac)
+                
                 idQ_unlocked = findfirst(==(subq["title_q"]), vect_question)
+                
                 if !(idQ_unlocked in vect_unlock_q[idCarac])
                     push!(vect_unlock_q[idCarac], idQ_unlocked)
                 end
