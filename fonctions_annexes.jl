@@ -1,3 +1,6 @@
+using DataFrames
+
+
 """
 accessible_questions_update : Met à jour les listes de questions accessibles et déjà posées après une réponse.
 
@@ -76,7 +79,7 @@ function score_evaluation2(df_caract_species, remaining_species, current_questio
     #Selection des colonnes et des lignes à compter 
     cols = question_caract[current_question]
 
-    all_rows = 1:nrow(df_caract_species)
+    all_rows = 1:size(df_caract_species,1)
     rows_to_count = setdiff(all_rows, remaining_species)
 
     #comptage des non-zero pour chaque colonne sélectionnées
@@ -128,16 +131,16 @@ Arguments :
 Sortie :
 - Booléen (true si l’espèce possède toutes les caractéristiques demandées, false sinon)
 """
-function verif_species_has_caract(df_caract_species::DataFrame,
+function verif_species_has_caract(df_caract_species::BitMatrix,
                                   species_id::Int,
                                   caract_ids::Vector{Int})
 
     # vérifs d'erreurs d'identifiants
-    if species_id > nrow(df_caract_species)
+    if species_id > size(df_caract_species,1)
         error("Identifiant d'espèce $(species_id) hors limites du DataFrame.")
     end
 
-    if any(x -> x > ncol(df_caract_species), caract_ids)
+    if any(x -> x > size(df_caract_species,2), caract_ids)
         error("Un ou plusieurs identifiants de caractéristiques sont hors limites du DataFrame.")
     end
 
@@ -171,7 +174,7 @@ Sortie :
 - new_remaining_species (Vector{Int}) : liste mise à jour des espèces compatibles
 """
 
-function remaining_species_update(df_caract_species::DataFrame,
+function remaining_species_update(df_caract_species::BitMatrix,
                                 remaining_species::Vector{Int},
                                 answer_carac_id::Int)
 
