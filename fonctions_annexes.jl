@@ -63,7 +63,7 @@ function score_evaluation(df_caract_species, remaining_species, current_question
                 score_reponse+=1
             end
         end
-        #
+        
         score[reponse]=score_reponse
     end
 
@@ -115,6 +115,7 @@ function best_question_selection(df_caract_species, remaining_species, accessibl
     end
 
     #On choisit la question possèdant le plus petit score
+    println(score)
     return findmin(score)[2]
 
 end
