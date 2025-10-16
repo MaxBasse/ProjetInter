@@ -10,114 +10,86 @@ using JSON
 # pwd()  # Vérifie le changement de répertoire
 
 #########################################################################################
-# Lecture du fichier JSON: file est un dictionnaire
-file = JSON.parsefile("question_reponse.json")
+#=
+Chaque noeud de l'arbre correspond à une question 
+- si la réponse à la question est "oui" (dans le sens où l'espèce possède la caractéristique) alors je descends à gauche
+- si la réponse à la question est "non" alors je descends à droite
+Le but est de trouver l'ordre des questions à poser afin de distinguer toutes les espèces avec le moins de questions possibles.
 
-# Création d'une liste vide pour contenir les espèces
-liste_espece = []
+BRANCH: exploration / ébaloration d'arbre
+Etape 1: J'ai besoin de à l'instant t: 
+-> la liste des espèces disponibles (especes_non_identifiees)
+-> la liste des questions pas encore posées (question_restante /accessibles)
+-> du graphe construit jusqu'à l'instant t (graphe)
+-> la meilleure borne connue à l'instant t (best_borne_inf)
 
-# test d'accès aux données 
-# println(file["collection"][1]["latin"])  # Affiche le nom latin de la première espèce
+Etape 2: Je sélectionne une question candidate 
+- soit avec le critère
+- soit avec le critère 
+La question divise la liste des espèces en deux groupes:
+- groupe possédant la caractéristique
+- groupe ne possédant pas la caractéristique
 
-# Parcours de toutes les espèces du fichier JSON
-for ligne in file["collection"]
-    # Ajout de l'espèce à la fin de la liste des espèces
-    push!(liste_espece, ligne["latin"])
+Etape 3: AVANT DE CONTINUER =>BOUND
+Avant de descendre plus en profondeur dans la branche du groupe possédant la caractéristique, il faut calculer une borne inférieure. 
+Etape 3.1: Borne à définir: 
+exemple de borne inférieur: s'il reste k espèces non distinguer il faudra au moins log2 (k) questions pour pouvoir les séparer complémentement. 
+Etape 3.2: Comparaison à la meilleure solution connue
+il faut comparer la borne inférieur calculée avec la meilleure solution qu'on possède à l'instant t 
+=> Si la borne calculée est pire que la meilleure solution connue alors on coupe la branche car on ne fera pas mieux dans la suite de la branche
+=> Si la borne calculée est meilleure que la meilleure solution connue alors notre borne devient la nouvelle meilleure solution connue et on continue ainsi l'exploration de la branche
+
+Etape 4: Il faut ensuite répéter ce processus sur chaque sous groupe non éliminé
+=#
+include("fonctions_annexes.jl")
+
+function branch_and_bound_juju(especes_non_identifiees, question_restante, graphe, best_borne_inf)
+    # Choix de la prochaine question 
+    #question = meilleure_question() à coder
+    
+
 end
 
-# Affichage de la liste des espèces
-# println(liste_espece)
 
-# Affichage du nombre d'espèce 
-# println(length(liste_espece))
 
-# Test jouer pour comprendre le fichier JSON
-#println(file["questions"][1]["answers"])
 
 #########################################################################################
-
-#####################################################################################
 using Graphs
 using GraphPlot
 
-function construire_arbre_question(donnee)
-    # Création d'un graphe orienté vide
-    graphe=SimpleDiGraph()
+G = DiGraph()  # un graphe orienté (chaque branche = direction)
+add_vertex!(G)  # noeud racine
+add_vertex!(G)
+add_vertex!(G)
 
-    # Association d'un numéro à chaque question 
-    dico_question = Dict{Int, String}()
+# exemple : ajout d'une question et de ses deux réponses
+add_edge!(G, 1, 2)  # 1 => "Oui"
+add_edge!(G, 1, 3)  # 1 => "Non"
+gplot(G)
 
-    # Parcours uniquement des questions "racines"
-    for ligne in donnee["questions"]
-        # Exploration des sous questions
-        ajout_question(graphe, dico_question, ligne)
+function branch_and_bound(species_matrix, remaining_species, remaining_questions, G, node_id)
+    # Cas de base : si 1 seule espèce => feuille
+    if length(remaining_species) == 1
+        return
     end
 
-    # Retourne le graphe et le dictionnaire des questions
-    return graphe, dico_question
-    
-end
+    # Sélectionne la "meilleure" question à poser
+    q = select_best_question(species_matrix, remaining_species, remaining_questions)
 
-function ajout_question(graphe, dico_question, ligne, num_parent=nothing)
-    # Etape 1: Création d'un nouveau sommet pour la question considérée
-    # Récupération de la question 
-    q_a_ajouter = ligne["title_q"]
-    # Ajout de la question au dictionnaire
-    if !(q_a_ajouter in values(dico_question))
-        # Ajout de la question en tant que nouveau sommet au graphe
-        add_vertex!(graphe)
-        # Récupération du numéro de la question 
-        id_q=nv(graphe)
-        dico_question[id_q]=q_a_ajouter
-    else
-        # Recherche de la (première d'où first) clé correspondant à cette question 
-        id_q = first(cle for (cle,valeur) in dico_question if valeur == q_a_ajouter)
-    end
+    # Crée les sous-groupes selon la réponse
+    for value in [0, 1]
+        subset = filter(spec -> species_matrix[spec, q] == value, remaining_species)
 
-    # Etape 2 (si nécessaire): Reliage du sommet de la nouvelle question au reste du graphe
-    # Position de la question dans le fichier JSON ie est ce que il y a une question au dessus (ie un parent)
-    if num_parent !== nothing
-        # Ajout de l'arrète reliant la question parent de la question considérée
-        add_edge!(graphe,num_parent,id_q)
-    end
-
-    # Etape 3: Est ce que la question est elle même parent ? 
-    for reponse in ligne["answers"] # pas besoin de ["title_q"][1] car c'est sur la même ligne ie pas de [
-        # Si la question a un fils on doit aussi l'ajouter au graphe
-        for q_fille in reponse["unlock_questions"]
-            # Récursivité pour ajouter la question fille au graphe
-            ajout_question(graphe, dico_question, q_fille, id_q)
+        if !isempty(subset)
+            new_node = nv(G) + 1
+            add_vertex!(G)
+            add_edge!(G, node_id, new_node)
+            branch_and_bound(species_matrix, subset, setdiff(remaining_questions, [q]), G, new_node)
         end
     end
-
-    # Renvoie du graphe et du dictionnaire de question mis à jour 
-    return graphe, dico_question
-
 end
 
-# pour sauvegarder l'arbre en pdf
-using Compose
-using Fontconfig
-using Cairo
 
-function afficher_arbre(donnee)
-    # Construction de l'arbre avec les fonctions écrites avant
-    g, dico_question = construire_arbre_question(donnee)
 
-    # Labels des sommets (questions)
-    labels = [dico_question[sommet] for sommet in 1:nv(g)]
-    # Affichage 
-    gplot(g, nodelabel = labels, nodelabeldist=1.5) 
-    
-    # enregistrer l'arbre résultat en pdf 
-    draw(PDF("resultat_arbre.pdf", 30cm, 60cm), gplot(g,nodelabel = labels, nodelabeldist=1.5)) 
-end
 
-# Test des fonctions
-afficher_arbre(file)
-
-# source aide: 
-# https://juliagraphs.org/Graphs.jl/dev/core_functions/simplegraphs/#Graphs.SimpleGraphs.add_vertex!-Union{Tuple{SimpleGraph{T}},%20Tuple{T}}%20where%20T
-# https://juliagraphs.org/GraphPlot.jl/#add-node-label
-# https://app.studyraid.com/fr/read/4194/86684/dictionnaires-et-ensembles
 
