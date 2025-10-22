@@ -44,8 +44,53 @@ function check_integrity_questions_collection(questions, collection)
     println("Toutes les questions ont bien des réponses associées à des espèces.")
     return true
 end
+tree = JSON.parsefile("arbre.json")
+function check_tree(node; path=[])
+    errors = String[]
+    species_found = Set{Int}()
+    # verification de non mixité branches especes
+    if haskey(node, "species") && haskey(node, "branches")
+        push!(errors, "Node $(join(path, '/')) has both 'species' and 'branches'")
+    end
 
-function check_integrity_tree(tree)
+    # Si c’est une feuille avec espèces, on l'ajoute à la liste des especes
+    if haskey(node, "species")
+        for s in node["species"]
+            push!(species_found, s)
+        end
+    end
+
+    # Si c’est un nœud avec des branches
+    if haskey(node, "branches")
+        branches = node["branches"]
+        if isempty(branches)
+            push!(errors, "Node $(join(path, '/')) has a 'question' but no branches")
+        else
+            # appel recursif de la fonctio,
+            for (branch_name, subnode) in pairs(branches)
+                sub_species, sub_errors = check_tree(subnode; path=[path... , branch_name])
+                union!(species_found, sub_species)
+                append!(errors, sub_errors)
+            end
+        end
+    end
+
+    return species_found, errors
+end
+
+species_found, errors = check_tree(tree)
+
+println("=== Vérification de l'arbre ===")
+println("Espèces trouvées : ", sort(collect(species_found)))
+if isempty(errors)
+    println("Aucune erreur détectée.")
+else
+    println("Erreurs détectées :")
+    for e in errors
+        println(" - ", e)
+    end
+end
 
 
-check_integrity_questions_collection(questions, collection)
+
+#check_integrity_questions_collection(questions, collection)
