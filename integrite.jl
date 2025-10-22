@@ -45,5 +45,7 @@ function check_integrity_questions_collection(questions, collection)
     return true
 end
 
+function check_integrity_tree(tree)
+
 
 check_integrity_questions_collection(questions, collection)
