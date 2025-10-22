@@ -79,8 +79,7 @@ function score_evaluation2(df_caract_species, remaining_species, current_questio
     #Selection des colonnes et des lignes à compter 
     cols = question_caract[current_question]
 
-    all_rows = 1:size(df_caract_species,1)
-    rows_to_count = setdiff(all_rows, remaining_species)
+    rows_to_count = remaining_species
 
     #comptage des non-zero pour chaque colonne sélectionnées
     #score = [sum(df_caract_species[row, col] != 0 for row in rows_to_count) for col in cols]

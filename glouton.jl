@@ -144,11 +144,12 @@ for reponses in vect_question_carac
         end
     end
 end
-println(new_species_matrix[:,103])
-println(new_species_matrix[:,124])
-println(accessible_questions)
-best_question_selection(new_species_matrix, remaining_species, accessible_questions, vect_question_carac)
-
+#println(new_species_matrix[:,103])
+#println(new_species_matrix[:,124])
+#println(accessible_questions)
+sc=best_question_selection(new_species_matrix, remaining_species, accessible_questions, vect_question_carac)
+println(sc)
+#=
 #Application de l'algo
 arbre=glouglouton(new_species_matrix, remaining_species, accessible_questions, vect_question_carac, vect_unlock_q, asked_questions)
 arbre_json=JSON.json(arbre, 4)
