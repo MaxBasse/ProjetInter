@@ -84,7 +84,7 @@ function score_evaluation2(df_caract_species, remaining_species, current_questio
 
     #comptage des non-zero pour chaque colonne sélectionnées
     #score = [sum(df_caract_species[row, col] != 0 for row in rows_to_count) for col in cols]
-    score = [sum(df_caract_species[row, col] != 0 for row in rows_to_count; init=0) for col in cols]
+    score = [sum(df_caract_species[row, col] != 0 for row in remaining_species; init=0) for col in cols]
 
 
     #Je choisi ici de rendre le max entre |S1| et |S2| car c'est que que je veux minimiser
