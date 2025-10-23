@@ -66,7 +66,7 @@ function check_tree(node; path=[])
         if isempty(branches)
             push!(errors, "Node $(join(path, '/')) has a 'question' but no branches")
         else
-            # appel recursif de la fonctio,
+            # appel recursif de la fonction
             for (branch_name, subnode) in pairs(branches)
                 sub_species, sub_errors = check_tree(subnode; path=[path... , branch_name])
                 union!(species_found, sub_species)
@@ -92,5 +92,5 @@ else
 end
 
 
-
 #check_integrity_questions_collection(questions, collection)
+
