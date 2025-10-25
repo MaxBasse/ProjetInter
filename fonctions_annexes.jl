@@ -68,7 +68,7 @@ function score_evaluation(df_caract_species, remaining_species, current_question
     end
 
     #Je choisi ici de rendre le max entre |S1| et |S2| car c'est que que je veux minimiser
-    return max(score)
+    return maximum(score)
 
 end
 
@@ -82,10 +82,22 @@ function score_evaluation2(df_caract_species, remaining_species, current_questio
     rows_to_count = remaining_species
 
     #comptage des non-zero pour chaque colonne sélectionnées
-    #score = [sum(df_caract_species[row, col] != 0 for row in rows_to_count) for col in cols]
-    score = [sum(df_caract_species[row, col] != 0 for row in remaining_species; init=0) for col in cols]
+    score = [sum(df_caract_species[row, col] != 0 for row in rows_to_count; init=0) for col in cols]
 
-
+    
+    #Ne pas choisir les questions qui ne servent à rien
+    compteur=0
+    for s in score 
+        if (s==0)||(s==length(remaining_species))
+            compteur+=1
+        end
+    end
+    if (compteur==length(cols))
+        #si la question ne partitionne pas les espèces restantes, c'est forcément la (ou une des) pire question donc on la code avec un score de -1
+        return -1
+    end
+    
+    #println(score)
     #Je choisi ici de rendre le max entre |S1| et |S2| car c'est que que je veux minimiser
     return maximum(score)
 
@@ -104,18 +116,53 @@ best_question_selection : sélectionne la meilleure question à poser selon une 
 - `Int` : identifiant de la question optimale selon la stratégie choisie
 """
 
-function best_question_selection(df_caract_species, remaining_species, accessible_questions, question_caract)
+function best_question_selection(df_caract_species, remaining_species, accessible_questions, asked_questions, question_caract, question_unlock)
     #initialisation du score pour chaque question
     score=Dict{Int, Int}()
+
+    new_asked_questions = copy(asked_questions)
+    new_accessibles_questions = copy(accessible_questions)
 
     #Calcul du score pour chaque question accessible
     for question in accessible_questions
         score[question] = score_evaluation2(df_caract_species, remaining_species, question, question_caract)
+        if (score[question]==-1)
+            #On met à jour les questions posées et les questions accessibles
+            push!(new_asked_questions, question)
+            filter(x -> x !=question, new_accessibles_questions)
+
+            #A décommenter si on veut rajouter les unlock_question des questions qu'on enlève mais je sais pas pourquoi ça ne change rien sur l'arbre final...
+            #=
+            #Il faut quand même unlock les questions associées aux réponses où les espèces peuvent être :
+            cols = question_caract[question]
+            rows_to_count = remaining_species
+            score_question = [sum(df_caract_species[row, col] != 0 for row in rows_to_count; init=0) for col in cols]
+            for i in eachindex(score_question, cols)
+                s=score_question[i]
+                c=cols[i]
+                if (s==length(remaining_species))
+                    #On rajoute aux questions accessibles les questions débloquées par les réponses des questions non-posées
+                    for q in question_unlock[c]   
+                        if !(q in new_asked_questions)
+                            push!(new_accessibles_questions, q)
+                        end
+                    end
+                end
+            end
+            =#
+
+            #on l'enlève du score pour ne pas la choisir
+            delete!(score, question)
+        end
+    end
+
+    if isempty(score)
+        return -1, new_accessibles_questions, new_asked_questions
     end
 
     #On choisit la question possèdant le plus petit score
-    println(score)
-    return findmin(score)[2]
+    #println(score)
+    return findmin(score)[2], new_accessibles_questions, new_asked_questions
 
 end
 

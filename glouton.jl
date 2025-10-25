@@ -42,10 +42,17 @@ function glouglouton(df_caract_species::BitMatrix,
     end
 
     # 1 et 2 - Choix de la meilleure question (fonction ?)
-    best_question = best_question_selection(df_caract_species,
-                                            remaining_species,
-                                            accessible_questions,
-                                            questions_answers)
+    (best_question, accessibles_questions, asked_question) = best_question_selection(df_caract_species,
+                                                                                    remaining_species,
+                                                                                    accessible_questions,
+                                                                                    asked_questions,
+                                                                                    questions_answers,
+                                                                                    question_unlock)
+
+    #Si aucune question n'apporte de nouvelles informations, on rend la liste des espèces restantes                                                                              
+    if (best_question==-1)
+        return Dict("species" => remaining_species)
+    end
 
     # 3 - Création du noeud de l’arbre
     node = Dict{String, Any}()
@@ -147,9 +154,9 @@ end
 #println(new_species_matrix[:,103])
 #println(new_species_matrix[:,124])
 #println(accessible_questions)
-sc=best_question_selection(new_species_matrix, remaining_species, accessible_questions, vect_question_carac)
-println(sc)
-#=
+best_question_selection(new_species_matrix, remaining_species, accessible_questions, asked_questions, vect_question_carac, vect_unlock_q)
+
+
 #Application de l'algo
 arbre=glouglouton(new_species_matrix, remaining_species, accessible_questions, vect_question_carac, vect_unlock_q, asked_questions)
 arbre_json=JSON.json(arbre, 4)
@@ -157,3 +164,4 @@ arbre_json=JSON.json(arbre, 4)
 open("arbre.json", "w") do f
     write(f, arbre_json)
 end
+
