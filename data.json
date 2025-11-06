@@ -1893,7 +1893,7 @@
                     [ "une par une", 1.0, [] ],
                     [ "par deux", 0.0, [] ],
                     [ "par trois", 0.0, [] ],
-                    [ "par plus que trois", 0.0, [] ]
+                    [ "par plus que trois", 0.0, [] ]  
                   ]
                 },
                 {
