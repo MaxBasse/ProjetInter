@@ -51,12 +51,7 @@ tree = JSON.parsefile("arbre.json")
 
 function check_tree(node; path=[])
     errors = String[]
-    species_found = Set{Int}()
-    # verification de non mixité branches especes
-    if haskey(node, "species") && haskey(node, "branches")
-        push!(errors, "Node $(join(path, '/')) has both 'species' and 'branches'")
-    end
-
+    species_found = Int[]
     # Si c’est une feuille avec espèces, on l'ajoute à la liste des especes
     if haskey(node, "species")
         for s in node["species"]
@@ -73,7 +68,7 @@ function check_tree(node; path=[])
             # appel recursif de la fonction
             for (branch_name, subnode) in pairs(branches)
                 sub_species, sub_errors = check_tree(subnode; path=[path... , branch_name])
-                union!(species_found, sub_species)
+                append!(species_found, sub_species)
                 append!(errors, sub_errors)
             end
         end
