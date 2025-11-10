@@ -27,3 +27,6 @@ Code écrit en francais :
     Sinon on branche.
     On peut remettre à jour la borne sup des que l'on a un nouveau noeud du B&B, 
     en faisant tourner un glouton sur la clé de dtermination partielle qui correspond au noeud.
+    """
+
+    
