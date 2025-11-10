@@ -39,6 +39,7 @@ for (i, nom) in enumerate(vect_species) # vect_species est dans data_parsing
 end
 
 #########################################################################################
+
 """
 Construit récursivement le graphe à partir de la structure de l’arbre glouton.
 """
@@ -151,40 +152,62 @@ afficher_arbre_glouton(arbre, map_questions, map_answers, map_species)
 ###########################################################################################
 function save_tree_graphviz(file::Dict, map_questions, map_answers, map_species; outpath="arbre_glouton_graphviz.pdf")
     g = SimpleDiGraph()
-
-    function rec(node, parent_name=nothing)
-        label = ""
+    vertex_labels = Dict{Int, String}()
+    vertex_props = Dict{Int, Dict{String, String}}()
+    
+    function rec(node, parent_id=nothing)
+        # Créer le sommet courant
+        add_vertex!(g)
+        current_id = nv(g)
+        
+        # Définir le label et les propriétés
         if haskey(node, "question")
             qid = node["question"]
-            label = "❓ " * get(map_questions, qid, "Question $qid")
+            vertex_labels[current_id] = "❓ " * get(map_questions, qid, "Question $qid")
+            vertex_props[current_id] = Dict("shape" => "box", "style" => "rounded,filled", "fillcolor" => "lightyellow")
         elseif haskey(node, "species")
-            label = "🌿 " * join([get(map_species, s, "Espèce $s") for s in node["species"]], ", ")
+            vertex_labels[current_id] = "🌿 " * join([get(map_species, s, "Espèce $s") for s in node["species"]], ", ")
+            vertex_props[current_id] = Dict("shape" => "box", "style" => "filled", "fillcolor" => "lightgreen")
         else
-            label = "(racine)"
+            vertex_labels[current_id] = "(racine)"
+            vertex_props[current_id] = Dict("shape" => "box", "style" => "rounded,filled", "fillcolor" => "lightyellow")
         end
 
-        current = add_node!(g, gensym("n"), label=label, shape="box", style="rounded,filled", fillcolor="lightyellow")
-
-        if parent_name !== nothing
-            add_edge!(g, parent_name, current)
+        # Ajouter l'arête depuis le parent si nécessaire
+        if parent_id !== nothing
+            add_edge!(g, parent_id, current_id)
         end
 
+        # Traiter les sous-branches
         if haskey(node, "branches")
             for (ans, sub) in node["branches"]
+                # Créer un nœud pour la réponse
+                add_vertex!(g)
+                answer_id = nv(g)
+                
                 answer_label = haskey(node, "question") ?
                     get(get(map_answers, node["question"], Dict()), string(ans), string(ans)) :
                     string(ans)
-                child_label = "💬 " * answer_label
-                edge_node = add_node!(g, gensym("a"), label=child_label, shape="ellipse", style="filled", fillcolor="lightblue")
-                add_edge!(g, current, edge_node)
-                rec(sub, edge_node)
+                vertex_labels[answer_id] = "💬 " * answer_label
+                vertex_props[answer_id] = Dict("shape" => "ellipse", "style" => "filled", "fillcolor" => "lightblue")
+                
+                add_edge!(g, current_id, answer_id)
+                
+                # Récursion sur le sous-arbre
+                rec(sub, answer_id)
             end
         end
+        
+        return current_id
     end
 
     rec(file)
-
-    save(g, outpath)
+    
+    # Création du graphe pour l'export
+    node_labels = [get(vertex_labels, i, "") for i in 1:nv(g)]
+    p = gplot(g, nodelabel=node_labels, nodelabeldist=1.5, nodesize=0.3, arrowlengthfrac=0.05)
+    draw(PDF(outpath, 40cm, 80cm), p)
+    
     println("✅ Graphe hiérarchique exporté : $outpath")
 end
 

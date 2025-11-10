@@ -44,7 +44,11 @@ function check_integrity_questions_collection(questions, collection)
     println("Toutes les questions ont bien des réponses associées à des espèces.")
     return true
 end
+
+
+
 tree = JSON.parsefile("arbre.json")
+
 function check_tree(node; path=[])
     errors = String[]
     species_found = Int[]
@@ -89,3 +93,29 @@ end
 
 #check_integrity_questions_collection(questions, collection)
 
+
+
+
+#Compter les noeuds et les feuilles de l'arbre obtenu
+
+function compter_noeuds_feuilles(arbre)
+    # Si c'est une feuille
+    if haskey(arbre, "species")
+        return (0, 1)  # (noeuds, feuilles)
+    end
+
+    # Sinon c'est un noeud
+    nb_noeuds = 1
+    nb_feuilles = 0
+
+    for sous_arbre in values(arbre["branches"])
+        n, f = compter_noeuds_feuilles(sous_arbre)
+        nb_noeuds += n
+        nb_feuilles += f
+    end
+
+    return (nb_noeuds, nb_feuilles)
+end
+
+nb_noeuds, nb_feuilles = compter_noeuds_feuilles(tree)
+println("Noeuds: $nb_noeuds, Feuilles: $nb_feuilles")
