@@ -52,7 +52,7 @@ ALGORITHME Branch_and_Bound(Qa_initial, E_initial)
     meilleure_solution = sol_glouton
 
     # Initialisation de la liste des noeuds à explorer
-    ListeNoeuds = [racine]
+    ListeNoeuds = racine
 
     TANT QUE ListeNoeuds n’est pas vide :
 
