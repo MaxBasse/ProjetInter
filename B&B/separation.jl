@@ -11,17 +11,17 @@ end
 #on en choisit une et on énumère toutes les questions à poser possibles.
 
 #On prend un noeud en argument et on rend une liste de noeud à évaluer
-function separation(noeud)
+function separation(noeud, questions_answers, question_unlock, df_caract_species)
     #choix de la feuille partielle pour laquelle faire les branchements
     # i.e parcours de la clé partielle en largeur et on prend la première feuille pour laquelle il reste plusieurs espèces et plusieurs questions
     arbre=noeud.cle_partielle
     (feuille, chemin) = parcours_largeur(arbre) 
 
-    res=[]
+    res=Noeud[]
     #j'énumère pour chaque question accessible de la feuille
-    for q in feuille["questions_assessibles"]
+    for q in feuille["questions_accessibles"]
         #création de la clé partielle associée
-        nouvelle_cle_partielle = MAJ_cle_partielle(arbre, chemin, q)
+        nouvelle_cle_partielle = MAJ_cle_partielle(arbre, chemin, q, questions_answers, question_unlock, df_caract_species)
         #création du nouveau noeud
         nouveau_noeud = Noeud(0, nouvelle_cle_partielle)
         #ajout à la liste des nouveaux noeuds
@@ -43,8 +43,8 @@ function parcours_largeur(arbre)
     while !isempty(file)
         n, chemin = popfirst!(file)
 
-        if haskey(n, "species")
-            n_species = length(n["species"])
+        if haskey(n, "especes_restantes")
+            n_species = length(n["especes_restantes"])
             #n_questions = length(n["questions_accessibles"])
             
             if (n_species > 1) #&& (n_questions > 0)
@@ -53,7 +53,7 @@ function parcours_largeur(arbre)
 
         elseif haskey(n, "branches")
             # On ajoute les sous-arbres à la file, et les chemins correspondants
-            for (cle, sous_arbre) in n["branches"]
+            for (cle, sous_arbre) in pairs(n["branches"])
                 push!(file, (sous_arbre, vcat(chemin,cle)))
             end
         end
@@ -64,37 +64,42 @@ end
 
 #Fonction qui met à jour la clé partielle associée au nouveau noeud, en fontion de l'ancienne clé partielle et de la séparation choisie
 #Je n'ai pas encore codé le chemin, mais je considère que c'est un vecteur, avec les identifiants des chemins suivis (id --> "branche" --> id --> ... --> id --> "feuille")
-function MAJ_cle_partielle(arbre, chemin, q)
-    feuille = chemin[end]
-    pop!(chemin)
+function MAJ_cle_partielle(arbre, chemin, q, questions_answers, question_unlock, df_caract_species)
+    new_arbre = deepcopy(arbre)
+    local_path = copy(chemin)
+    feuille = local_path[end]
+    pop!(local_path)
 
-    iter=arbre
-    for i in chemin
+    iter=new_arbre
+    for i in local_path
         iter=iter["branches"][i]
     end
 
-    questions_accessibles = iter[feuille]["questions_accessibles"]
-    especes_restantes = iter[feuille]["especes_restantes"]
-    questions_posees = iter[feuille]["questions_posees"]
-    profondeur = iter[feuille]["profondeur"]
+    noeud_feuille = iter["branches"][feuille]
 
-    iter[feuille]["question"]=q
+    questions_accessibles = noeud_feuille["questions_accessibles"]
+    especes_restantes = noeud_feuille["especes_restantes"]
+    questions_posees = noeud_feuille["questions_posees"]
+    profondeur = noeud_feuille["profondeur"]
+
+    noeud_feuille["question"]=q
     
-    branchage=dict()
+    branchage = Dict{Any,Any}()
     for reponse in questions_answers[q] #pour toutes les réponses possibles à la question q
         #faire tout plein de manips, potentiellement dans des fonctions annexes, qui vont me donner les nouvelles espèces_restantes et les nouvelles questions_accessibles
         new_questions_accessibles , new_questions_posees = MAJ_questions(questions_accessibles, questions_posees, q, reponse, question_unlock)
-        new_especes_restantes = MAJ_especes_restantes(df, especes_restantes, reponse)
+        new_especes_restantes = MAJ_especes_restantes(df_caract_species, especes_restantes, reponse)
 
         #création des nouvelles branches
-        branchage[reponse]=dict()
+        branchage[reponse]=Dict{Any,Any}()
         branchage[reponse]["questions_accessibles"] = new_questions_accessibles
         branchage[reponse]["questions_posees"] = new_questions_posees
         branchage[reponse]["profondeur"] = profondeur + 1
         branchage[reponse]["especes_restantes"] = new_especes_restantes
-        
+        #branchage[reponse]["branches"] = Dict()
+
     end
-    iter[feuille]["branches"]=branchage
+    noeud_feuille["branches"]=branchage
 
     #mettre à jour l'arbre général, pour l'instant je vois pas trop comment faire
     #apparement, faire "iter=arbre" et ensuite modifier iter. Cela modifie aussi arbre (car pas une recopie)
@@ -102,13 +107,9 @@ function MAJ_cle_partielle(arbre, chemin, q)
     
 
     #rendre l'arbre actualisé
-    return arbre
+    return new_arbre
 end
 
-
-#tests
-arbre = JSON.parsefile("c:/Users/HP/Documents/4MA/Projet interdisciplinaire/ProjetInter/Glouton/arbre.json")
-print(parcours_largeur(arbre))
 
 
 
@@ -131,7 +132,7 @@ function MAJ_questions(accessibles_questions, asked_questions, current_question,
 
     #On rajoute aux questions accessibles les questions débloquées par la réponse donnée
     for q in question_unlock[answer_id]   
-        if !(q in new_asked_questions)
+        if !(q in new_asked_questions) && !(q in new_accessibles_questions)
             push!(new_accessibles_questions, q)
         end
     end
