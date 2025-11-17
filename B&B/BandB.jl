@@ -52,7 +52,7 @@ ALGORITHME Branch_and_Bound(Qa_initial, E_initial)
     meilleure_solution = sol_glouton
 
     # Initialisation de la liste des noeuds à explorer
-    ListeNoeuds = [racine]
+    ListeNoeuds = racine
 
     TANT QUE ListeNoeuds n’est pas vide :
 
@@ -89,11 +89,11 @@ ALGORITHME Branch_and_Bound(Qa_initial, E_initial)
 
             FIN POUR
 
-            # Optionnel : mise à jour dynamique de la borne sup avec un glouton local
+            # mise à jour de la borne sup sur la nouvelle cle partrielle 
             (borne_sup_locale, sol_locale) ← Glouton(noeud.Qa, noeud.E)
             SI borne_sup_locale < borne_sup ALORS
-                borne_sup ← borne_sup_locale
-                meilleure_solution ← sol_locale
+                borne_sup = borne_sup_locale
+                meilleure_solution = sol_locale
             FIN SI
 
         FIN SI
@@ -103,7 +103,110 @@ ALGORITHME Branch_and_Bound(Qa_initial, E_initial)
     FIN TANT QUE
 
     RETOURNER (meilleure_solution, borne_sup)
-FIN ALGORITHME
+FIN ALGORITHMEE4
 
     """
 
+
+# Structure d’un noeud B&B #
+ 
+
+struct Noeud
+    cle_partielle::Dict{Symbol, Any}           # Clé de détermination partielle
+    brone_inf::Int              # bonr einf associée à chaque noeud du B&B 
+end
+
+#   Algorithme Branch & Bound    #
+
+function Branch_and_Bound(Qa_initial, E_initial)
+
+      
+    # 1. Initialisation du noeud racine et des variables B&B  #
+      
+
+    racine = Noeud(
+        Dict(
+        :profondeur => 0,
+        :questions_accessibles => copy(Qa_initial),
+        :questions_posees => Int[],
+        :especes_restantes => copy(E_initial),
+        :question => -1,
+        :branches => Dict{Int, Any}()
+    ), 
+        0
+    )
+
+    # Calcul initial de la borne supérieure via le glouton
+    borne_sup, sol_glouton = Glouton(Qa_initial, E_initial)
+    meilleure_solution = sol_glouton
+
+    # Liste des noeuds à explorer, soit une file pour largeur soit une pile pour profondeur
+    ListeNoeuds = [racine]
+
+
+     
+    # 2. Boucle principale du B&B     #
+
+    while !isempty(ListeNoeuds)
+
+    
+        # 2.1 Sélection d’un noeud selon une stratégie (profondeur, largeur ?) #
+          
+        noeud = pop!(liste_noeuds)  
+
+
+          
+        # 2.2 Calcul de la borne inférieure   #
+          
+        borne_inf = evaluation(noeud)
+
+
+          
+        # 2.3 Test afin de savoir si on peut élaguer tels des bucherons gaziers
+          
+        if borne_inf ≥ borne_sup
+            # badaboum on élague
+            continue
+        end
+
+
+          
+        # 2.4 Test si la clé partielle s'avère plutot etre une clé totalement définie (chaque feuille est vide ou une espece) #
+          
+        if Est_une_cle_determination_totale(noeud)
+
+            cout_solution = Evaluer(noeud)
+
+            # Mise à jour de la borne supérieure si amélioration
+            if cout_solution < borne_sup
+                borne_sup = cout_solution
+                meilleure_solution = noeud.cle_partielle
+            end
+
+        else
+
+               
+            # 2.5 Branchement : création des noeuds fils          #
+               
+            noeud_inter=branchement(Noeud.Qa)
+            liste_noeud=append!(liste_noeud, noeud_inter)
+
+
+            
+            # 2.6 Mise à jour de la borne sup via glouton sur clé partielle (pas sur de MAJ a chaque fois mais on laisse comme cela pour l'instant)
+              # a revoir car cette fonction glouton la est différente car elle fait du glouton sur des arbres partiels
+            borne_sup_locale, sol_locale = Glouton(noeud.Qa, noeud.E)
+
+            if borne_sup_locale < borne_sup
+                borne_sup = borne_sup_locale
+                meilleure_solution = sol_locale
+            end
+        end
+
+        # Fin du traitement du noeud -> il est sorti de la liste via selection_noeud!
+    end
+
+
+
+    return meilleure_solution, borne_sup
+end
