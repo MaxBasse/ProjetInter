@@ -16,7 +16,7 @@ mutable struct DiagnosisNode
     # If the node is a question node, this holds the question ID (Int).
     # If it's a leaf node, this is -1.
     question_id::Int 
-    
+
     # If the node is a leaf, this holds the list of remaining species IDs (Vector{Int}).
     # If it's a question node, this is empty.
     species_ids::Vector{Int} 
