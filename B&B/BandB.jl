@@ -112,10 +112,8 @@ FIN ALGORITHMEE4
  
 
 struct Noeud
-    Qa::Any                      # Questions accessibles, a voir si les questions accessibles et les especes sont propres au noeud ou plutot a la clé de determination
-    E::Any                       # Espèces disponibles, idem
-    cle_partielle::Any           # Clé de détermination partielle
-    profondeur::Int              # Profondeur dans l'arbre, à titre indicatif 
+    cle_partielle::Dict{Symbol, Any}           # Clé de détermination partielle
+    brone_inf::Int              # bonr einf associée à chaque noeud du B&B 
 end
 
 #   Algorithme Branch & Bound    #
@@ -127,9 +125,14 @@ function Branch_and_Bound(Qa_initial, E_initial)
       
 
     racine = Noeud(
-        Qa_initial,
-        E_initial,
-        init_cle_partielle(),    # fonction supposée exister, qui donne les cles en fonctions des Qa et E
+        Dict(
+        :profondeur => 0,
+        :questions_accessibles => copy(Qa_initial),
+        :questions_posees => Int[],
+        :especes_restantes => copy(E_initial),
+        :question => -1,
+        :branches => Dict{Int, Any}()
+    ), 
         0
     )
 
@@ -149,13 +152,13 @@ function Branch_and_Bound(Qa_initial, E_initial)
     
         # 2.1 Sélection d’un noeud selon une stratégie (profondeur, largeur ?) #
           
-        noeud = selection_noeud!(ListeNoeuds)  # enlève aussi le noeud de la liste
+        noeud = pop!(liste_noeuds)  
 
 
           
         # 2.2 Calcul de la borne inférieure   #
           
-        borne_inf = Evaluer_Borne_Inf(noeud)
+        borne_inf = evaluation(noeud)
 
 
           
@@ -172,11 +175,11 @@ function Branch_and_Bound(Qa_initial, E_initial)
           
         if Est_une_cle_determination_totale(noeud)
 
-            coût_solution = Evaluer(noeud)
+            cout_solution = Evaluer(noeud)
 
             # Mise à jour de la borne supérieure si amélioration
-            if coût_solution < borne_sup
-                borne_sup = coût_solution
+            if cout_solution < borne_sup
+                borne_sup = cout_solution
                 meilleure_solution = noeud.cle_partielle
             end
 
@@ -185,19 +188,13 @@ function Branch_and_Bound(Qa_initial, E_initial)
                
             # 2.5 Branchement : création des noeuds fils          #
                
-            for q in noeud.Qa
-
-                # branchement(noeud, q) doit créer tous les fils possibles
-                noeuds_fils = branchement(noeud, q)
-                for nf in noeuds_fils
-                    push!(ListeNoeuds, nf)
-                end
-            end
+            noeud_inter=branchement(Noeud.Qa)
+            liste_noeud=append!(liste_noeud, noeud_inter)
 
 
             
             # 2.6 Mise à jour de la borne sup via glouton sur clé partielle (pas sur de MAJ a chaque fois mais on laisse comme cela pour l'instant)
-              
+              # a revoir car cette fonction glouton la est différente car elle fait du glouton sur des arbres partiels
             borne_sup_locale, sol_locale = Glouton(noeud.Qa, noeud.E)
 
             if borne_sup_locale < borne_sup
