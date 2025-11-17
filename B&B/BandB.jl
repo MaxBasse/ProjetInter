@@ -113,7 +113,7 @@ FIN ALGORITHMEE4
 
 struct Noeud
     cle_partielle::Dict{Symbol, Any}           # Clé de détermination partielle
-    brone_inf::Int              # bonr einf associée à chaque noeud du B&B 
+    borne_inf::Int              # bonr einf associée à chaque noeud du B&B 
 end
 
 #   Algorithme Branch & Bound    #
@@ -123,7 +123,8 @@ function Branch_and_Bound(Qa_initial, E_initial)
       
     # 1. Initialisation du noeud racine et des variables B&B  #
       
-
+    borne_sup, sol_glouton = Glouton(Qa_initial, E_initial)
+    meilleure_solution = sol_glouton
     racine = Noeud(
         Dict(
         :profondeur => 0,
@@ -137,8 +138,7 @@ function Branch_and_Bound(Qa_initial, E_initial)
     )
 
     # Calcul initial de la borne supérieure via le glouton
-    borne_sup, sol_glouton = Glouton(Qa_initial, E_initial)
-    meilleure_solution = sol_glouton
+
 
     # Liste des noeuds à explorer, soit une file pour largeur soit une pile pour profondeur
     ListeNoeuds = [racine]
