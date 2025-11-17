@@ -1,7 +1,9 @@
+using JSON
 
-struct Noeud
+
+mutable struct Noeud
     borne_inf::Int
-    cle_partielle::Dict{}
+    cle_partielle::Dict
 end
 
 #On choisit de séparer selon les questions
@@ -13,7 +15,7 @@ function separation(noeud)
     #choix de la feuille partielle pour laquelle faire les branchements
     # i.e parcours de la clé partielle en largeur et on prend la première feuille pour laquelle il reste plusieurs espèces et plusieurs questions
     arbre=noeud.cle_partielle
-    feuille, chemin = parcours_largeur(arbre)  #à coder pour avoir le chemin
+    (feuille, chemin) = parcours_largeur(arbre) 
 
     res=[]
     #j'énumère pour chaque question accessible de la feuille
@@ -33,30 +35,68 @@ end
 
 
 #Fonction qui rend la première feuille partielle trouvée, et le chemin associé pour y aller
+#Attention, à vérifier pour le chemin
 function parcours_largeur(arbre)
 
-    file = [arbre]
+    file = [(arbre,[])]
 
     while !isempty(file)
-        n = popfirst!(file)
+        n, chemin = popfirst!(file)
 
         if haskey(n, "species")
             n_species = length(n["species"])
-            n_questions = length(n["questions_accessibles"])
+            #n_questions = length(n["questions_accessibles"])
             
-            if (n_species > 1) && (n_questions > 0)
-                return (n)
+            if (n_species > 1) #&& (n_questions > 0)
+                return (n, chemin)
             end
 
         elseif haskey(n, "branches")
-            # On ajoute les sous-arbres à la file
-            for sous_arbre in values(n["branches"])
-                push!(file, sous_arbre)
+            # On ajoute les sous-arbres à la file, et les chemins correspondants
+            for (cle, sous_arbre) in n["branches"]
+                push!(file, (sous_arbre, vcat(chemin,cle)))
             end
         end
     end
 
-    return nothing
+    return -1
+end
+
+#Fonction qui met à jour la clé partielle associée au nouveau noeud, en fontion de l'ancienne clé partielle et de la séparation choisie
+#Je n'ai pas encore codé le chemin, mais je considère que c'est un vecteur, avec les identifiants des chemins suivis (id --> "branche" --> id --> ... --> id --> "feuille")
+function MAJ_cle_partielle(arbre, chemin, q)
+    feuille = chemin[end]
+    pop!(chemin)
+
+    iter=arbre
+    for i in chemin
+        iter=iter["branches"][i]
+    end
+
+    question_accessibles=iter[feuille]["questions_accessibles"]
+    especes_restantes=iter[feuille]["species"]
+
+    branchage=dict()
+    for reponse in questions_answers[q] #pour toutes les réponses possibles à la question q
+        #faire tout plein de manips, potentiellement dans des fonctions annexes, qui vont me donner les nouvelles espèces_restantes et les nouvelles questions_accessibles
+        new_questions_accessibles , new_especes_restantes = MAJ(question_accessibles, especes_restantes, reponse) #à coder
+
+        #création des nouvelles branches
+        branchage[reponse]=dict()
+        branchage[reponse]["questions_accessibles"] = new_questions_accessibles
+        branchage[reponse]["species"] = new_especes_restantes
+    end
+
+    #mettre à jour l'arbre général, pour l'instant je vois pas trop comment faire
+    #apparement, faire "iter=arbre" et ensuite modifier iter. Cela modifie aussi arbre (car pas une recopie)
+    #on peut donc imaginer un truc comme ça mais à vérifier
+    iter=branchage
+
+    #rendre l'arbre actualisé
+    return arbre
 end
 
 
+#tests
+arbre = JSON.parsefile("c:/Users/HP/Documents/4MA/Projet interdisciplinaire/ProjetInter/Glouton/arbre.json")
+parcours_largeur(arbre)
