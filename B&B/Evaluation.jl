@@ -12,7 +12,7 @@ function evaluation(Noeud::n)
         if feuille.eval == null continue end
 
         #setdiff
-        remaining_q = (1:length(vect_question)) - feuille.questions_posees
+        remaining_q = setdiff((1:length(vect_question)), feuille.questions_posees)
 
         nombre_especes = length(feuille.especes)
 

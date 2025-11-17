@@ -12,11 +12,11 @@ using JSON
 
 # A struct to represent a node in the decision tree.
 # It can be either an internal (question) node or a leaf (species) node.
-mutable struct DiagnosisNode
+mutable struct Node
     # If the node is a question node, this holds the question ID (Int).
     # If it's a leaf node, this is -1.
     question_id::Int 
-
+ 
     # If the node is a leaf, this holds the list of remaining species IDs (Vector{Int}).
     # If it's a question node, this is empty.
     species_ids::Vector{Int} 
