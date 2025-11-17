@@ -103,7 +103,7 @@ ALGORITHME Branch_and_Bound(Qa_initial, E_initial)
     FIN TANT QUE
 
     RETOURNER (meilleure_solution, borne_sup)
-FIN ALGORITHME
+FIN ALGORITHMEE4
 
     """
 
