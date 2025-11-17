@@ -107,3 +107,109 @@ FIN ALGORITHME
 
     """
 
+
+# Structure d’un noeud B&B #
+ 
+
+struct Noeud
+    Qa::Any                      # Questions accessibles, a voir si les questions accessibles et les especes sont propres au noeud ou plutot a la clé de determination
+    E::Any                       # Espèces disponibles, idem
+    cle_partielle::Any           # Clé de détermination partielle
+    profondeur::Int              # Profondeur dans l'arbre, à titre indicatif 
+end
+
+#   Algorithme Branch & Bound    #
+
+function Branch_and_Bound(Qa_initial, E_initial)
+
+      
+    # 1. Initialisation du noeud racine et des variables B&B  #
+      
+
+    racine = Noeud(
+        Qa_initial,
+        E_initial,
+        init_cle_partielle(),    # fonction supposée exister, qui donne les cles en fonctions des Qa et E
+        0
+    )
+
+    # Calcul initial de la borne supérieure via le glouton
+    borne_sup, sol_glouton = Glouton(Qa_initial, E_initial)
+    meilleure_solution = sol_glouton
+
+    # Liste des noeuds à explorer, soit une file pour largeur soit une pile pour profondeur
+    ListeNoeuds = [racine]
+
+
+     
+    # 2. Boucle principale du B&B     #
+
+    while !isempty(ListeNoeuds)
+
+    
+        # 2.1 Sélection d’un noeud selon une stratégie (profondeur, largeur ?) #
+          
+        noeud = selection_noeud!(ListeNoeuds)  # enlève aussi le noeud de la liste
+
+
+          
+        # 2.2 Calcul de la borne inférieure   #
+          
+        borne_inf = Evaluer_Borne_Inf(noeud)
+
+
+          
+        # 2.3 Test afin de savoir si on peut élaguer tels des bucherons gaziers
+          
+        if borne_inf ≥ borne_sup
+            # badaboum on élague
+            continue
+        end
+
+
+          
+        # 2.4 Test si la clé partielle s'avère plutot etre une clé totalement définie (chaque feuille est vide ou une espece) #
+          
+        if Est_une_cle_determination_totale(noeud)
+
+            coût_solution = Evaluer(noeud)
+
+            # Mise à jour de la borne supérieure si amélioration
+            if coût_solution < borne_sup
+                borne_sup = coût_solution
+                meilleure_solution = noeud.cle_partielle
+            end
+
+        else
+
+               
+            # 2.5 Branchement : création des noeuds fils          #
+               
+            for q in noeud.Qa
+
+                # branchement(noeud, q) doit créer tous les fils possibles
+                noeuds_fils = branchement(noeud, q)
+                for nf in noeuds_fils
+                    push!(ListeNoeuds, nf)
+                end
+            end
+
+
+            
+            # 2.6 Mise à jour de la borne sup via glouton sur clé partielle (pas sur de MAJ a chaque fois mais on laisse comme cela pour l'instant)
+              
+            borne_sup_locale, sol_locale = Glouton(noeud.Qa, noeud.E)
+
+            if borne_sup_locale < borne_sup
+                borne_sup = borne_sup_locale
+                meilleure_solution = sol_locale
+            end
+        end
+
+        # Fin du traitement du noeud -> il est sorti de la liste via selection_noeud!
+    end
+
+
+
+    return meilleure_solution, borne_sup
+end
