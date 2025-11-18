@@ -210,3 +210,30 @@ function Branch_and_Bound(Qa_initial, E_initial)
 
     return meilleure_solution, borne_sup
 end
+
+
+function Est_une_cle_determination_totale(Noeud)
+    # fonction qui prend un noeud du B&B en parametre et qui vérifie si sa clé de determination associée est totale ou bien partielle 
+    cle=Noeud.cle_partielle
+    return cle_totale_recursive(cle)
+
+
+function cle_totale_recursive(cle::Dict{Symbol,Any})::Bool
+
+    branches = cle[:branches]
+
+    # Cas 1 : feuille → vérifier le nombre d'espèces restantes
+    if isempty(branches)
+        nb = length(cle[:especes_restantes])
+        return nb <= 1
+    end
+
+    # Cas 2 : noeud interne → toutes les branches doivent être totales
+    for (_, souscle) in branches
+        if !cle_totale_recursive(souscle)
+            return false
+        end
+    end
+
+    return true
+end
