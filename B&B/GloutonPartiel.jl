@@ -69,10 +69,7 @@ end
 
 # Etape 4 : Fonction principale appelée par le B&B
 
-function glouton_borne_inf(noeud::Noeud,
-                           df_caract_species::BitMatrix,
-                           questions_answers,
-                           question_unlock)
+function glouton_borne_inf(noeud::Noeud, df_caract_species::BitMatrix, questions_answers::Vector{Vector{Int}}, question_unlock::Vector{Vector{Int}})
 
     # Copie profonde de la clé partielle
     cle = deepcopy(noeud.cle_partielle)
@@ -86,14 +83,7 @@ function glouton_borne_inf(noeud::Noeud,
         accessibles = feuille["questions_accessibles"]
         posees      = feuille["questions_posees"]
 
-        arbre_glouton = glouglouton(
-            df_caract_species,
-            remaining,
-            accessibles,
-            questions_answers,
-            question_unlock,
-            posees
-        )
+        arbre_glouton = glouglouton(df_caract_species, remaining, accessibles, questions_answers, question_unlock, posees)
 
         remplacer_feuille(cle, feuille, arbre_glouton)
     end

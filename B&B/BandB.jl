@@ -107,6 +107,7 @@ FIN ALGORITHMEE4
 
     """
 include("GloutonPartiel.jl")
+include("../Glouton/glouton.jl")
 
 # Structure d’un noeud B&B #
  
@@ -123,7 +124,10 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
       
     # 1. Initialisation du noeud racine et des variables B&B  #
       
-    borne_sup, sol_glouton = Glouton(Qa_initial, E_initial)
+    sol_glouton = glouglouton(df_caract_species, E_initial, Qa_initial, questions_answers, question_unlock)
+
+    # Calcul initial de la borne supérieure via le glouton
+    borne_sup = profondeur_arbre(sol_glouton)
     meilleure_solution = sol_glouton
     racine = Noeud(
         Dict(
@@ -137,15 +141,13 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
         0
     )
 
-    # Calcul initial de la borne supérieure via le glouton
-
 
     # Liste des noeuds à explorer, soit une file pour largeur soit une pile pour profondeur
     ListeNoeuds = [racine]
 
 
      
-    # 2. Boucle principale du B&B     #
+    # 2. Boucle principale du B&B     
 
     while !isempty(ListeNoeuds)
 
@@ -164,8 +166,8 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
           
         # 2.3 Test afin de savoir si on peut élaguer tels des bucherons gaziers
           
-        if borne_inf ≥ borne_sup
-            # badaboum on élague
+        if borne_inf >= borne_sup
+            # badaboum on élague (en gros on fait R)
             continue
         end
 
@@ -194,7 +196,7 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
 
             
             # 2.6 Mise à jour de la borne sup via glouton sur clé partielle (pas sur de MAJ a chaque fois mais on laisse comme cela pour l'instant)
-            borne_sup_locale, sol_locale = glouton_borne_inf(Noeud::Noeud, df_caract_species::BitMatrix, questions_answers, question_unlock)
+            borne_sup_locale, sol_locale = glouton_borne_inf(Noeud, df_caract_species, questions_answers, question_unlock)
 
             if borne_sup_locale < borne_sup
                 borne_sup = borne_sup_locale

@@ -29,7 +29,7 @@ function glouglouton(df_caract_species::BitMatrix,
                     accessible_questions::Vector{Int},
                     questions_answers::Vector{Vector{Int}},
                     question_unlock::Vector{Vector{Int}},
-                    asked_questions::Vector{Int} )
+                    asked_questions::Vector{Int} = Vector{Int}() )
 
     # Feuille terminale : une seule espèce possible (ou aucune connue)
     if isempty(remaining_species)
