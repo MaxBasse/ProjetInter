@@ -124,6 +124,8 @@ open("arbre_test.json", "w") do f
 end
 =#
 
+"""
+
 ## Test du glouton sur nos données
 
 #Initialisation des données
@@ -164,4 +166,4 @@ arbre_json=JSON.json(arbre, 4)
 open("arbre.json", "w") do f
     write(f, arbre_json)
 end
-
+"""
