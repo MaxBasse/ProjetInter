@@ -106,7 +106,7 @@ ALGORITHME Branch_and_Bound(Qa_initial, E_initial)
 FIN ALGORITHMEE4
 
     """
-
+include("GloutonPartiel.jl")
 
 # Structure d’un noeud B&B #
  
@@ -118,7 +118,7 @@ end
 
 #   Algorithme Branch & Bound    #
 
-function Branch_and_Bound(Qa_initial, E_initial)
+function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unlock, questions_answers)
 
       
     # 1. Initialisation du noeud racine et des variables B&B  #
@@ -194,8 +194,7 @@ function Branch_and_Bound(Qa_initial, E_initial)
 
             
             # 2.6 Mise à jour de la borne sup via glouton sur clé partielle (pas sur de MAJ a chaque fois mais on laisse comme cela pour l'instant)
-              # a revoir car cette fonction glouton la est différente car elle fait du glouton sur des arbres partiels
-            borne_sup_locale, sol_locale = Glouton(noeud.Qa, noeud.E)
+            borne_sup_locale, sol_locale = glouton_borne_inf(Noeud::Noeud, df_caract_species::BitMatrix, questions_answers, question_unlock)
 
             if borne_sup_locale < borne_sup
                 borne_sup = borne_sup_locale
