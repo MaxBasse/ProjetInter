@@ -6,10 +6,10 @@ using Cairo # dessiner des graphiques vectoriels en SVG et PDF
 using Fontconfig
 using GraphViz
 
-include("questions_parser.jl")
-include("data_parsing.jl")
-include("fonctions_annexes.jl")
-include("glouton.jl")
+include("../questions_parser.jl")
+include("../data_parsing.jl")
+include("../Glouton/fonctions_annexes.jl")
+include("../Glouton/glouton.jl")
 
 #########################################################################################
 # Mon mapping pour la visualisation du graphe du généré avec le glouton 
