@@ -1,6 +1,6 @@
 #include("leodum.jl")
-include("questions_parser.jl")
-include("data_parsing.jl")
+include("../questions_parser.jl")
+include("../data_parsing.jl")
 include("fonctions_annexes.jl")
 
 
@@ -29,7 +29,7 @@ function glouglouton(df_caract_species::BitMatrix,
                     accessible_questions::Vector{Int},
                     questions_answers::Vector{Vector{Int}},
                     question_unlock::Vector{Vector{Int}},
-                    asked_questions::Vector{Int} )
+                    asked_questions::Vector{Int} = Vector{Int}() )
 
     # Feuille terminale : une seule espèce possible (ou aucune connue)
     if isempty(remaining_species)
@@ -124,6 +124,8 @@ open("arbre_test.json", "w") do f
 end
 =#
 
+"""
+
 ## Test du glouton sur nos données
 
 #Initialisation des données
@@ -164,4 +166,4 @@ arbre_json=JSON.json(arbre, 4)
 open("arbre.json", "w") do f
     write(f, arbre_json)
 end
-
+"""
