@@ -216,24 +216,49 @@ function Est_une_cle_determination_totale(Noeud)
     # fonction qui prend un noeud du B&B en parametre et qui vérifie si sa clé de determination associée est totale ou bien partielle 
     cle=Noeud.cle_partielle
     return cle_totale_recursive(cle)
-
+end
 
 function cle_totale_recursive(cle::Dict{Symbol,Any})::Bool
 
     branches = cle[:branches]
 
-    # Cas 1 : feuille → vérifier le nombre d'espèces restantes
+    # Si on est sur une feuille, on vérifie le nombre d'espece restante
     if isempty(branches)
         nb = length(cle[:especes_restantes])
         return nb <= 1
     end
 
-    # Cas 2 : noeud interne → toutes les branches doivent être totales
+    # Sinon, on fait de la recursivité sur les autres branches
     for (_, souscle) in branches
         if !cle_totale_recursive(souscle)
             return false
         end
     end
-
+    # c'est que une fois que l'on a parcouru toutes les feuilles sans retourner false que l'on peut enfin retrouner true.
     return true
 end
+
+
+cle_totale = Dict(
+    :profondeur => 0,
+    :especes_restantes => [1,2,3],
+    :branches => Dict(
+        10 => Dict(
+            :profondeur => 1,
+            :especes_restantes => [1],
+            :branches => Dict()
+        ),
+        20 => Dict(
+            :profondeur => 1,
+            :especes_restantes => [2],
+            :branches => Dict()
+        ),
+        30 => Dict(
+            :profondeur => 1,
+            :especes_restantes => [3,1],
+            :branches => Dict()
+        )
+    )
+)
+
+print(cle_totale_recursive(cle_totale))
