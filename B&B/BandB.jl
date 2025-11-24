@@ -106,24 +106,29 @@ ALGORITHME Branch_and_Bound(Qa_initial, E_initial)
 FIN ALGORITHMEE4
 
     """
-
+include("GloutonPartiel.jl")
+include("../Glouton/glouton.jl")
 
 # Structure d’un noeud B&B #
  
 
 struct Noeud
     cle_partielle::Dict{Symbol, Any}           # Clé de détermination partielle
-    brone_inf::Int              # bonr einf associée à chaque noeud du B&B 
+    borne_inf::Int              # bonr einf associée à chaque noeud du B&B 
 end
 
 #   Algorithme Branch & Bound    #
 
-function Branch_and_Bound(Qa_initial, E_initial)
+function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unlock, questions_answers)
 
       
     # 1. Initialisation du noeud racine et des variables B&B  #
       
+    sol_glouton = glouglouton(df_caract_species, E_initial, Qa_initial, questions_answers, question_unlock)
 
+    # Calcul initial de la borne supérieure via le glouton
+    borne_sup = profondeur_arbre(sol_glouton)
+    meilleure_solution = sol_glouton
     racine = Noeud(
         Dict(
         :profondeur => 0,
@@ -136,16 +141,13 @@ function Branch_and_Bound(Qa_initial, E_initial)
         0
     )
 
-    # Calcul initial de la borne supérieure via le glouton
-    borne_sup, sol_glouton = Glouton(Qa_initial, E_initial)
-    meilleure_solution = sol_glouton
 
     # Liste des noeuds à explorer, soit une file pour largeur soit une pile pour profondeur
     ListeNoeuds = [racine]
 
 
      
-    # 2. Boucle principale du B&B     #
+    # 2. Boucle principale du B&B     
 
     while !isempty(ListeNoeuds)
 
@@ -164,8 +166,8 @@ function Branch_and_Bound(Qa_initial, E_initial)
           
         # 2.3 Test afin de savoir si on peut élaguer tels des bucherons gaziers
           
-        if borne_inf ≥ borne_sup
-            # badaboum on élague
+        if borne_inf >= borne_sup
+            # badaboum on élague (en gros on fait R)
             continue
         end
 
@@ -194,8 +196,7 @@ function Branch_and_Bound(Qa_initial, E_initial)
 
             
             # 2.6 Mise à jour de la borne sup via glouton sur clé partielle (pas sur de MAJ a chaque fois mais on laisse comme cela pour l'instant)
-              # a revoir car cette fonction glouton la est différente car elle fait du glouton sur des arbres partiels
-            borne_sup_locale, sol_locale = Glouton(noeud.Qa, noeud.E)
+            borne_sup_locale, sol_locale = glouton_borne_inf(Noeud, df_caract_species, questions_answers, question_unlock)
 
             if borne_sup_locale < borne_sup
                 borne_sup = borne_sup_locale
@@ -210,3 +211,55 @@ function Branch_and_Bound(Qa_initial, E_initial)
 
     return meilleure_solution, borne_sup
 end
+
+
+function Est_une_cle_determination_totale(Noeud)
+    # fonction qui prend un noeud du B&B en parametre et qui vérifie si sa clé de determination associée est totale ou bien partielle 
+    cle=Noeud.cle_partielle
+    return cle_totale_recursive(cle)
+end
+
+function cle_totale_recursive(cle::Dict{Symbol,Any})::Bool
+
+    branches = cle[:branches]
+
+    # Si on est sur une feuille, on vérifie le nombre d'espece restante
+    if isempty(branches)
+        nb = length(cle[:especes_restantes])
+        return nb <= 1
+    end
+
+    # Sinon, on fait de la recursivité sur les autres branches
+    for (_, souscle) in branches
+        if !cle_totale_recursive(souscle)
+            return false
+        end
+    end
+    # c'est que une fois que l'on a parcouru toutes les feuilles sans retourner false que l'on peut enfin retrouner true.
+    return true
+end
+
+
+cle_totale = Dict(
+    :profondeur => 0,
+    :especes_restantes => [1,2,3],
+    :branches => Dict(
+        10 => Dict(
+            :profondeur => 1,
+            :especes_restantes => [1],
+            :branches => Dict()
+        ),
+        20 => Dict(
+            :profondeur => 1,
+            :especes_restantes => [2],
+            :branches => Dict()
+        ),
+        30 => Dict(
+            :profondeur => 1,
+            :especes_restantes => [3,1],
+            :branches => Dict()
+        )
+    )
+)
+
+print(cle_totale_recursive(cle_totale))

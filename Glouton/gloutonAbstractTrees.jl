@@ -1,6 +1,6 @@
 #include("leodum.jl")
-include("questions_parser.jl")
-include("data_parsing.jl")
+include("../questions_parser.jl")
+include("../data_parsing.jl")
 include("fonctions_annexes.jl")
 
 
