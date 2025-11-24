@@ -16,24 +16,12 @@ mutable struct Node
     # If the node is a question node, this holds the question ID (Int).
     # If it's a leaf node, this is -1.
     question_id::Int 
- 
-    # If the node is a leaf, this holds the list of remaining species IDs (Vector{Int}).
-    # If it's a question node, this is empty.
-    species_ids::Vector{Int} 
-    
-    # The branches/children of the node. 
-    # Key: Answer ID (Int), Value: Child DiagnosisNode
-    branches::Dict{Int, DiagnosisNode} 
-
-    # Constructor for an internal (question) node
-    function DiagnosisNode(question_id::Int)
-        new(question_id, Int[], Dict{Int, DiagnosisNode}())
-    end
-
-    # Constructor for a leaf (species) node
-    function DiagnosisNode(species_ids::Vector{Int})
-        new(-1, species_ids, Dict{Int, DiagnosisNode}())
-    end
+    carac_id::Int
+    remaining_species::Vector{Int} 
+    depth::Int
+    questions_asked::Vector{Int}      # List of questions asked to reach this node.
+    available_questions::Vector{Int} # List of questions still available at this node.
+    Node(question_id::Int, carac_id::Int, remaining_species::Vector{Int}, depth::Int, questions_asked::Vector{Int}, available_questions::Vector{Int}) = new(question_id, carac_id, remaining_species, depth, questions_asked, available_questions)
 end
 
 """
@@ -52,11 +40,11 @@ Sortie : Retourne notre arbre (noeuds = questions / branches = réponses / feuil
 """
 
 function glouglouton(df_caract_species::BitMatrix, 
-                    remaining_species::Vector{Int}, 
-                    accessible_questions::Vector{Int},
-                    questions_answers::Vector{Vector{Int}},
-                    question_unlock::Vector{Vector{Int}},
-                    asked_questions::Vector{Int} )
+                     remaining_species::Vector{Int}, 
+                     accessible_questions::Vector{Int},
+                     questions_answers::Vector{Vector{Int}},
+                     question_unlock::Vector{Vector{Int}},
+                     asked_questions::Vector{Int})
 
     # Feuille terminale : une seule espèce possible (ou aucune connue)
     if isempty(remaining_species)
