@@ -1,94 +1,113 @@
 using JSON
 
 """
-    extract_graph_elements!(node, parent_id, branch_label, nodes, edges, node_counter)
+    extract_styled_elements!(node, parent_id, branch_label, nodes, edges, node_counter)
 
-Fonction récursive pour parcourir la structure JSON de l'arbre et extraire les nœuds
-et les arêtes au format Graphviz DOT.
-
-- `nodes` et `edges` sont mutés et remplis par la fonction.
-- `node_counter` est utilisé pour générer des identifiants uniques de nœuds.
+Parcourt l'arbre et extrait les informations en appliquant un style 
+spécifique pour une clé de détermination botanique.
 """
-function extract_graph_elements!(node, parent_id, branch_label, nodes, edges, node_counter)
-    # Assignation d'un ID unique au nœud courant
+function extract_styled_elements!(node, parent_id, branch_label, nodes, edges, node_counter)
+    # 1. Générer un ID unique
     current_node_id = "N$(node_counter[1])"
     node_counter[1] += 1
 
-    # Déterminer l'étiquette du nœud
+    # 2. Déterminer le Label et le Style (Attributs Graphviz)
+    label = ""
+    attributes = ""
+
     if haskey(node, "question")
-        label = "Question $(node["question"])"
+        # Nœud de décision (Question)
+        q_num = node["question"]
+        label = "Question $(q_num)"
+        # Style : Boîte bleue clair
+        attributes = "shape=box, style=\"filled\", fillcolor=\"lightblue\""
+        
     elseif haskey(node, "species")
-        species_list = join(string.(node["species"]), ", ")
-        label = "Espèces: $(species_list)"
+        # Nœud terminal (Espèce)
+        # On joint la liste des espèces par des virgules
+        s_list = join(string.(node["species"]), ", ")
+        label = "Espèce(s): $(s_list)"
+        # Style : Ellipse verte clair (pour le côté botanique)
+        attributes = "shape=ellipse, style=\"filled\", fillcolor=\"lightgreen\""
+        
     else
-        label = "Root" # Cas du nœud racine initial
+        # Racine ou autre (si pas de question explicite au début)
+        label = "Début"
+        attributes = "shape=diamond, style=\"filled\", fillcolor=\"gold\""
     end
 
-    push!(nodes, (current_node_id, label))
+    # Stocker le nœud avec ses attributs
+    push!(nodes, (current_node_id, label, attributes))
 
-    # Créer une arête à partir du parent vers le nœud courant
+    # 3. Créer l'arête (Lien) depuis le parent
     if !isnothing(parent_id)
+        # branch_label est la réponse à la question précédente
         push!(edges, (parent_id, current_node_id, branch_label))
     end
 
-    # Récurrence sur les branches
+    # 4. Récursion sur les branches
     if haskey(node, "branches")
-        for (branch_key, sub_node) in node["branches"]
-            extract_graph_elements!(
-                sub_node,
-                current_node_id,
-                branch_key,
-                nodes,
-                edges,
+        # Trier les clés pour un ordre visuel cohérent (optionnel mais recommandé)
+        sorted_keys = sort(collect(keys(node["branches"])))
+        
+        for key in sorted_keys
+            child_node = node["branches"][key]
+            extract_styled_elements!(
+                child_node, 
+                current_node_id, 
+                key, 
+                nodes, 
+                edges, 
                 node_counter
             )
         end
     end
-    return nothing
 end
 
-function generate_dot_file(file_path::String, output_filename::String)
-    # 1. Charger le fichier JSON
-    data = open(file_path) do f
+function generate_botanic_dot(json_path::String, dot_output_path::String)
+    # Charger le JSON
+    data = open(json_path, "r") do f
         JSON.parse(f)
     end
 
-    # Initialisation des structures de données
-    nodes = [] # (node_id, label)
-    edges = [] # (source, target, label)
-    node_counter = [0] # Compteur mutable pour les IDs de nœuds
+    nodes = [] # Tuples: (id, label, attributes)
+    edges = [] # Tuples: (source, target, label)
+    node_counter = [0]
 
-    # 2. Parcourir l'arbre
-    extract_graph_elements!(data, nothing, nothing, nodes, edges, node_counter)
+    # Lancer l'extraction
+    extract_styled_elements!(data, nothing, nothing, nodes, edges, node_counter)
 
-    # 3. Générer le contenu DOT
-    dot_output = "digraph DecisionTree {\n"
-    dot_output *= "  node [shape=box];\n\n"
+    # Écriture du fichier DOT
+    open(dot_output_path, "w") do f
+        write(f, "digraph BotanicKey {\n")
+        
+        # Paramètres globaux pour améliorer la lisibilité
+        write(f, "  rankdir=LR;\n") # Orientation Gauche -> Droite (souvent plus lisible pour les grands arbres)
+        write(f, "  node [fontname=\"Arial\"];\n")
+        write(f, "  edge [fontname=\"Arial\", fontsize=10];\n\n")
 
-    # Définir les nœuds
-    for (node_id, label) in nodes
-        # Échapper les guillemets pour le format DOT
-        escaped_label = replace(label, "\"" => "\\\"")
-        dot_output *= "  $(node_id) [label=\"$(escaped_label)\"];\n"
+        # Écriture des Nœuds
+        for (id, lbl, attr) in nodes
+            # Échapper les guillemets dans les labels
+            safe_lbl = replace(lbl, "\"" => "\\\"")
+            write(f, "  $(id) [label=\"$(safe_lbl)\", $(attr)];\n")
+        end
+
+        write(f, "\n")
+
+        # Écriture des Arêtes
+        for (src, dst, lbl) in edges
+            safe_lbl = replace(string(lbl), "\"" => "\\\"")
+            write(f, "  $(src) -> $(dst) [label=\"$(safe_lbl)\"];\n")
+        end
+
+        write(f, "}\n")
     end
 
-    dot_output *= "\n"
-
-    # Définir les arêtes
-    for (source, target, label) in edges
-        dot_output *= "  $(source) -> $(target) [label=\"$(label)\"];\n"
-    end
-
-    dot_output *= "}\n"
-
-    # 4. Écrire le fichier DOT
-    open(output_filename, "w") do f
-        write(f, dot_output)
-    end
-
-    println("Fichier DOT généré avec succès : $(output_filename)")
+    println("Fichier généré : $(dot_output_path)")
+    println("Nombre de nœuds : $(length(nodes))")
 end
 
 # --- Exécution ---
 # Remplacez 'arbre.json' par le chemin de votre fichier si nécessaire
-generate_dot_file("arbre.json", "decision_tree_julia.dot")
+generate_botanic_dot("C:\\Users\\Maxent\\Documents\\Dev\\Workspace\\Julia\\ProjetInter\\Glouton\\arbre.json", "decision_tree_julia.dot")
