@@ -163,7 +163,7 @@ best_question_selection(new_species_matrix, remaining_species, accessible_questi
 arbre=glouglouton(new_species_matrix, remaining_species, accessible_questions, vect_question_carac, vect_unlock_q, asked_questions)
 arbre_json=JSON.json(arbre, 4)
 
-open("arbre.json", "w") do f
+open("arbre_V2.json", "w") do f
     write(f, arbre_json)
 end
 

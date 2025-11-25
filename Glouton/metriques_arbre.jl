@@ -1,7 +1,7 @@
 using JSON
 
 # Charge le JSON depuis un fichier
-tree = JSON.parsefile("arbre.json")
+tree = JSON.parsefile("arbre_V2.json")
 
 """
 Analyse récursive de l'arbre
@@ -77,4 +77,61 @@ for (i, (questions, species)) in enumerate(longest_paths)
     println("\nChemin $i :")
     println("Questions : ", questions)
     println("Espèces en feuille : ", species)
+end
+
+
+
+using DataFrames
+using Plots
+using Statistics
+
+# ==============================
+# KPI des deux méthodes
+# ==============================
+
+kpi_eval2 = Dict(
+    "Nombre de feuilles" => 108,
+    "Espèces moyennes / feuille" => 1.1666666666666667,
+    "Profondeur max" => 13,
+    "Nombre de noeuds internes" => 83,
+    "Branches moyennes / noeud interne" => 2.289156626506024
+)
+
+kpi_eval3 = Dict(
+    "Nombre de feuilles" => 21,
+    "Espèces moyennes / feuille" => 3.238095238095238,
+    "Profondeur max" => 5,
+    "Nombre de noeuds internes" => 12,
+    "Branches moyennes / noeud interne" => 2.6666666666666665
+)
+
+# ==============================
+# Construction du DataFrame
+# ==============================
+
+kpi_names = collect(keys(kpi_eval2))
+
+df = DataFrame(
+    KPI = kpi_names,
+    Evaluation2 = [kpi_eval2[k] for k in kpi_names],
+    Evaluation3 = [kpi_eval3[k] for k in kpi_names]
+)
+
+println("\n=== Tableau comparatif ===")
+println(df)
+
+default(titlefont=12, legendfontsize=10)
+
+for kpi in kpi_names
+    vals = [kpi_eval2[kpi], kpi_eval3[kpi]]
+
+    p=bar(
+        ["Eval2", "Eval3"],
+        vals,
+        title = kpi,
+        xlabel = "Méthode",
+        ylabel = "Valeur",
+        legend = false
+    )
+    display(p)
 end
