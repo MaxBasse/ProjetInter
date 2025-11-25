@@ -52,6 +52,29 @@ function glouglouton(df_caract_species::BitMatrix,
         return Dict("species" => remaining_species)
     end
 
+    # --- Gestion des questions évidentes ---
+    while true
+        q_obv = obvious_questions(df_caract_species, remaining_species, accessible_questions, questions_answers)
+        if isempty(q_obv)
+            break
+        end
+
+        for q in q_obv
+            # Marque comme posee
+            push!(asked_questions, q)
+            filter!(x -> x != q, accessible_questions)
+
+            # Ajoute les questions debloquees par cette reponse
+            for c in questions_answers[q]
+                for new_q in question_unlock[c]
+                    if !(new_q in asked_questions) && !(new_q in accessible_questions)
+                        push!(accessible_questions, new_q)
+                    end
+                end
+            end
+        end
+    end
+
     # 1 et 2 - Choix de la meilleure question (fonction ?)
     (best_question, accessibles_questions, asked_question) = best_question_selection(df_caract_species,
                                                                                     remaining_species,

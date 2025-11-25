@@ -25,5 +25,5 @@ function evaluation(n::Noeud)
             cout_max = cout_feuille
         end
     end
-    return 0
+    return cout_max
 end

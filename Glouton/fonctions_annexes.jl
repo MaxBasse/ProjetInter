@@ -151,7 +151,6 @@ function best_question_selection(df_caract_species, remaining_species, accessibl
             end
             =#
 
-            #on l'enlève du score pour ne pas la choisir
             delete!(score, question)
         end
     end
@@ -165,6 +164,31 @@ function best_question_selection(df_caract_species, remaining_species, accessibl
     return findmin(score)[2], new_accessibles_questions, new_asked_questions
 
 end
+
+
+"""
+Retourne les questions accessibles pour lesquelles toutes les especes restantes
+donnent la meme reponse.
+- df_caract_species : matrice especes x caracteristiques
+- remaining_species : vecteur des indices des especes restantes
+- accessible_questions : questions encore accessibles
+- question_caract : pour chaque question, liste des colonnes correspondantes
+"""
+function obvious_questions(df_caract_species, remaining_species, accessible_questions, question_caract)
+    evidentes = Int[]
+    for q in accessible_questions
+        cols = question_caract[q]
+        # Extraire les reponses des especes restantes pour cette question
+        reponses = [df_caract_species[s, cols] for s in remaining_species]
+        # On regarde si toutes les reponses sont identiques
+        if all(r -> r == reponses[1], reponses)
+            push!(evidentes, q)
+        end
+    end
+    return evidentes
+end
+
+
 
 
 """

@@ -156,7 +156,7 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
      
     # 2. Boucle principale du B&B     
     compteur=0
-    while !isempty(ListeNoeuds) && compteur<10
+    while !isempty(ListeNoeuds)
         #println(compteur)
         compteur+=1
     
@@ -176,6 +176,7 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
           
         if borne_inf >= borne_sup
             # badaboum on élague (en gros on fait R)
+            println("élagage de fifou")
             continue
         end
 
@@ -185,7 +186,7 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
           
         if Est_une_cle_determination_totale(noeud)
 
-            cout_solution = borne_inf # peut etre pas opti mais pour le moment on garde comme ca 
+            cout_solution = profondeur_arbre(noeud.cle_partielle)
 
             # Mise à jour de la borne supérieure si amélioration
             if cout_solution < borne_sup
