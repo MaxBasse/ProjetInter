@@ -3,7 +3,7 @@ import DashCoreComponents as dcc
 import DashHtmlComponents as html
 using DataFrames
 tree_1 = JSON.parsefile("Glouton/arbre.json")
-tree_2=JSON.parsefile("Glouton/arbre_V2.json")
+tree_2=JSON.parsefile("arbre_V2.json")
 stats_1 = analyze(tree_1)
 stats_2 = analyze(tree_2)
 
