@@ -177,7 +177,7 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
           
         if Est_une_cle_determination_totale(noeud)
 
-            cout_solution = Evaluer(noeud)
+            cout_solution = borne_inf # peut etre pas opti mais pour le moment on garde comme ca 
 
             # Mise à jour de la borne supérieure si amélioration
             if cout_solution < borne_sup
