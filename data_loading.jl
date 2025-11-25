@@ -101,7 +101,7 @@ function extract_characteristics(choices, vect_carac::Vector{String}, nb_carac::
             subqs = opt[3]
             if !isempty(subqs)
                 subdict = extract_characteristics(subqs, vect_carac, nb_carac) # recursivité pour faire de meme avec les questions imbriquées
-                d = d .| subdict
+                d .|= subdict
             end
         end
     end
@@ -144,7 +144,7 @@ function fill_variables!(vect_question::Vector{String}, vect_question_carac::Vec
     end 
 
     nb_carac = length(vect_carac)
-
+    species_matrix()
     for (i, species) in enumerate(data["collection"])
     latin = String(species["latin"])
     vect_species[i] = latin
