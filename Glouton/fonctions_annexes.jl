@@ -168,7 +168,7 @@ function best_question_selection(df_caract_species, remaining_species, accessibl
 
     #Calcul du score pour chaque question accessible
     for question in accessible_questions
-        score[question] = score_evaluation3(df_caract_species, remaining_species, question, question_caract)
+        score[question] = score_evaluation2(df_caract_species, remaining_species, question, question_caract)
         if (score[question]==-1)
             #On met à jour les questions posées et les questions accessibles
             push!(new_asked_questions, question)
