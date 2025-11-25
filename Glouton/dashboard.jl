@@ -2,33 +2,38 @@ using Dash
 import DashCoreComponents as dcc
 import DashHtmlComponents as html
 using DataFrames
+tree_1 = JSON.parsefile("Glouton/arbre.json")
+tree_2=JSON.parsefile("Glouton/arbre_V2.json")
+stats_1 = analyze(tree_1)
+stats_2 = analyze(tree_2)
+
 
 # ==========================
 #  KPI DES DEUX MÉTHODES
 # ==========================
+kpi_eval1 = Dict(
+    "Nombre de feuilles" => stats_1[:leaves],
+    "Espèces moyennes / feuille" => sum(stats_1[:species_per_leaf])/length(stats_1[:species_per_leaf]),
+    "Profondeur max" => stats_1[:max_depth],
+    "Nombre de noeuds internes" => stats_1[:internal_nodes],
+    "Branches moyennes / noeud interne" => sum(stats_1[:branching_factors])/length(stats_1[:branching_factors])
+)
+
 kpi_eval2 = Dict(
-    "Nombre de feuilles" => 108,
-    "Espèces moyennes / feuille" => 1.1666666666666667,
-    "Profondeur max" => 13,
-    "Nombre de noeuds internes" => 83,
-    "Branches moyennes / noeud interne" => 2.289156626506024
+   "Nombre de feuilles" => stats_2[:leaves],
+    "Espèces moyennes / feuille" => sum(stats_2[:species_per_leaf])/length(stats_2[:species_per_leaf]),
+    "Profondeur max" => stats_2[:max_depth],
+    "Nombre de noeuds internes" => stats_2[:internal_nodes],
+    "Branches moyennes / noeud interne" => sum(stats_2[:branching_factors])/length(stats_2[:branching_factors])
 )
 
-kpi_eval3 = Dict(
-    "Nombre de feuilles" => 21,
-    "Espèces moyennes / feuille" => 3.238095238095238,
-    "Profondeur max" => 5,
-    "Nombre de noeuds internes" => 12,
-    "Branches moyennes / noeud interne" => 2.6666666666666665
-)
-
-kpi_names = collect(keys(kpi_eval2))
+kpi_names = collect(keys(kpi_eval1))
 
 # DataFrame pour le tableau
 df = DataFrame(
     KPI = kpi_names,
-    Evaluation2 = [kpi_eval2[k] for k in kpi_names],
-    Evaluation3 = [kpi_eval3[k] for k in kpi_names]
+    Evaluation2 = [kpi_eval1[k] for k in kpi_names],
+    Evaluation3 = [kpi_eval2[k] for k in kpi_names]
 )
 
 # ==========================
@@ -40,8 +45,8 @@ function generate_bar_chart(kpi)
         figure = Dict(
             "data" => [
                 Dict(
-                    "x" => ["Évaluation 2", "Évaluation 3"],
-                    "y" => [kpi_eval2[kpi], kpi_eval3[kpi]],
+                    "x" => ["Minimiser Profondeur", "Minimiser Feuilles"],
+                    "y" => [kpi_eval1[kpi], kpi_eval2[kpi]],
                     "type" => "bar",
                     "name" => kpi
                 )
@@ -62,15 +67,15 @@ function generate_global_comparison()
             "data" => [
                 Dict(
                     "x" => kpi_names,
-                    "y" => [kpi_eval2[k] for k in kpi_names],
+                    "y" => [kpi_eval1[k] for k in kpi_names],
                     "type" => "bar",
-                    "name" => "Évaluation 2"
+                    "name" => "Minimiser Profondeur"
                 ),
                 Dict(
                     "x" => kpi_names,
-                    "y" => [kpi_eval3[k] for k in kpi_names],
+                    "y" => [kpi_eval2[k] for k in kpi_names],
                     "type" => "bar",
-                    "name" => "Évaluation 3"
+                    "name" => "Minimiser Feuilles"
                 )
             ],
             "layout" => Dict(
@@ -88,11 +93,11 @@ end
 app = dash()
 
 app.layout = html_div([
-    html_h1("Dashboard comparatif des arbres (Évaluation2 vs Évaluation3)"),
+    html_h1("Dashboard comparatif des arbres selon le score"),
     html_h2("Tableau comparatif des KPI"),
     html_table(
         [
-            html_tr([html_th("KPI"), html_th("Évaluation 2"), html_th("Évaluation 3")]),
+            html_tr([html_th("KPI"), html_th("Minimiser Profondeur"), html_th("Minimiser Feuilles")]),
             [html_tr([html_td(df[i, :KPI]), html_td(df[i, :Evaluation2]), html_td(df[i, :Evaluation3])]) for i in 1:nrow(df)]
         ],
         style = Dict("border" => "1px solid black", "border-collapse" => "collapse", "width" => "50%")
