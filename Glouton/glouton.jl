@@ -1,6 +1,4 @@
 #include("leodum.jl")
-include("../questions_parser.jl")
-include("../data_parsing.jl")
 include("fonctions_annexes.jl")
 
 
@@ -150,7 +148,7 @@ end
 
 
 ## Test du glouton sur nos données
-
+#=
 #Initialisation des données
 remaining_species=collect(1:size(species_matrix)[1])
 asked_questions = Vector{Int}()
@@ -190,3 +188,4 @@ open("arbre_V2.json", "w") do f
     write(f, arbre_json)
 end
 
+=#
