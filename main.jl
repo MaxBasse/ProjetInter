@@ -58,7 +58,7 @@ end
 arbre=glouglouton(new_species_matrix, remaining_species, accessible_questions, v_qc, v_uq, asked_questions)
 arbre_json=JSON.json(arbre, 4)
 
-open("arbre_V2.json", "w") do f
+open("arbre_V1.json", "w") do f
     write(f, arbre_json)
 end
 
