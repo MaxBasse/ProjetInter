@@ -1,4 +1,6 @@
 using JSON
+using FileIO
+using GraphViz
 
 """
     extract_styled_elements!(node, parent_id, branch_label, nodes, edges, node_counter)
@@ -82,9 +84,11 @@ function generate_botanic_dot(json_path::String, dot_output_path::String)
         write(f, "digraph BotanicKey {\n")
         
         # Paramètres globaux pour améliorer la lisibilité
-        write(f, "  rankdir=LR;\n") # Orientation Gauche -> Droite (souvent plus lisible pour les grands arbres)
         write(f, "  node [fontname=\"Arial\"];\n")
         write(f, "  edge [fontname=\"Arial\", fontsize=10];\n\n")
+        write(f, "  layout=dot;\n")       # Force l'algo hiérarchique (CRUCIAL)
+        write(f, "  rankdir=LR;\n")       # Orientation Gauche -> Droite (plus lisible pour votre arbre)    
+        write(f, "  overlap=false;\n")     # Interdire strictement le chevauchement
 
         # Écriture des Nœuds
         for (id, lbl, attr) in nodes
@@ -108,6 +112,17 @@ function generate_botanic_dot(json_path::String, dot_output_path::String)
     println("Nombre de nœuds : $(length(nodes))")
 end
 
-# --- Exécution ---
-# Remplacez 'arbre.json' par le chemin de votre fichier si nécessaire
+function generate_botanic_svg(dot__path::String, svg_path::String)
+
+    contenu_dot = read(dot__path, String)
+    g = GraphViz.Graph(contenu_dot)
+
+    GraphViz.layout!(g, engine="dot")
+
+    open(png_path, "w") do f
+        GraphViz.render(f, g)
+    end
+end
+
 generate_botanic_dot("arbre_V2.json", "decision_tree_julia_V2.dot")
+generate_botanic_svg("decision_tree_julia_V2.dot", "decision_tree_julia_V2.svg")

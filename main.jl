@@ -42,6 +42,7 @@ for answer_id in v_qc[35]
     println("Answer ", answer_id, " → remaining_species = ", new_remaining_species)
 end
 
+
 new_species_matrix = copy(species_matrix)
 for reponses in v_qc
     rowsums = vec(sum(new_species_matrix[:, reponses], dims=2))
