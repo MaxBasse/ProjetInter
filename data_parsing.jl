@@ -12,7 +12,7 @@ Function used to extract the characteristics of a species
     returns:
         d : boolean vector of size nb_carac indicating which characteristics are present
 """
-function extract_characteristics(choices)
+function extract_characteristics(choices)::BitVector
     d = falses(nb_carac) 
     # dico de la forme : "question::réponse" → score.
     for choice in choices
@@ -28,8 +28,7 @@ function extract_characteristics(choices)
             # Sous-questions éventuelles
             subqs = opt[3]
             if !isempty(subqs)
-                subdict = extract_characteristics(subqs)
-                # recursivité pour faire de meme avec les questions imbriquées
+                subdict = extract_characteristics(subqs) # recursivité pour faire de meme avec les questions imbriquées
                 d = d .| subdict
             end
         end
@@ -46,6 +45,10 @@ for (i, species) in enumerate(data["collection"])
     end
 end
 
+
+
+#Affichage
+#=
 for i in 1:nb_carac
     println("Caractéristique $i : $(vect_carac[i])")
 end
@@ -54,3 +57,4 @@ for i in 1:length(vect_question)
     println("Question $i : $(vect_question[i])")
     println("Réponses de la question $i : $(vect_question_carac[i])")
 end
+=#

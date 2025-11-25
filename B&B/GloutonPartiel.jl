@@ -33,10 +33,7 @@ avec leur proba
 Sortie : Retourne notre arbre (noeuds = questions / branches = réponses / feuilles = espèces)
 """
 
-# --- Définition du type Noeud pour le test ---
-mutable struct Noeud
-    cle_partielle::Dict{String, Any}
-end
+
 
 function glouglouton(df_caract_species::BitMatrix, 
                     remaining_species::Vector{Int}, 
@@ -53,6 +50,29 @@ function glouglouton(df_caract_species::BitMatrix,
     elseif isempty(accessible_questions)
         # Plus de questions accessibles → on retourne toutes les espèces restantes car on ne sait pas aller plus loin dans l'identification
         return Dict("species" => remaining_species)
+    end
+
+    # --- Gestion des questions évidentes ---
+    while true
+        q_obv = obvious_questions(df_caract_species, remaining_species, accessible_questions, questions_answers)
+        if isempty(q_obv)
+            break
+        end
+
+        for q in q_obv
+            # Marque comme posee
+            push!(asked_questions, q)
+            filter!(x -> x != q, accessible_questions)
+
+            # Ajoute les questions debloquees par cette reponse
+            for c in questions_answers[q]
+                for new_q in question_unlock[c]
+                    if !(new_q in asked_questions) && !(new_q in accessible_questions)
+                        push!(accessible_questions, new_q)
+                    end
+                end
+            end
+        end
     end
 
     # 1 et 2 - Choix de la meilleure question (fonction ?)
@@ -190,7 +210,7 @@ end
 
 
 # TEST
-
+"""
 using CSV, DataFrames
 
 
@@ -239,3 +259,6 @@ profondeur_max, cle_complete = glouton_borne_inf(noeud_test, df_bit, questions_a
 println("Profondeur max calculée : ", profondeur_max)
 println("Clé complétée : ")
 println(cle_complete)
+
+
+"""
