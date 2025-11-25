@@ -138,20 +138,25 @@ Extrait les caractéristiques de toutes les espèces et remplit les vecteurs et 
     
     fill_variables!(v_q, v_qc, v_c, v_uq, species_matrix, vect_species, data)
 """
-function fill_variables!(vect_question::Vector{String}, vect_question_carac::Vector{Vector{Int}}, vect_carac::Vector{String}, vect_unlock_q::Vector{Vector{Int}}, species_matrix::BitMatrix, vect_species::Vector{String}, data::Dict)::Nothing
+function fill_variables!(vect_question::Vector{String}, vect_question_carac::Vector{Vector{Int}}, vect_carac::Vector{String}, vect_unlock_q::Vector{Vector{Int}}, species_matrix::Ref{BitMatrix}, vect_species::Vector{String}, data::Dict)::Nothing
     for q in data["questions"]
        process_question!(vect_question, vect_question_carac, vect_carac, vect_unlock_q, q)
     end 
 
     nb_carac = length(vect_carac)
-    species_matrix()
+    nb_species = length(data["collection"])
+
+    sp_matrix = falses(nb_species, nb_carac)
+
     for (i, species) in enumerate(data["collection"])
-    latin = String(species["latin"])
-    vect_species[i] = latin
-    sp_carac = extract_characteristics(species["choices"], vect_carac, nb_carac)
-        for j in 1:nb_carac
-            species_matrix[i,j] = sp_carac[j]
-        end
+        latin = String(species["latin"])
+        vect_species[i] = latin
+        sp_carac = extract_characteristics(species["choices"], vect_carac, nb_carac)
+        
+        sp_matrix[i, 1:nb_carac] .= sp_carac
+        
     end
+    species_matrix[] = sp_matrix
+    return nothing
 end
 

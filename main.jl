@@ -7,7 +7,7 @@ v_qc = Vector{Vector{Int}}() # caractéristiques par question
 v_c = Vector{String}() # caractéristiques
 v_uq = Vector{Vector{Int}}() # questions débloquées par caractéristique
 nb_species = length(data["collection"])
-species_matrix = falses(nb_species, nb_carac)
+species_matrix = Ref(BitMatrix(undef, 0, 0))
 vect_species = Vector{String}(undef, nb_species)
     
 fill_variables!(v_q, v_qc, v_c, v_uq, species_matrix, vect_species, data)
@@ -20,5 +20,5 @@ end
 
 for i in 1:length(v_q)
     println("Question $i : $(v_q[i])")
-    println("Réponses de la question $i : $(v_qc[i])")
+    println("Réponses de la question $i : $(v_c[v_qc[i]])")
 end
