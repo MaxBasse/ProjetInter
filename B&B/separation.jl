@@ -1,11 +1,6 @@
 using JSON
 
 
-mutable struct Noeud
-    borne_inf::Int
-    cle_partielle::Dict
-end
-
 #On choisit de séparer selon les questions
 #C'est-à-dire on regarde toutes les feuilles de l'arbre partielles pour lesquelles on peut encore poser des questions,
 #on en choisit une et on énumère toutes les questions à poser possibles.
@@ -23,11 +18,11 @@ function separation(noeud, questions_answers, question_unlock, df_caract_species
         #création de la clé partielle associée
         nouvelle_cle_partielle = MAJ_cle_partielle(arbre, chemin, q, questions_answers, question_unlock, df_caract_species)
         #création du nouveau noeud
-        nouveau_noeud = Noeud(0, nouvelle_cle_partielle)
+        nouveau_noeud = Noeud(nouvelle_cle_partielle, 0)
         #ajout à la liste des nouveaux noeuds
         push!(res, nouveau_noeud)
     end
-
+    
     return res
 
 end
@@ -66,21 +61,27 @@ end
 #Je n'ai pas encore codé le chemin, mais je considère que c'est un vecteur, avec les identifiants des chemins suivis (id --> "branche" --> id --> ... --> id --> "feuille")
 function MAJ_cle_partielle(arbre, chemin, q, questions_answers, question_unlock, df_caract_species)
     new_arbre = deepcopy(arbre)
-    local_path = copy(chemin)
-    feuille = local_path[end]
-    pop!(local_path)
 
-    iter=new_arbre
-    for i in local_path
-        iter=iter["branches"][i]
+
+    if isempty(chemin)
+        noeud_feuille=new_arbre
+    else
+        local_path = copy(chemin)
+        feuille = pop!(local_path)
+
+        iter=new_arbre
+        for i in local_path
+            iter=iter["branches"][i]
+        end
+        noeud_feuille = iter["branches"][feuille]
     end
 
-    noeud_feuille = iter["branches"][feuille]
+    questions_accessibles = copy(noeud_feuille["questions_accessibles"])
+    especes_restantes = copy(noeud_feuille["especes_restantes"])
+    questions_posees = copy(noeud_feuille["questions_posees"])
+    profondeur = copy(noeud_feuille["profondeur"])
 
-    questions_accessibles = noeud_feuille["questions_accessibles"]
-    especes_restantes = noeud_feuille["especes_restantes"]
-    questions_posees = noeud_feuille["questions_posees"]
-    profondeur = noeud_feuille["profondeur"]
+    println(questions_accessibles)
 
     noeud_feuille["question"]=q
     
@@ -100,6 +101,8 @@ function MAJ_cle_partielle(arbre, chemin, q, questions_answers, question_unlock,
 
     end
     noeud_feuille["branches"]=branchage
+
+    
 
     #mettre à jour l'arbre général, pour l'instant je vois pas trop comment faire
     #apparement, faire "iter=arbre" et ensuite modifier iter. Cela modifie aussi arbre (car pas une recopie)

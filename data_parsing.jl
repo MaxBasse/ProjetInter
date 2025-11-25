@@ -45,6 +45,10 @@ for (i, species) in enumerate(data["collection"])
     end
 end
 
+
+
+#Affichage
+#=
 for i in 1:nb_carac
     println("Caractéristique $i : $(vect_carac[i])")
 end
@@ -53,3 +57,4 @@ for i in 1:length(vect_question)
     println("Question $i : $(vect_question[i])")
     println("Réponses de la question $i : $(vect_question_carac[i])")
 end
+=#

@@ -124,7 +124,7 @@ open("arbre_test.json", "w") do f
 end
 =#
 
-"""
+
 
 ## Test du glouton sur nos données
 
@@ -133,7 +133,7 @@ remaining_species=collect(1:size(species_matrix)[1])
 asked_questions = Vector{Int}()
 
 accessible_questions = Vector{Int}()
-data = JSON.parsefile("data.json")
+data = JSON.parsefile("Glouton/data.json")
 for q in data["questions"]
     push!(accessible_questions, findfirst(==(q["title_q"]), vect_question))
 end
@@ -166,4 +166,4 @@ arbre_json=JSON.json(arbre, 4)
 open("arbre.json", "w") do f
     write(f, arbre_json)
 end
-"""
+

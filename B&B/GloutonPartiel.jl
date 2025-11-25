@@ -33,10 +33,7 @@ avec leur proba
 Sortie : Retourne notre arbre (noeuds = questions / branches = réponses / feuilles = espèces)
 """
 
-# --- Définition du type Noeud pour le test ---
-mutable struct Noeud
-    cle_partielle::Dict{String, Any}
-end
+
 
 function glouglouton(df_caract_species::BitMatrix, 
                     remaining_species::Vector{Int}, 
@@ -190,7 +187,7 @@ end
 
 
 # TEST
-
+"""
 using CSV, DataFrames
 
 
@@ -239,3 +236,6 @@ profondeur_max, cle_complete = glouton_borne_inf(noeud_test, df_bit, questions_a
 println("Profondeur max calculée : ", profondeur_max)
 println("Clé complétée : ")
 println(cle_complete)
+
+
+"""

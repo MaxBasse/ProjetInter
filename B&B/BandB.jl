@@ -1,3 +1,10 @@
+include("GloutonPartiel.jl")
+include("../Glouton/glouton.jl")
+include("separation.jl")
+include("Evaluation.jl")
+
+
+
 """
 
 
@@ -105,24 +112,24 @@ ALGORITHME Branch_and_Bound(Qa_initial, E_initial)
     RETOURNER (meilleure_solution, borne_sup)
 FIN ALGORITHMEE4
 
-    """
-include("GloutonPartiel.jl")
-include("../Glouton/glouton.jl")
+"""
+
 
 # Structure d’un noeud B&B #
  
-
-struct Noeud
-    cle_partielle::Dict{Symbol, Any}           # Clé de détermination partielle
-    borne_inf::Int              # bonr einf associée à chaque noeud du B&B 
+"""
+mutable struct Noeud
+    cle_partielle::Dict{Any, Any}           # Clé de détermination partielle
+    borne_inf::Int              # borne inf associée à chaque noeud du B&B 
 end
+"""
 
 #   Algorithme Branch & Bound    #
 
 function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unlock, questions_answers)
 
       
-    # 1. Initialisation du noeud racine et des variables B&B  #
+    # 1. Initialisation du noeud racine et des variables B&B 
       
     sol_glouton = glouglouton(df_caract_species, E_initial, Qa_initial, questions_answers, question_unlock)
 
@@ -131,12 +138,12 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
     meilleure_solution = sol_glouton
     racine = Noeud(
         Dict(
-        :profondeur => 0,
-        :questions_accessibles => copy(Qa_initial),
-        :questions_posees => Int[],
-        :especes_restantes => copy(E_initial),
-        :question => -1,
-        :branches => Dict{Int, Any}()
+        "profondeur" => 0,
+        "questions_accessibles" => copy(Qa_initial),
+        "questions_posees" => Int[],
+        "especes_restantes" => copy(E_initial),
+        #"question" => -1,
+        #"branches" => Dict{Int, Any}()
     ), 
         0
     )
@@ -148,13 +155,14 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
 
      
     # 2. Boucle principale du B&B     
-
-    while !isempty(ListeNoeuds)
-
+    compteur=0
+    while !isempty(ListeNoeuds) && compteur<10
+        #println(compteur)
+        compteur+=1
     
         # 2.1 Sélection d’un noeud selon une stratégie (profondeur, largeur ?) #
           
-        noeud = pop!(liste_noeuds)  
+        noeud = pop!(ListeNoeuds)  
 
 
           
@@ -186,17 +194,17 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
             end
 
         else
-
+            
                
             # 2.5 Branchement : création des noeuds fils          #
                
-            noeud_inter=branchement(Noeud.Qa)
-            liste_noeud=append!(liste_noeud, noeud_inter)
+            noeud_inter=separation(noeud, questions_answers, question_unlock, df_caract_species)
+            append!(ListeNoeuds, noeud_inter)
 
 
             
             # 2.6 Mise à jour de la borne sup via glouton sur clé partielle (pas sur de MAJ a chaque fois mais on laisse comme cela pour l'instant)
-            borne_sup_locale, sol_locale = glouton_borne_inf(Noeud, df_caract_species, questions_answers, question_unlock)
+            borne_sup_locale, sol_locale = glouton_borne_inf(noeud, df_caract_species, questions_answers, question_unlock)
 
             if borne_sup_locale < borne_sup
                 borne_sup = borne_sup_locale
@@ -212,14 +220,14 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
     return meilleure_solution, borne_sup
 end
 
-
+"""
 function Est_une_cle_determination_totale(Noeud)
     # fonction qui prend un noeud du B&B en parametre et qui vérifie si sa clé de determination associée est totale ou bien partielle 
     cle=Noeud.cle_partielle
     return cle_totale_recursive(cle)
 end
 
-function cle_totale_recursive(cle::Dict{Symbol,Any})::Bool
+function cle_totale_recursive(cle::Dict{Any,Any})::Bool
 
     branches = cle[:branches]
 
@@ -238,8 +246,32 @@ function cle_totale_recursive(cle::Dict{Symbol,Any})::Bool
     # c'est que une fois que l'on a parcouru toutes les feuilles sans retourner false que l'on peut enfin retrouner true.
     return true
 end
+"""
 
 
+function Est_une_cle_determination_totale(noeud::Noeud)
+    return cle_totale_recursive(noeud.cle_partielle)
+end
+
+function cle_totale_recursive(cle::Dict{Any,Any})::Bool
+
+    # Si la clé n'a pas de branches -> c’est une feuille
+    if !haskey(cle, "branches") || isempty(cle["branches"])
+        nb = length(cle["especes_restantes"])
+        return nb <= 1
+    end
+
+    # Sinon, descente récursive dans chaque sous-branche
+    for (_, souscle) in cle["branches"]
+        if !cle_totale_recursive(souscle)
+            return false
+        end
+    end
+
+    return true
+end
+
+"""
 cle_totale = Dict(
     :profondeur => 0,
     :especes_restantes => [1,2,3],
@@ -263,3 +295,4 @@ cle_totale = Dict(
 )
 
 print(cle_totale_recursive(cle_totale))
+"""

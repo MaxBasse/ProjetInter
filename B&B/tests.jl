@@ -4,7 +4,7 @@ using Test
 
 
 #test de MAJ_questions
-"""
+
 @testset "Test basique MAJ_questions" begin
     
     accessibles = ["q1", "q2"]
@@ -19,10 +19,10 @@ using Test
     @test new_pos == ["q1"]
 
 end
-"""
+
 
 #test de parcours_largeur
-"""
+
 # Arbre de test 
 arbre_test = Dict{Any,Any}(
     "branches" => Dict{Any,Any}(
@@ -55,10 +55,10 @@ arbre_test = Dict{Any,Any}(
     @test chemin == ["F", "G"]  # la première feuille avec plusieurs espèces en largeur
     @test feuille["especes_restantes"] == [5,6]
 end
-"""
+
 
 #test de MAJ_especes_restantes
-"""
+
 @testset "Test minimal MAJ_especes_restantes" begin
 
     # On crée un petit BitMatrix (4 espèces x 3 caractéristiques)
@@ -84,10 +84,10 @@ end
     @test new_remaining3 == [1,3,4]
 
 end
-"""
+
 
 #test de MAJ_cle_partielle
-"""
+
 # Mini-arbre avec 2 niveaux
 arbre = Dict(
     "branches" => Dict(
@@ -148,11 +148,11 @@ new_arbre = MAJ_cle_partielle(
     @test new_arbre["branches"]["root"]["branches"][2]["especes_restantes"] == [2,3]
 end
 
-"""
+
 
 
 #test de separation
-"""
+
 # Mini-arbre pour test
 arbre_test = Dict{Any,Any}(
     "branches" => Dict{Any,Any}(
@@ -187,7 +187,7 @@ df_caract_species = BitMatrix([
 ])
 
 # Noeud initial
-noeud_initial = Noeud(0, arbre_test)
+noeud_initial = Noeud(arbre_test, 0)
 
 # Test minimal pour separation
 @testset "Test separation réel" begin
@@ -209,7 +209,7 @@ noeud_initial = Noeud(0, arbre_test)
         end
     end
 end
-"""
+
 
 
 
