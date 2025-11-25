@@ -1,7 +1,11 @@
 using JSON
 
-#data = JSON.parsefile("data.json")
+data = JSON.parsefile("Glouton/data.json")
 
+vect_carac = Vector{String}() # vector of characteristics of the form "question :: answer", the index of the characteristic in this vector is its id
+vect_question = Vector{String}() # vector of questions of the form "question", the index of the question in this vector is its id
+vect_unlock_q = Vector{Vector{Int}}() # vector of int vectors, for each characteristic (index in vect_carac), list of questions (index in vect_question) it unlocks
+vect_question_carac = Vector{Vector{Int}}() # for each question (index in vect_question), list of characteristics (index in vect_carac) it 
 vect_carac = Vector{String}() # vector of characteristics of the form "question :: answer", the index of the characteristic in this vector is its id
 vect_question = Vector{String}() # vector of questions of the form "question", the index of the question in this vector is its id
 vect_unlock_q = Vector{Vector{Int}}() # vector of int vectors, for each characteristic (index in vect_carac), list of questions (index in vect_question) it unlocks
