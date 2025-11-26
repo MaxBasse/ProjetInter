@@ -32,7 +32,16 @@ function extract_styled_elements!(node, parent_id, branch_label, nodes, edges, n
         # Style : Ellipse verte clair (pour le côté botanique)
         attributes = "shape=ellipse, style=\"filled\", fillcolor=\"lightgreen\""
         
+    elseif haskey(node, "especes")
+        # Nœud terminal (Espèce)
+        # On joint la liste des espèces par des virgules
+        s_list = join(string.(node["especes"]), ", ")
+        label = "Espèce(s): $(s_list)"
+        # Style : Ellipse verte clair (pour le côté botanique)
+        attributes = "shape=ellipse, style=\"filled\", fillcolor=\"lightgreen\""
+        
     else
+        
         # Racine ou autre (si pas de question explicite au début)
         label = "Début"
         attributes = "shape=diamond, style=\"filled\", fillcolor=\"gold\""
@@ -112,17 +121,18 @@ function generate_botanic_dot(json_path::String, dot_output_path::String)
     println("Nombre de nœuds : $(length(nodes))")
 end
 
-function generate_botanic_svg(dot__path::String, svg_path::String)
+function generate_botanic_svg(json_path::String, dot_path::String, svg_path::String)
 
-    contenu_dot = read(dot__path, String)
+    generate_botanic_dot(json_path, dot_path)
+
+    contenu_dot = read(dot_path, String)
     g = GraphViz.Graph(contenu_dot)
 
     GraphViz.layout!(g, engine="dot")
 
-    open(png_path, "w") do f
+    open(svg_path, "w") do f
         GraphViz.render(f, g)
     end
 end
 
-generate_botanic_dot("arbre_V2.json", "decision_tree_julia_V2.dot")
-generate_botanic_svg("decision_tree_julia_V2.dot", "decision_tree_julia_V2.svg")
+generate_botanic_svg("arbre_simplifie_grand.json", "arbre_simplifie_grand.dot", "arbre_simplifie_grand.svg")
