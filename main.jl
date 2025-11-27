@@ -30,7 +30,7 @@ for q in data["questions"]
 end
 
 #Application de l'algo
-arbre=glouglouton(new_species_matrix, remaining_species, accessible_questions, v_qc, v_uq, asked_questions)
+arbre=glouglouton(species_matrix, remaining_species, accessible_questions, v_qc, v_uq, asked_questions)
 arbre_json=JSON.json(arbre, 4)
 
 #Sauvegarde de l'arbre au format JSON
