@@ -1,12 +1,13 @@
 include("data_loading.jl")
 include("Glouton/glouton.jl")
+include("B&B/BandB2.jl")
 include("Glouton/fonctions_annexes.jl")
 include("Visualisation/visualisation.jl")
 
 data = JSON.parsefile("Glouton/data.json")
 
 #=====Initialisation des vecteurs======#
-
+@info "Initialisation des vecteurs..."
 v_q = Vector{String}() # questions
 v_qc = Vector{Vector{Int}}() # caractéristiques par question
 v_c = Vector{String}() # caractéristiques
@@ -14,24 +15,32 @@ v_uq = Vector{Vector{Int}}() # questions débloquées par caractéristique
 nb_species = length(data["collection"]) # nombre d'espèces
 sp_matrix = Ref(BitMatrix(undef, 0, 0)) # matrice des espèces référence afin de pouvoir avoir une taille dynamique
 vect_species = Vector{String}(undef, nb_species) # vecteur des noms d'espèces
-
-#=====Remplissage des vecteurs======#
-fill_variables!(v_q, v_qc, v_c, v_uq, sp_matrix, vect_species, data)
-species_matrix = sp_matrix[] # Conversion de Ref{BitMatrix} à BitMatrix
-
-#=====Application de l'algorithme glouton======#
-remaining_species=collect(1:nb_species)
 asked_questions = Vector{Int}()
 accessible_questions = Vector{Int}()
-
-# Remplissage du vecteur des questions accessibles au départ
+@info "Initialisation des vecteurs terminée."
+#=====Remplissage des vecteurs======#
+@info "Remplissage des vecteurs..."
+fill_variables!(v_q, v_qc, v_c, v_uq, sp_matrix, vect_species, data) 
+species_matrix = sp_matrix[] # Conversion de Ref{BitMatrix} à BitMatrix
+remaining_species=collect(1:nb_species) # Remplissage des espèces restantes au départ
+# Remplissage des questions accessibles au départ
 for q in data["questions"]
     push!(accessible_questions, findfirst(==(q["title_q"]), v_q))
 end
+@info "Vecteurs remplis avec succès."
 
-#Application de l'algo
+#=====Application de l'algorithme glouton======#
+
+@info "Application de l'algorithme glouton..."
 arbre=glouglouton(species_matrix, remaining_species, accessible_questions, v_qc, v_uq, asked_questions)
 arbre_json=JSON.json(arbre, 4)
+@info "Algorithme glouton terminé."
+
+#=====Application de l'algorithme Branch and Bound======#
+@info "Application de l'algorithme Branch and Bound..."
+Branch_and_Bound(accessible_questions, remaining_species, species_matrix, v_uq, v_qc)
+@info "Algorithme Branch and Bound terminé."
+
 
 #Sauvegarde de l'arbre au format JSON
 open("arbre_V1.json", "w") do f
