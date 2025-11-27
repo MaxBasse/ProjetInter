@@ -1,5 +1,7 @@
 include("questions_parser.jl")
 
+#OBSOLETE FILE, kept for reference only
+
 nb_species = length(data["collection"])
 nb_carac = length(vect_carac)
 vect_species = Vector{String}(undef, nb_species)

@@ -2,6 +2,7 @@ using JSON
 using CSV
 using DataFrames
 
+#OBSOLETE FILE, kept for reference only
 
 donnees = JSON.parsefile("data.json")
 donnees_tronquees = JSON.parsefile("truncated_data.json")

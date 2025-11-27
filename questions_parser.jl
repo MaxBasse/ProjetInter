@@ -1,5 +1,7 @@
 using JSON
 
+#OBSOLETE FILE, kept for reference only
+
 data = JSON.parsefile("Glouton/data.json")
 
 vect_carac = Vector{String}() # vector of characteristics of the form "question :: answer", the index of the characteristic in this vector is its id

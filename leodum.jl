@@ -1,5 +1,6 @@
 include("extraction_of_path_arthur.jl")
 
+#OBSOLETE FILE, kept for reference only
 
 # Importation des données JSON initiales (parse)
 import Pkg

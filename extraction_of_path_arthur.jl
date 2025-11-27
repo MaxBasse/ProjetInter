@@ -1,9 +1,10 @@
-
 import Pkg
 Pkg.add("JSON")
 using JSON
 donnees = JSON.parsefile("data.json")
 using DataFrames
+
+#OBSOLETE FILE, kept for reference only
 
 #println(donnees)
 #println(donnees["questions"][1]["title_q"])
