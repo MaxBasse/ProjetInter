@@ -1,8 +1,8 @@
 using JSON
 
 # Charge le JSON depuis un fichier
-tree = JSON.parsefile("Glouton/arbre.json")
-
+tree = JSON.parsefile("arbre_V1.json")
+tree_Bnb = JSON.parsefile("arbre_simplifie_grand.json")
 """
 Analyse récursive de l'arbre
 
@@ -54,8 +54,64 @@ function analyze(node; depth=1, path=Int[])
     )
 end
 
+function analyze_BnB(node; depth=1, path=Int[])
+
+    # ----- 1) FEUILLE -----
+    if haskey(node, "especes")
+        return Dict(
+            :leaves => 1,
+            :species_per_leaf => [length(node["especes"])],
+            :max_depth => depth,
+            :internal_nodes => 0,
+            :branching_factors => Int[],
+            :paths => [(path, node["especes"])]
+        )
+    end
+
+    # ----- 2) CAS : PAS DE BRANCHES (BnB intermédiaire vide) -----
+    if !haskey(node, "branches")
+        # On traite ce nœud comme une "feuille vide"
+        return Dict(
+            :leaves => 1,
+            :species_per_leaf => [0],
+            :max_depth => depth,
+            :internal_nodes => 0,
+            :branching_factors => Int[],
+            :paths => [(path, [])]
+        )
+    end
+
+    # ----- 3) NOEUD INTERNE AVEC BRANCHES -----
+    new_path = haskey(node, "question") ? vcat(path, node["question"]) : path
+
+    results = [
+        analyze_BnB(child; depth=depth+1, path=new_path)
+        for (_, child) in node["branches"]
+    ]
+
+    return Dict(
+        :leaves => sum(r[:leaves] for r in results),
+        :species_per_leaf => vcat([r[:species_per_leaf] for r in results]...),
+        :max_depth => maximum(r[:max_depth] for r in results),
+        :internal_nodes => 1 + sum(r[:internal_nodes] for r in results),
+        :branching_factors =>
+            [length(node["branches"]);
+             vcat([r[:branching_factors] for r in results]...)],
+        :paths => vcat([r[:paths] for r in results]...)
+    )
+end
+
+
+
+
+
+
+
+
+
 # Analyse
-stats = analyze(tree)
+#stats = analyze(tree)
+stats = analyze_BnB(tree_Bnb)
 
 println("\n=== KPIs SUR L'ARBRE ===")
 println("Nombre total de feuilles                      :", stats[:leaves])
