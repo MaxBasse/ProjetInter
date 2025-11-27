@@ -1,6 +1,4 @@
 #include("leodum.jl")
-include("../questions_parser.jl")
-include("../data_parsing.jl")
 include("fonctions_annexes.jl")
 
 
@@ -150,7 +148,7 @@ end
 
 
 ## Test du glouton sur nos données
-
+#=
 #Initialisation des données
 remaining_species=collect(1:size(species_matrix)[1])
 asked_questions = Vector{Int}()
@@ -186,7 +184,8 @@ best_question_selection(new_species_matrix, remaining_species, accessible_questi
 arbre=glouglouton(new_species_matrix, remaining_species, accessible_questions, vect_question_carac, vect_unlock_q, asked_questions)
 arbre_json=JSON.json(arbre, 4)
 
-open("arbre.json", "w") do f
+open("arbre_V2.json", "w") do f
     write(f, arbre_json)
 end
 
+=#

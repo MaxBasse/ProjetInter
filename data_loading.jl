@@ -156,7 +156,19 @@ function fill_variables!(vect_question::Vector{String}, vect_question_carac::Vec
         sp_matrix[i, 1:nb_carac] .= sp_carac
         
     end
+    # Gestion des données manquantes : si une espèce n'a aucune réponse pour une question, on considère toutes les réponses comme possibles
+    for reponses in vect_question_carac
+        # Vérifie pour chaque espèce si au moins une réponse est cochée pour la question en cours
+        # view(...) évite de copier la sous-matrice
+        has_answer = vec(any(view(sp_matrix, :, reponses), dims=2))
+        
+        # Si aucune réponse n'est cochée (!has_answer), on coche toutes les réponses possibles
+        if !all(has_answer)
+            sp_matrix[.!has_answer, reponses] .= true
+        end
+    end
     species_matrix[] = sp_matrix
+    
     return nothing
 end
 

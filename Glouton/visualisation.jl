@@ -110,4 +110,5 @@ end
 
 # --- Exécution ---
 # Remplacez 'arbre.json' par le chemin de votre fichier si nécessaire
-generate_botanic_dot("C:\\Users\\Maxent\\Documents\\Dev\\Workspace\\Julia\\ProjetInter\\Glouton\\arbre.json", "decision_tree_julia.dot")
+generate_botanic_dot("arbre_V1.json", "decision_tree_julia_V1.dot")
+generate_botanic_dot("arbre_V2.json", "decision_tree_julia_V2.dot")

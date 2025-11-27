@@ -1,5 +1,10 @@
 using JSON
 
+mutable struct Noeud
+    cle_partielle::Dict{Any, Any}           # Clé de détermination partielle
+    borne_inf::Int              # borne inf associée à chaque noeud du B&B 
+end
+
 include("BandB.jl")
 
 data2 = JSON.parsefile(joinpath(@__DIR__, "petite_data_test.json"))

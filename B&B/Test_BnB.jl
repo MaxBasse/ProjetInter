@@ -46,7 +46,7 @@ function process_question(q)
         end
 
         # Récursivité sur les sous-questions 
-        if haskey(a, "unlock_questions")    
+        if haskey(a, "unlock_questions") && !isempty(a["unlock_questions"])  # J'ai ajouté && !isempty(a["unlock_questions"]) mais je crois que ça change rien
             for subq in a["unlock_questions"]
                 process_question(subq)
                 
@@ -63,9 +63,6 @@ end
 for q in data["questions"]
     process_question(q)
 end
-
-println("étape 1 réalisée")
-
 
 
 nb_species = length(data["collection"])
@@ -114,7 +111,6 @@ for (i, species) in enumerate(data["collection"])
     end
 end
 
-println("étape 2 réalisée")
 println(vect_unlock_q)
 println(vect_species)
 println(species_matrix)
@@ -126,8 +122,7 @@ df_caract_species = species_matrix
 question_unlock = vect_unlock_q
 questions_answers = vect_question_carac
 
-"""
-E_initial = collect(1:size(species_matrix)[1])
+E_initial = collect(1:length(vect_species))
 
 Qa_initial = Vector{Int}()
 for q in data["questions"]
@@ -136,8 +131,11 @@ end
 
 println("-----------------------------------------------------------")
 println(question_unlock)
+println(length(question_unlock))
 println("-----------------------------------------------------------")
 println(questions_answers)
+println(length(questions_answers))
+
 
 meilleure_solution, borne_sup = Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unlock, questions_answers)
 println("-----------------------------------------------------------")
@@ -145,8 +143,7 @@ println(meilleure_solution)
 println("-----------------------------------------------------------")
 println(borne_sup)
 
-
-
+"""
 function simplifie_arbre(noeud)
     # Détecter une vraie feuille : aucune branche, ou dictionnaire vide
     if !haskey(noeud, "branches") || isempty(noeud["branches"])
