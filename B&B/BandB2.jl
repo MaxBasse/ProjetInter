@@ -84,7 +84,7 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
         end
         
         # Better Logging
-        if compteur % 100 == 0
+        if compteur % 1000 == 0
              println("Iter: $compteur | Stack: $(length(ListeNoeuds)) | Best: $borne_sup | Current LB: $(noeud.borne_inf)")
         end
     end
