@@ -1,5 +1,4 @@
 include("GloutonPartiel.jl")
-include("../Glouton/glouton.jl")
 include("separation.jl")
 include("Evaluation.jl")
 

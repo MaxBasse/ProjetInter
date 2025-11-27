@@ -1,5 +1,10 @@
 using JSON
 
+mutable struct Noeud
+    cle_partielle::Dict{Any, Any}           # Clé de détermination partielle
+    borne_inf::Int              # borne inf associée à chaque noeud du B&B 
+end
+
 include("BandB.jl")
 
 data = JSON.parsefile(joinpath(@__DIR__, "data.json"))
@@ -41,7 +46,7 @@ function process_question(q)
         end
 
         # Récursivité sur les sous-questions 
-        if haskey(a, "unlock_questions")    
+        if haskey(a, "unlock_questions") && !isempty(a["unlock_questions"])  # J'ai ajouté && !isempty(a["unlock_questions"]) mais je crois que ça change rien
             for subq in a["unlock_questions"]
                 process_question(subq)
                 
@@ -58,10 +63,6 @@ end
 for q in data["questions"]
     process_question(q)
 end
-
-
-
-
 
 
 nb_species = length(data["collection"])
@@ -121,8 +122,7 @@ df_caract_species = species_matrix
 question_unlock = vect_unlock_q
 questions_answers = vect_question_carac
 
-
-E_initial = collect(1:size(species_matrix)[1])
+E_initial = collect(1:length(vect_species))
 
 Qa_initial = Vector{Int}()
 for q in data["questions"]
@@ -131,8 +131,11 @@ end
 
 println("-----------------------------------------------------------")
 println(question_unlock)
+println(length(question_unlock))
 println("-----------------------------------------------------------")
 println(questions_answers)
+println(length(questions_answers))
+
 
 meilleure_solution, borne_sup = Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unlock, questions_answers)
 println("-----------------------------------------------------------")
@@ -140,8 +143,7 @@ println(meilleure_solution)
 println("-----------------------------------------------------------")
 println(borne_sup)
 
-
-
+"""
 function simplifie_arbre(noeud)
     # Détecter une vraie feuille : aucune branche, ou dictionnaire vide
     if !haskey(noeud, "branches") || isempty(noeud["branches"])
@@ -167,6 +169,7 @@ end
 arbre_simplifie = simplifie_arbre(meilleure_solution)
 json_str = JSON.json(arbre_simplifie, 4)
 
-open("arbre_simplifie_grand.json", "w") do f
+open("arbre_simplifie_grand2.json", "w") do f
     write(f, json_str)
 end
+"""

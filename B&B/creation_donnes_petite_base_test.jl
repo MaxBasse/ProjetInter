@@ -1,5 +1,10 @@
 using JSON
 
+mutable struct Noeud
+    cle_partielle::Dict{Any, Any}           # Clé de détermination partielle
+    borne_inf::Int              # borne inf associée à chaque noeud du B&B 
+end
+
 include("BandB.jl")
 
 data2 = JSON.parsefile(joinpath(@__DIR__, "petite_data_test.json"))
@@ -153,7 +158,7 @@ println(borne_sup)
 println(vect_question_carac)
 println(species_matrix)
 
-
+"""
 #Application de l'algo
 arbre= meilleure_solution
 arbre_json=JSON.json(arbre, 4)
@@ -192,4 +197,4 @@ json_str = JSON.json(arbre_simplifie, 4)
 open("arbre_simplifie.json", "w") do f
     write(f, json_str)
 end
-
+"""
