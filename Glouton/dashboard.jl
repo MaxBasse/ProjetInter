@@ -2,6 +2,8 @@ include("metriques_arbre.jl")  # charge le code
 
 
 using Dash
+using DashCoreComponents
+using DashHtmlComponents
 import DashCoreComponents as dcc
 import DashHtmlComponents as html
 
@@ -117,8 +119,7 @@ callback!(
         
         # Formater la valeur (arrondi à 2 décimales si un nombre, sinon tel quel)
         display_value = ""
-        # IMPORTANT: Puisque nous n'appelons plus analyze/analyze_BnB, 
-        # les valeurs sont garanties être des nombres, pas des AbstractVectors.
+        # Les valeurs sont garanties être des nombres
         if isa(kpi_value, Number)
              display_value = string(round(kpi_value, digits=2))
         else
@@ -188,7 +189,14 @@ end
 # ==========================
 #  LANCEMENT SERVEUR (Prêt pour le déploiement)
 # ==========================
+# NOTE: Le code est simplifié pour utiliser le port 8050 directement pour éviter
+# les erreurs d'environnement avec ENV et parse(Int, port).
+port = 8050
+host = "0.0.0.0" 
 
-# Développement local Windows
-run_server(app, "127.0.0.1", 8050)
+println("----------------------------------------------------------------")
+println("Dashboard prêt sur : http://127.0.0.1:$(port)")
+println("Veuillez ouvrir manuellement ce lien dans votre navigateur.")
+println("----------------------------------------------------------------")
 
+run_server(app, host, port)
