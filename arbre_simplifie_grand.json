@@ -1,0 +1,55 @@
+{
+    "branches": {
+        "4": {
+            "branches": {
+                "10": {
+                    "especes": [
+                        3
+                    ]
+                },
+                "11": {
+                    "branches": {
+                        "12": {
+                            "especes": [
+                                2
+                            ]
+                        },
+                        "13": {
+                            "especes": [
+                                1
+                            ]
+                        }
+                    },
+                    "question": 6
+                }
+            },
+            "question": 5
+        },
+        "2": {
+            "branches": {
+                "15": {
+                    "especes": [
+                        3
+                    ]
+                },
+                "19": {
+                    "especes": [
+                        3
+                    ]
+                },
+                "16": {
+                    "especes": [
+                        4
+                    ]
+                }
+            },
+            "question": 7
+        },
+        "3": {
+            "especes": [
+                3
+            ]
+        }
+    },
+    "question": 2
+}

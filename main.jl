@@ -1,10 +1,15 @@
+mutable struct Noeud
+    cle_partielle::Dict{Any, Any}           # Clé de détermination partielle
+    borne_inf::Int              # borne inf associée à chaque noeud du B&B 
+end
+
 include("data_loading.jl")
 include("Glouton/glouton.jl")
-include("B&B/BandB2.jl")
+include("B&B/BandB3.jl")
 include("Glouton/fonctions_annexes.jl")
 include("Visualisation/visualisation.jl")
 
-data = JSON.parsefile("Glouton/data.json")
+data = JSON.parsefile("C:\\Users\\Maxent\\Documents\\Dev\\Workspace\\Julia\\ProjetInter\\B&B\\data.json")
 
 #=====Initialisation des vecteurs======#
 @info "Initialisation des vecteurs..."
@@ -38,8 +43,35 @@ arbre_json=JSON.json(arbre, 4)
 
 #=====Application de l'algorithme Branch and Bound======#
 @info "Application de l'algorithme Branch and Bound..."
-Branch_and_Bound(accessible_questions, remaining_species, species_matrix, v_uq, v_qc)
+meilleure_solution, borne_sup =Branch_and_Bound(accessible_questions, remaining_species, species_matrix, v_uq, v_qc)
 @info "Algorithme Branch and Bound terminé."
+
+function simplifie_arbre(noeud)
+    # Détecter une vraie feuille : aucune branche, ou dictionnaire vide
+    if !haskey(noeud, "branches") || isempty(noeud["branches"])
+        # Prend "especes_restantes" si elle existe, sinon "species"
+        especes = get(noeud, "especes_restantes", get(noeud, "species", []))
+        return Dict("especes" => especes)
+    end
+
+    # Noeud interne
+    branches_simpl = Dict{String, Any}()
+    for (cle, sousnoeud) in noeud["branches"]
+        branches_simpl[string(cle)] = simplifie_arbre(sousnoeud)
+    end
+
+    return Dict(
+        "question" => noeud["question"],
+        "branches" => branches_simpl
+    )
+end
+
+arbre_simplifie = simplifie_arbre(meilleure_solution)
+json_str = JSON.json(arbre_simplifie, 4)
+
+open("arbre_simplifie_grand.json", "w") do f
+    write(f, json_str)
+end
 
 
 #Sauvegarde de l'arbre au format JSON
