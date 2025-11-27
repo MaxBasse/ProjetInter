@@ -4,6 +4,7 @@ include("metriques_arbre.jl")  # charge le code
 using Dash
 import DashCoreComponents as dcc
 import DashHtmlComponents as html
+
 using DataFrames
 using JSON
 
@@ -56,13 +57,14 @@ methods = Dict(
 
 #  Mappage des KPI avec des icônes et couleurs pour l'affichage stylisé
 # Les clés sont ici les chaînes exactes (String) utilisées dans les dictionnaires kpi_eval.
+# Mappage des KPI avec des icônes et couleurs pour l'affichage stylisé
 KPI_INFO = Dict(
     "Nombre de feuilles" => Dict("icon" => "🌿", "color" => "#10B981", "unit" => "feuilles"), 
     "Espèces moyennes / feuille" => Dict("icon" => "📊", "color" => "#3B82F6", "unit" => "espèces"), 
     "Profondeur max" => Dict("icon" => "🌳", "color" => "#EF4444", "unit" => "niveaux"), 
     "Nombre de noeuds internes" => Dict("icon" => "🔗", "color" => "#F59E0B", "unit" => "noeuds"), 
     "Branches moyennes / noeud interne" => Dict("icon" => "🧭", "color" => "#8B5CF6", "unit" => "branches"),
-    "Temps de calcul (s)" => Dict("icon" => "⏱️", "color" => "#1F2937", "unit" => "secondes") # Nouveau KPI de temps
+    "Temps de calcul (s)" => Dict("icon" => "⏱️", "color" => "#1F2937", "unit" => "secondes")
 )
 
 # ==========================
@@ -99,29 +101,25 @@ app.layout = html_div(style = Dict("font-family" => "Inter, sans-serif", "paddin
 # ==========================
 callback!(
     app,
-    Output("content_container", "children"),
-    Input("method_select", "value")
+    [Output("content_container", "children")],
+    [Input("method_select", "value")]
 ) do selected_method
 
     selected_data = methods[selected_method]
     
     # 1. Cartes KPI stylisées
     kpi_cards = []
+    
     # On itère sur les clés String du dictionnaire de stats
     for (kpi_name, kpi_value) in selected_data
         
-        # Le lookup pour l'info utilise le kpi_name (qui est une String)
         info = get(KPI_INFO, kpi_name, Dict("icon" => "❓", "color" => "#6B7280", "unit" => "", "name" => kpi_name)) 
-        
-        # Déterminer le nom à afficher (c'est kpi_name car c'est déjà la chaîne de caractères formatée)
         
         # Formater la valeur (arrondi à 2 décimales si un nombre, sinon tel quel)
         display_value = ""
-        if isa(kpi_value, AbstractVector) && !isempty(kpi_value)
-             # Cas où la valeur est une liste (comme pour les facteurs d'embranchement)
-             value = kpi_value[1]
-             display_value = string(round(value, digits=2))
-        elseif isa(kpi_value, Number)
+        # IMPORTANT: Puisque nous n'appelons plus analyze/analyze_BnB, 
+        # les valeurs sont garanties être des nombres, pas des AbstractVectors.
+        if isa(kpi_value, Number)
              display_value = string(round(kpi_value, digits=2))
         else
             display_value = string(kpi_value)
@@ -129,7 +127,7 @@ callback!(
         
         push!(kpi_cards, 
             html_div(style = Dict(
-                "flex" => "0 0 25%", # CORRECTION APPLIQUÉE: Ajustement pour 3 cartes par ligne (31% + marges)
+                "flex" => "0 0 31%", # 3 cartes par ligne
                 "margin" => "10px",
                 "padding" => "20px",
                 "background-color" => "white",
@@ -153,7 +151,7 @@ callback!(
     elseif selected_method == "Minimiser Feuilles"
         image_url = "https://i.ibb.co/MDJqTZzG/graph-2.png"
     else
-        image_url = "https://i.ibb.co/hRMqP14s/graph-3.png"
+        image_url = "https://i.ibb.co/bj5gNYZC/graph-1.png" # Uniformisation de la taille d'image
     end
 
     image_section = html_div(
@@ -172,7 +170,7 @@ callback!(
                 alt = "Graphe pour la méthode $selected_method",
                 style = Dict(
                     "max-width" => "90%",
-                    "height" => "auto",
+                    "height" => "auto", 
                     "border-radius" => "8px",
                     "margin-top" => "15px"
                 )
@@ -190,8 +188,7 @@ end
 # ==========================
 #  LANCEMENT SERVEUR (Prêt pour le déploiement)
 # ==========================
-# Récupère le port et l'hôte de l'environnement, sinon utilise 8050 et 0.0.0.0
-port = get(ENV, "PORT", "8050") 
-host = get(ENV, "HOST", "0.0.0.0") 
-run(`cmd /c start http://127.0.0.1:8050`)
-run_server(app, host, parse(Int, port))
+
+# Développement local Windows
+run_server(app, "127.0.0.1", 8050)
+
