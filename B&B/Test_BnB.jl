@@ -125,7 +125,7 @@ questions_answers = vect_question_carac
 E_initial = collect(1:size(species_matrix)[1])
 
 Qa_initial = Vector{Int}()
-for q in data2["questions"]
+for q in data["questions"]
     push!(Qa_initial, findfirst(==(q["title_q"]), vect_question))
 end
 
