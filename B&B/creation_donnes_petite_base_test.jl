@@ -153,7 +153,7 @@ println(borne_sup)
 println(vect_question_carac)
 println(species_matrix)
 
-
+"""
 #Application de l'algo
 arbre= meilleure_solution
 arbre_json=JSON.json(arbre, 4)
@@ -192,4 +192,4 @@ json_str = JSON.json(arbre_simplifie, 4)
 open("arbre_simplifie.json", "w") do f
     write(f, json_str)
 end
-
+"""

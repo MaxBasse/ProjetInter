@@ -1,5 +1,10 @@
 using JSON
 
+mutable struct Noeud
+    cle_partielle::Dict{Any, Any}           # Clé de détermination partielle
+    borne_inf::Int              # borne inf associée à chaque noeud du B&B 
+end
+
 include("BandB.jl")
 
 data = JSON.parsefile(joinpath(@__DIR__, "data.json"))
@@ -59,8 +64,7 @@ for q in data["questions"]
     process_question(q)
 end
 
-
-
+println("étape 1 réalisée")
 
 
 
@@ -110,6 +114,7 @@ for (i, species) in enumerate(data["collection"])
     end
 end
 
+println("étape 2 réalisée")
 println(vect_unlock_q)
 println(vect_species)
 println(species_matrix)
@@ -121,11 +126,11 @@ df_caract_species = species_matrix
 question_unlock = vect_unlock_q
 questions_answers = vect_question_carac
 
-
+"""
 E_initial = collect(1:size(species_matrix)[1])
 
 Qa_initial = Vector{Int}()
-for q in data2["questions"]
+for q in data["questions"]
     push!(Qa_initial, findfirst(==(q["title_q"]), vect_question))
 end
 
@@ -167,6 +172,7 @@ end
 arbre_simplifie = simplifie_arbre(meilleure_solution)
 json_str = JSON.json(arbre_simplifie, 4)
 
-open("arbre_simplifie_grand.json", "w") do f
+open("arbre_simplifie_grand2.json", "w") do f
     write(f, json_str)
 end
+"""
