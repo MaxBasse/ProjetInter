@@ -191,7 +191,7 @@ end
 # ==========================
 # NOTE: Le code est simplifié pour utiliser le port 8050 directement pour éviter
 # les erreurs d'environnement avec ENV et parse(Int, port).
-port = 8050
+port = 8080
 host = "0.0.0.0" 
 
 println("----------------------------------------------------------------")
