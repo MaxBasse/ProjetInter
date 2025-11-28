@@ -5,7 +5,7 @@ end
 
 include("data_loading.jl")
 include("Glouton/glouton.jl")
-include("B&B/BandB3.jl")
+include("B&B/BandB2.jl")
 include("Glouton/fonctions_annexes.jl")
 include("Visualisation/visualisation.jl")
 

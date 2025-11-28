@@ -81,7 +81,7 @@ function MAJ_cle_partielle(arbre, chemin, q, questions_answers, question_unlock,
     questions_posees = copy(noeud_feuille["questions_posees"])
     profondeur = copy(noeud_feuille["profondeur"])
 
-    println(questions_accessibles)
+    #println(questions_accessibles)
 
     noeud_feuille["question"]=q
     

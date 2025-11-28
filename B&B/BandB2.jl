@@ -1,7 +1,7 @@
 include("GloutonPartiel.jl")
 include("../Glouton/glouton.jl")
 include("separation.jl")
-include("Evaluation2.jl")
+include("Evaluation3.jl")
 
 function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unlock, questions_answers)
 
@@ -84,7 +84,7 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
         end
         
         # Better Logging
-        if compteur % 1000 == 0
+        if compteur % 100 == 0
              println("Iter: $compteur | Stack: $(length(ListeNoeuds)) | Best: $borne_sup | Current LB: $(noeud.borne_inf)")
         end
     end
