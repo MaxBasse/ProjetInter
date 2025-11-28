@@ -2,11 +2,8 @@ include("metriques_arbre.jl")  # charge le code
 
 
 using Dash
-using DashCoreComponents
-using DashHtmlComponents
-import DashCoreComponents as dcc
-import DashHtmlComponents as html
-
+using DashCoreComponents 
+using DashHtmlComponents 
 using DataFrames
 using JSON
 
