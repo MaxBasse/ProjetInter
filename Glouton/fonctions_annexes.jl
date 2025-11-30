@@ -73,7 +73,7 @@ function score_evaluation(df_caract_species, remaining_species, current_question
 end
 
 
-#Meme fonction mais grandement améliorée par chatty (pour éviter les boucles)
+#Meme fonction mais grandement améliorée par chatty (pour éviter les boucles), fonction qui selectionne la fonction qui partitionne le mieux
 function score_evaluation2(df_caract_species, remaining_species, current_question, question_caract)
 
     #Selection des colonnes et des lignes à compter 
@@ -102,6 +102,49 @@ function score_evaluation2(df_caract_species, remaining_species, current_questio
     return maximum(score)
 
 end
+
+# fonction score qui minimise le polymorphisme et le nombre de feuille
+function score_evaluation3(df_caract_species, remaining_species, current_question, question_caract)
+
+    #Selection des colonnes et des lignes à compter 
+    cols = question_caract[current_question]
+
+    rows_to_count = remaining_species
+
+   # Pour chaque colonne, on récupère l'ensemble des espèces positives
+    subset = [ Set(row for row in rows_to_count if df_caract_species[row, col] != 0)
+           for col in cols ]
+
+    # Intersection des ensembles
+    intersection_species = reduce(intersect, subset)
+
+    # Score = nombre d'espèces dans l'intersection
+    score = length(intersection_species)
+
+
+    
+    #Ne pas choisir les questions qui ne servent à rien
+
+    if (score == length(remaining_species))
+        #si la question ne partitionne pas les espèces restantes, c'est forcément la (ou une des) pire question donc on la code avec un score de -1
+        return -1
+    end
+    # on regarde si ya pas de set vide dans subst, si oui et que le score est nul c'est que la question ne sert à rien
+    any_empty_subset = any(length(s) == 0 for s in subset)
+
+    if score == 0 && any_empty_subset
+        return -1   # inutile : un des splits est vide → question inutile
+    end
+
+    #println(score)
+    #Je choisis ici de le cardinal de l'intersection entre les noeuds fils qui découlent d'une question
+    return score
+
+end
+
+
+
+
 
 """
 best_question_selection : sélectionne la meilleure question à poser selon une stratégie basée sur le score d’évaluation
@@ -151,7 +194,6 @@ function best_question_selection(df_caract_species, remaining_species, accessibl
             end
             =#
 
-            #on l'enlève du score pour ne pas la choisir
             delete!(score, question)
         end
     end
@@ -165,6 +207,31 @@ function best_question_selection(df_caract_species, remaining_species, accessibl
     return findmin(score)[2], new_accessibles_questions, new_asked_questions
 
 end
+
+
+"""
+Retourne les questions accessibles pour lesquelles toutes les especes restantes
+donnent la meme reponse.
+- df_caract_species : matrice especes x caracteristiques
+- remaining_species : vecteur des indices des especes restantes
+- accessible_questions : questions encore accessibles
+- question_caract : pour chaque question, liste des colonnes correspondantes
+"""
+function obvious_questions(df_caract_species, remaining_species, accessible_questions, question_caract)
+    evidentes = Int[]
+    for q in accessible_questions
+        cols = question_caract[q]
+        # Extraire les reponses des especes restantes pour cette question
+        reponses = [df_caract_species[s, cols] for s in remaining_species]
+        # On regarde si toutes les reponses sont identiques
+        if all(r -> r == reponses[1], reponses)
+            push!(evidentes, q)
+        end
+    end
+    return evidentes
+end
+
+
 
 
 """

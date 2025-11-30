@@ -38,7 +38,7 @@ function parcours_largeur(arbre)
     while !isempty(file)
         n, chemin = popfirst!(file)
 
-        if haskey(n, "especes_restantes")
+        if !haskey(n, "branches") || isempty(n["branches"])
             n_species = length(n["especes_restantes"])
             #n_questions = length(n["questions_accessibles"])
             
@@ -46,7 +46,7 @@ function parcours_largeur(arbre)
                 return (n, chemin)
             end
 
-        elseif haskey(n, "branches")
+        elseif haskey(n, "branches") && !isempty(n["branches"])
             # On ajoute les sous-arbres à la file, et les chemins correspondants
             for (cle, sous_arbre) in pairs(n["branches"])
                 push!(file, (sous_arbre, vcat(chemin,cle)))
@@ -81,7 +81,7 @@ function MAJ_cle_partielle(arbre, chemin, q, questions_answers, question_unlock,
     questions_posees = copy(noeud_feuille["questions_posees"])
     profondeur = copy(noeud_feuille["profondeur"])
 
-    println(questions_accessibles)
+    #println(questions_accessibles)
 
     noeud_feuille["question"]=q
     

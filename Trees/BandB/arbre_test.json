@@ -1,0 +1,67 @@
+{
+    "questions_posees": [],
+    "branches": {
+        "4": {
+            "branches": {
+                "11": {
+                    "branches": {
+                        "13": {
+                            "species": [
+                                1
+                            ]
+                        },
+                        "12": {
+                            "species": [
+                                2
+                            ]
+                        }
+                    },
+                    "question": 6
+                },
+                "10": {
+                    "species": [
+                        3
+                    ]
+                }
+            },
+            "question": 5
+        },
+        "2": {
+            "branches": {
+                "15": {
+                    "species": [
+                        3
+                    ]
+                },
+                "16": {
+                    "species": [
+                        4
+                    ]
+                },
+                "19": {
+                    "species": [
+                        3
+                    ]
+                }
+            },
+            "question": 7
+        },
+        "3": {
+            "species": [
+                3
+            ]
+        }
+    },
+    "question": 2,
+    "especes_restantes": [
+        1,
+        2,
+        3,
+        4
+    ],
+    "questions_accessibles": [
+        7,
+        2
+    ],
+    "profondeur": 0
+}

@@ -1,0 +1,105 @@
+{
+    "branches": {
+        "15": {
+            "branches": {
+                "4": {
+                    "branches": {
+                        "11": {
+                            "branches": {
+                                "13": {
+                                    "species": [
+                                        1
+                                    ]
+                                },
+                                "12": {
+                                    "species": [
+                                        2
+                                    ]
+                                }
+                            },
+                            "question": 6
+                        },
+                        "10": {
+                            "species": [
+                                3
+                            ]
+                        }
+                    },
+                    "question": 5
+                },
+                "2": {
+                    "species": [
+                        3
+                    ]
+                },
+                "3": {
+                    "species": [
+                        3
+                    ]
+                }
+            },
+            "question": 2
+        },
+        "16": {
+            "branches": {
+                "4": {
+                    "species": [
+                        1
+                    ]
+                },
+                "2": {
+                    "species": [
+                        4
+                    ]
+                }
+            },
+            "question": 2
+        },
+        "18": {
+            "species": [
+                1
+            ]
+        },
+        "19": {
+            "branches": {
+                "4": {
+                    "branches": {
+                        "11": {
+                            "branches": {
+                                "13": {
+                                    "species": [
+                                        1
+                                    ]
+                                },
+                                "12": {
+                                    "species": [
+                                        2
+                                    ]
+                                }
+                            },
+                            "question": 6
+                        },
+                        "10": {
+                            "species": [
+                                3
+                            ]
+                        }
+                    },
+                    "question": 5
+                },
+                "2": {
+                    "species": [
+                        3
+                    ]
+                },
+                "3": {
+                    "species": [
+                        3
+                    ]
+                }
+            },
+            "question": 2
+        }
+    },
+    "question": 7
+}

@@ -1,8 +1,10 @@
 digraph BotanicKey {
-  rankdir=LR;
   node [fontname="Arial"];
   edge [fontname="Arial", fontsize=10];
 
+  layout=dot;
+  rankdir=LR;
+  overlap=false;
   N0 [label="Question 19", shape=box, style="filled", fillcolor="lightblue"];
   N1 [label="Question 24", shape=box, style="filled", fillcolor="lightblue"];
   N2 [label="Question 32", shape=box, style="filled", fillcolor="lightblue"];
