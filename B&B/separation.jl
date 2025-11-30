@@ -188,3 +188,6 @@ function MAJ_especes_restantes(df_caract_species::BitMatrix,
 
     return new_remaining_species
 end
+
+
+
