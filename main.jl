@@ -1,8 +1,3 @@
-mutable struct Noeud
-    cle_partielle::Dict{Any, Any}           # Clé de détermination partielle
-    borne_inf::Int              # borne inf associée à chaque noeud du B&B 
-end
-
 include("data_loading.jl")
 include("Glouton/glouton.jl")
 include("B&B/BandB2.jl")
