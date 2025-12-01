@@ -1,7 +1,7 @@
 using JSON
 
 # Charge le JSON depuis un fichier
-tree = JSON.parsefile("arbre_V1.json")
+tree = JSON.parsefile("Trees/Glouton/arbre_V2.json")
 tree_Bnb = JSON.parsefile("Trees/BandB/arbre_simplifie_grand.json")
 """
 Analyse récursive de l'arbre
@@ -110,8 +110,8 @@ end
 
 
 # Analyse
-#stats = analyze(tree)
-stats = analyze_BnB(tree_Bnb)
+stats = analyze(tree)
+#stats = analyze_BnB(tree_Bnb)
 
 println("\n=== KPIs SUR L'ARBRE ===")
 println("Nombre total de feuilles                      :", stats[:leaves])

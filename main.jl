@@ -5,7 +5,7 @@ include("Glouton/fonctions_annexes.jl")
 include("Visualisation/visualisation.jl")
 
 @info "Chargement des données depuis data.json..."
-data = JSON.parsefile("C:\\Users\\Maxent\\Documents\\Dev\\Workspace\\Julia\\ProjetInter\\B&B\\data.json")
+data = JSON.parsefile("B&B/data.json")
 
 #=====Initialisation des vecteurs======#
 @info "Initialisation des vecteurs..."
@@ -38,7 +38,7 @@ arbre_json=JSON.json(arbre, 4)
 @info "Algorithme glouton terminé."
 
 @info "Sauvegarde de l'arbre glouton au format JSON..."
-open("arbre_V1.json", "w") do f
+open("arbre_V3.json", "w") do f
     write(f, arbre_json)
 end
 
