@@ -1,46 +1,33 @@
 include("../Glouton/fonctions_annexes.jl")
-
 """
-L'idée pour recalculer une possible meilleure borne d'élagage avec un glouton à partir d'une clé partielle :
+    glouglouton(df_caract_species::BitMatrix, remaining_species::Vector{Int}, accessible_questions::Vector{Int},questions_answers::Vector{Vector{Int}}, question_unlock::Vector{Vector{Int}}, asked_questions::Vector{Int} = Vector{Int}())
 
-feuilles = toutes les feuilles de la clé_partielle
+#Arguments :
+- `df_caract_species::BitMatrix` : Matrice binaire contenant les caractéristiques des espèces.
+- `remaining_species::Vector{Int}` : Liste des indices des espèces restantes à identifier.  
+- `accessible_questions::Vector{Int}` : Liste des indices des questions accessibles.
+- `questions_answers::Vector{Vector{Int}}` : Pour chaque question, liste des indices des réponses (caractéristiques) possibles.
+- `question_unlock::Vector{Vector{Int}}` : Pour chaque caractéristique, liste des indices des questions débloquées.
+- `asked_questions::Vector{Int}` : Liste des indices des questions déjà posées (par défaut vide).
 
-pour chaque feuille f : On la remplace par son glouton
-    arbre_glouton = glouglouton(... pour cette feuille ...)
-    remplacer_feuille(cle, feuille, arbre_glouton)
+#Returns :
+- `node::Dict{String, Any}` : Dictionnaire représentant le noeud de l'arbre de décision construit par l'algorithme glouton.
 
-calculer la profondeur max sur l'arbre total
-profondeur_max = profondeur_arbre(cle)
+# Exemple
+    df_caract_species = BitMatrix(...) # Matrice binaire des caractéristiques des espèces
+    remaining_species = [1, 2, 3, 4, 5]
+    accessible_questions = [1, 2, 3, 4, 5]
+    questions_answers = [[10, 20], [30, 40], ...] # Liste des réponses possibles pour chaque question
+    question_unlock = [[2, 3], [4], ...] # Liste des questions débloquées par chaque caractéristique
 
-si profondeur_max < borne_sup :
-    borne_sup = profondeur_max
-    meilleure_solution = clé partielle complétée avec les gloutons
-
+    arbre_glouton = glouglouton(df_caract_species, remaining_species, accessible_questions, questions_answers, question_unlock)
 """
-
-"""
-glouglouton : fonction main de l'algo glouton avec des dictionnaire dedictionnaire (cf pseudo-code en photo)
-
-Arguments :
-- df_caract_species (DataFrame) : matrice des espèces (lignes) et de leurs caracteristiques (colonnes) 
-avec leur proba
-- remaining_species (Vector{Int}) : liste des espèces restantes avant la réponse donnée (sous forme d'identifiant/ encodé)
-- accessible_questions (Vector{Int}) : liste des questions accessibles à un certain instant (vecteur d'int(identifiant des questions))
-- questions_answers (Vector{Vector{Int}}) : liste des réponses possibles (caractéristiques sous forme d'indentifiant) possible pour chaque question
-- question_unlock (Vector{Vector{Int}}) : liste des questions débloquées (sous forme d'indentifiant de question) pour chaque réponse/caractéristique obtenue
-- asked_questions (Vector{Int}) : liste des questions déjà posées à un certain moment dans l'arbre
-
-Sortie : Retourne notre arbre (noeuds = questions / branches = réponses / feuilles = espèces)
-"""
-
-
-
 function glouglouton(df_caract_species::BitMatrix, 
                     remaining_species::Vector{Int}, 
                     accessible_questions::Vector{Int},
                     questions_answers::Vector{Vector{Int}},
                     question_unlock::Vector{Vector{Int}},
-                    asked_questions::Vector{Int} = Vector{Int}() )
+                    asked_questions::Vector{Int} = Vector{Int}())
 
     # Feuille terminale : une seule espèce possible (ou aucune connue)
     if isempty(remaining_species)
@@ -207,58 +194,3 @@ function glouton_borne_inf(noeud::Noeud, df_caract_species::BitMatrix, questions
 
     return profondeur_max, cle
 end
-
-
-# TEST
-"""
-using CSV, DataFrames
-
-
-
-# --- Création d'une clé partielle minimale ---
-cle_partielle = Dict(
-    "branches" => Dict(
-        "f1" => Dict(
-            "especes_restantes" => [1, 2],
-            "questions_accessibles" => [1, 2, 3],
-            "questions_posees" => Int[],
-            "branches" => Dict()
-        ),
-        "f2" => Dict(
-            "especes_restantes" => [3, 4],
-            "questions_accessibles" => [4, 5, 6],
-            "questions_posees" => Int[],
-            "branches" => Dict()
-        )
-    )
-)
-
-noeud_test = Noeud(cle_partielle)
-
-# --- Chargement des fichiers CSV ---
-using CSV, DataFrames
-
-df_species = CSV.read("species_matrix_petite.csv", DataFrame; header=false)
-species_col = CSV.read("species_column_petite.csv", DataFrame)[!, :Species]
-characteristics_row = CSV.read("characteristics_row_petite.csv", DataFrame)[!, :Characteristic]
-
-# --- Conversion en BitMatrix ---
-df_bit = falses(size(df_species))
-for i in 1:size(df_species,1), j in 1:size(df_species,2)
-    df_bit[i,j] = df_species[i,j] != 0.0
-end
-
-# --- Création des vecteurs questions_answers et question_unlock ---
-nb_carac = length(characteristics_row)
-questions_answers = [ [i] for i in 1:nb_carac ]  
-question_unlock = [ Int[] for _ in 1:nb_carac ]  
-
-# --- Test de la fonction ---
-profondeur_max, cle_complete = glouton_borne_inf(noeud_test, df_bit, questions_answers, question_unlock)
-
-println("Profondeur max calculée : ", profondeur_max)
-println("Clé complétée : ")
-println(cle_complete)
-
-
-"""

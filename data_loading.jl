@@ -172,3 +172,14 @@ function fill_variables!(vect_question::Vector{String}, vect_question_carac::Vec
     return nothing
 end
 
+"""
+    Noeud
+Mutable struct représentant un nœud dans l'algorithme Branch and Bound.
+- `cle_partielle::Dict{Any, Any}` : Clé de détermination partielle associée au nœud.
+- `borne_inf::Int` : Borne inférieure associée au nœud dans l'algorithme Branch and Bound.
+"""
+mutable struct Noeud
+    cle_partielle::Dict{Any, Any}           # Clé de détermination partielle
+    borne_inf::Int              # borne inf associée à chaque noeud du B&B 
+end
+

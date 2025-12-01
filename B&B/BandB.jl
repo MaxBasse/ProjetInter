@@ -2,132 +2,32 @@ include("GloutonPartiel.jl")
 include("separation.jl")
 include("Evaluation.jl")
 
-
-
 """
+     Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unlock, questions_answers)
 
+Algorithme de Branch and Bound pour la construction d'une clé de détermination optimale.
+# Arguments
+- `Qa_initial::Vector{Int}` : Liste des questions accessibles initiales.
+- `E_initial::Vector{Int}` : Liste des espèces restantes initiales.
+- `df_caract_species::BitMatrix` : Matrice binaire contenant les caractéristiques des espèces.
+- `question_unlock::Dict{Int, Vector{Int}}` : Dictionnaire des questions débloquées par chaque question.
+- `questions_answers::Dict{Int, Vector{Int}}` : Dictionnaire des réponses possibles pour chaque question.
 
-lexique :
+# Returns
+- `meilleure_solution::Dict` : La clé de détermination optimale trouvée.
+- `borne_sup::Int` : Le coût (profondeur) de la meilleure solution trouvée.
 
-    Branch and Bound : l'abre d'énumération des clé de determinations (partielles ou totales)
+# Exemple
+    Qa_initial = [1, 2, 3, 4, 5]
+    E_initial = [1, 2, 3, 4, 5, 6]
+    df_caract_species = BitMatrix(...) # Matrice binaire des caractéristiques des espèces
+    question_unlock = Dict(1 => [2, 3], 2 => [4], ...)
+    questions_answers = Dict(1 => [10, 20], 2 => [30, 40], ...)
 
-    Arbre ou clé de determination partielles : arbre qui correspond à un noeud du B&Bound
-
-    Qa : ensembles des questions accessible à un moment donné 
-
-    E : ensemble des especes accessibles à un moment donné du code 
-
-Code écrit en francais : 
-
-    initialisation du B&B : le premier sommet correspond à l'ensemble des clés de déterminations possible
-    en ayant en parametre Qa et E
-
-    initialisation de la borne sup : on a besoin d'une borne sup réalisable selon un critère (profondeur, largeur, ...)
-    Pour cela on on calculera initialement le glouton qui servira de modele de solution realisable en borne sup.
-
-    branchement sur le premier sommet du B&B : on crée autant de noeud fils qu'il y a de questions accessibles. 
-    Chaque noed fils correspondra à une clé de determination partielles où Qa sera fixé en première question. 
-    Si l'on suppose que Qa est binaire, on a donc deux noeuds fils dans la clé de determination. 
-    Chaque noeud fils de la clé de determination aura son propre E et son Qa. 
-    On évalue le premier noeud fils du B&B, si la borne inf de ce noeud est moins bonne que la borne sup on élage.
-    Sinon on branche.
-    On peut remettre à jour la borne sup des que l'on a un nouveau noeud du B&B, 
-    en faisant tourner un glouton sur la clé de dtermination partielle qui correspond au noeud.
-
-
-
-
-
-Pseudo Code : 
-
-ALGORITHME Branch_and_Bound(Qa_initial, E_initial)
-
-    # initialisation de déclarations des variables
-    # on attribue les caracteristiques propres à chaque noeud au noeud initial (la racine)
-    # les carac : Qa : Questions accessibles, E : ensemble des especes disponibles, clé partielle correspondante, la profondeur du sommet dans le B&B
-    créer la racine :
-        racine.Qa = Qa_initial
-        racine.E = E_initial
-        racine.cle_partielle = ∅
-        racine.cle_partielle.feuille
-        racine.cle_partielle.feuille.question_accessibles # tout un tas de caracterisitque sur la clé partielle associée à un noeud
-        racine.profondeur = 0
-
-    # Calcul initial de la borne supérieure (solution réalisable)
-    (borne_sup, sol_glouton) = Glouton(Qa_initial, E_initial)
-    meilleure_solution = sol_glouton
-
-    # Initialisation de la liste des noeuds à explorer
-    ListeNoeuds = racine
-
-    TANT QUE ListeNoeuds n’est pas vide :
-
-        1. Sélection d’un noeud à explorer selon un critère de parcours en largeur ou profondeur
-        noeud = selection_noeud(ListeNoeuds)
-
-        2. evaluation de la borne inf de ce noeud (selon le critère de E/2 par exemple)
-        borne_inf = Evaluer_Borne_Inf(noeud)
-
-        3. Peut on élager ce noeud tels des gaziers bucherons 
-        SI borne_inf ≥ borne_sup :
-            Supprimer(noeud)    
-            CONTINUER
-        FIN SI
-
-        4. Test si le noeud correspond à une clé de determination totale
-        SI Est_une_cle_determination_totale(noeud) :
-            coût_solution = Evaluer(noeud)
-
-            SI coût_solution < borne_sup : (on MAJ la borne sup)
-                borne_sup = coût_solution
-                meilleure_solution = noeud.cle_partielle (qui est en vrai une clé totale ici)
-            FIN SI
-
-        SINON
-            5. Branchement on crée les possibilités fils 
-            POUR chaque question q DANS noeud.Qa FAIRE
-                créer noued :
-                    _nouveau_noeud = branchement(noeud)
-                    # on enleve celle que l'on vient de poser et ajoute celles que l'on vient de débloquer
-                    # adapter les especes disponibles suite à la questions posée
-                    # creer une nouvelle clé de determination ou l'on a ajouté le split du à la question posée
-                    Ajouter NOEUD à ListeNoeuds
-
-            FIN POUR
-
-            # mise à jour de la borne sup sur la nouvelle cle partrielle 
-            (borne_sup_locale, sol_locale) ← Glouton(noeud.Qa, noeud.E)
-            SI borne_sup_locale < borne_sup ALORS
-                borne_sup = borne_sup_locale
-                meilleure_solution = sol_locale
-            FIN SI
-
-        FIN SI
-
-        Supprimer(noeud)  # On a exploré ce noeud
-
-    FIN TANT QUE
-
-    RETOURNER (meilleure_solution, borne_sup)
-FIN ALGORITHMEE4
-
+    meilleure_solution, borne_sup = Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unlock, questions_answers)
 """
-
-
-# Structure d’un noeud B&B #
+function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_caract_species::BitMatrix, question_unlock::Dict{Int, Vector{Int}}, questions_answers::Dict{Int, Vector{Int}})
  
-"""
-mutable struct Noeud
-    cle_partielle::Dict{Any, Any}           # Clé de détermination partielle
-    borne_inf::Int              # borne inf associée à chaque noeud du B&B 
-end
-"""
-
-#   Algorithme Branch & Bound    #
-
-function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unlock, questions_answers)
-
-      
     # 1. Initialisation du noeud racine et des variables B&B 
       
     sol_glouton = glouglouton(df_caract_species, E_initial, Qa_initial, questions_answers, question_unlock)
@@ -147,11 +47,8 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
         0
     )
 
-
     # Liste des noeuds à explorer, soit une file pour largeur soit une pile pour profondeur
     ListeNoeuds = [racine]
-
-
      
     # 2. Boucle principale du B&B     
     compteur=0
@@ -160,33 +57,24 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
         compteur+=1
     
         # 2.1 Sélection d’un noeud selon une stratégie (profondeur, largeur ?) #
-          
         noeud = pop!(ListeNoeuds)  
 
-
-          
         # 2.2 Calcul de la borne inférieure   #
-          
         borne_inf = evaluation(noeud)
 
 
           
         # 2.3 Test afin de savoir si on peut élaguer tels des bucherons gaziers
-          
-        #=if borne_inf >= borne_sup
-            # badaboum on élague (en gros on fait rien)
+        if borne_inf >= borne_sup
+            # badaboum on élague (en gros on fait R)
             println("élagage de fifou")
             continue
-        end=#
+        end
 
-
-          
-        # 2.4 Test si la clé partielle s'avère plutot etre une clé totalement définie (chaque feuille est vide ou une espece) #
-          
+        # 2.4 Test si la clé partielle s'avère plutot etre une clé totalement définie (chaque feuille est vide ou une espece) #  
         if Est_une_cle_determination_totale(noeud)
 
             cout_solution = profondeur_arbre(noeud.cle_partielle)
-
             # Mise à jour de la borne supérieure si amélioration
             if cout_solution < borne_sup
                 borne_sup = cout_solution
@@ -196,12 +84,9 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
         else
             
                
-            # 2.5 Branchement : création des noeuds fils          #
-               
+            # 2.5 Branchement : création des noeuds fils          #  
             noeud_inter=separation(noeud, questions_answers, question_unlock, df_caract_species)
             append!(ListeNoeuds, noeud_inter)
-
-
             
             # 2.6 Mise à jour de la borne sup via glouton sur clé partielle (pas sur de MAJ a chaque fois mais on laisse comme cela pour l'instant)
             borne_sup_locale, sol_locale = glouton_borne_inf(noeud, df_caract_species, questions_answers, question_unlock)
@@ -211,7 +96,6 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
                 meilleure_solution = sol_locale
             end
         end
-
         # Fin du traitement du noeud -> il est sorti de la liste via selection_noeud!
     end
 
@@ -221,38 +105,38 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
 end
 
 """
-function Est_une_cle_determination_totale(Noeud)
-    # fonction qui prend un noeud du B&B en parametre et qui vérifie si sa clé de determination associée est totale ou bien partielle 
-    cle=Noeud.cle_partielle
-    return cle_totale_recursive(cle)
-end
+    Est_une_cle_determination_totale(noeud::Noeud)::Bool
 
-function cle_totale_recursive(cle::Dict{Any,Any})::Bool
+Vérifie si la clé partielle contenue dans le noeud correspond à une clé de détermination totale,
+c'est-à-dire si chaque feuille de la clé mène à une espèce unique ou est vide. 
+Utilise la fonction récursive `cle_totale_recursive`.
 
-    branches = cle[:branches]
+# Arguments
+- `noeud::Noeud` : Le noeud contenant la clé partielle à vérifier.
 
-    # Si on est sur une feuille, on vérifie le nombre d'espece restante
-    if isempty(branches)
-        nb = length(cle[:especes_restantes])
-        return nb <= 1
-    end
+# Returns
+- `Bool` : Retourne `true` si la clé est totale, `false` sinon.
 
-    # Sinon, on fait de la recursivité sur les autres branches
-    for (_, souscle) in branches
-        if !cle_totale_recursive(souscle)
-            return false
-        end
-    end
-    # c'est que une fois que l'on a parcouru toutes les feuilles sans retourner false que l'on peut enfin retrouner true.
-    return true
-end
+# Exemple
+    noeud = Noeud(cle, 0)
+    print(Est_une_cle_determination_totale(noeud)) # Affiche false
 """
-
-
-function Est_une_cle_determination_totale(noeud::Noeud)
+function Est_une_cle_determination_totale(noeud::Noeud)::Bool
     return cle_totale_recursive(noeud.cle_partielle)
 end
 
+"""
+    cle_totale_recursive(cle::Dict{Any,Any})::Bool
+
+Vérifie récursivement si une clé de détermination est totale,
+c'est-à-dire si chaque feuille de la clé mène à une espèce unique ou est vide.
+
+# Arguments
+- `cle::Dict{Any,Any}` : La clé de détermination représentée sous forme de dictionnaire.
+
+# Returns
+- `Bool` : Retourne `true` si la clé est totale, `false` sinon.
+"""
 function cle_totale_recursive(cle::Dict{Any,Any})::Bool
 
     # Si la clé n'a pas de branches -> c’est une feuille
@@ -270,29 +154,3 @@ function cle_totale_recursive(cle::Dict{Any,Any})::Bool
 
     return true
 end
-
-"""
-cle_totale = Dict(
-    :profondeur => 0,
-    :especes_restantes => [1,2,3],
-    :branches => Dict(
-        10 => Dict(
-            :profondeur => 1,
-            :especes_restantes => [1],
-            :branches => Dict()
-        ),
-        20 => Dict(
-            :profondeur => 1,
-            :especes_restantes => [2],
-            :branches => Dict()
-        ),
-        30 => Dict(
-            :profondeur => 1,
-            :especes_restantes => [3,1],
-            :branches => Dict()
-        )
-    )
-)
-
-print(cle_totale_recursive(cle_totale))
-"""
