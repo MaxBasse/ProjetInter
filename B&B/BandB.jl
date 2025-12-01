@@ -1,6 +1,6 @@
 include("GloutonPartiel.jl")
-include("separation.jl")
-include("Evaluation3.jl")
+include("separation2.jl")
+include("Evaluation.jl")
 
 """
      Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unlock, questions_answers)
@@ -68,7 +68,7 @@ function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_ca
 
         # 2.2 Calcul de la borne inférieure   #
 
-        borne_inf = evaluation(noeud, df_caract_species, questions_answers)
+        borne_inf = evaluation(noeud, length(questions_answers), questions_answers)
           
         # 2.3 Test afin de savoir si on peut élaguer tels des bucherons gaziers
         if borne_inf >= borne_sup
@@ -96,7 +96,7 @@ function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_ca
 
             for child in noeud_inter
                 # Calculate Lower Bound for the child
-                child.borne_inf = evaluation(noeud, df_caract_species, questions_answers)
+                child.borne_inf = evaluation(noeud, length(questions_answers), questions_answers)
                 
                 # Only keep the child if it has potential to beat the current Upper Bound
                 if child.borne_inf < borne_sup
@@ -121,7 +121,7 @@ function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_ca
             end
         end
         # Fin du traitement du noeud -> il est sorti de la liste via selection_noeud!
-        println("Iter: $compteur | Stack: $(length(ListeNoeuds)) | Best: $borne_sup | Current LB: $(noeud.borne_inf)")
+        #println("Iter: $compteur | Stack: $(length(ListeNoeuds)) | Best: $borne_sup | Current LB: $(noeud.borne_inf)")
     end
 
 
