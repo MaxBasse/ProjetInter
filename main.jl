@@ -4,6 +4,26 @@ include("B&B/BandB.jl")
 include("Glouton/fonctions_annexes.jl")
 include("Visualisation/visualisation.jl")
 
+function simplifie_arbre(noeud)
+    # Détecter une vraie feuille : aucune branche, ou dictionnaire vide
+    if !haskey(noeud, "branches") || isempty(noeud["branches"])
+        # Prend "especes_restantes" si elle existe, sinon "species"
+        especes = get(noeud, "especes_restantes", get(noeud, "species", []))
+        return Dict("especes" => especes)
+    end
+
+    # Noeud interne
+    branches_simpl = Dict{String, Any}()
+    for (cle, sousnoeud) in noeud["branches"]
+        branches_simpl[string(cle)] = simplifie_arbre(sousnoeud)
+    end
+
+    return Dict(
+        "question" => noeud["question"],
+        "branches" => branches_simpl
+    )
+end
+
 @info "Chargement des données depuis data.json..."
 data = JSON.parsefile("B&B/data_moy_test.json")
 
@@ -63,22 +83,3 @@ generate_botanic_svg("arbre_V1.json", "Visualisation/arbre_V1.svg", v_q, v_c, ve
 generate_botanic_svg("arbre_simplifie_grand.json", "Visualisation/arbre_simplifie_grand.svg", v_q, v_c, vect_species)
 
 
-function simplifie_arbre(noeud)
-    # Détecter une vraie feuille : aucune branche, ou dictionnaire vide
-    if !haskey(noeud, "branches") || isempty(noeud["branches"])
-        # Prend "especes_restantes" si elle existe, sinon "species"
-        especes = get(noeud, "especes_restantes", get(noeud, "species", []))
-        return Dict("especes" => especes)
-    end
-
-    # Noeud interne
-    branches_simpl = Dict{String, Any}()
-    for (cle, sousnoeud) in noeud["branches"]
-        branches_simpl[string(cle)] = simplifie_arbre(sousnoeud)
-    end
-
-    return Dict(
-        "question" => noeud["question"],
-        "branches" => branches_simpl
-    )
-end

@@ -13,8 +13,10 @@ function separation(noeud, questions_answers, question_unlock, df_caract_species
     (feuille, chemin) = parcours_largeur(arbre) 
 
     res=Noeud[]
+    q_a = feuille["questions_accessibles"]
+    
     #j'énumère pour chaque question accessible de la feuille
-    for q in feuille["questions_accessibles"]
+    for q in q_a
         #création de la clé partielle associée
         nouvelle_cle_partielle = MAJ_cle_partielle(arbre, chemin, q, questions_answers, question_unlock, df_caract_species)
         #création du nouveau noeud
