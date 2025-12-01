@@ -53,7 +53,7 @@ function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_ca
     # 2. Boucle principale du B&B     
     compteur=0
     while !isempty(ListeNoeuds)
-        #println(compteur)
+        println(compteur)
         compteur+=1
     
         # 2.1 Sélection d’un noeud selon une stratégie (profondeur, largeur ?) 
