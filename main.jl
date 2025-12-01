@@ -1,6 +1,6 @@
 include("data_loading.jl")
 include("Glouton/glouton.jl")
-include("B&B/BandB2.jl")
+include("B&B/BandB.jl")
 include("Glouton/fonctions_annexes.jl")
 include("Visualisation/visualisation.jl")
 
@@ -33,7 +33,7 @@ end
 
 #=====Application de l'algorithme glouton======#
 @info "Application de l'algorithme glouton..."
-arbre=glouglouton(species_matrix, remaining_species, accessible_questions, v_qc, v_uq, asked_questions)
+arbre=glouglouton(species_matrix, copy(remaining_species), copy(accessible_questions), v_qc, v_uq, copy(asked_questions))
 arbre_json=JSON.json(arbre, 4)
 @info "Algorithme glouton terminé."
 

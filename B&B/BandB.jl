@@ -1,6 +1,6 @@
 include("GloutonPartiel.jl")
 include("separation.jl")
-include("Evaluation.jl")
+include("Evaluation3.jl")
 
 """
      Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unlock, questions_answers)
@@ -26,11 +26,11 @@ Algorithme de Branch and Bound pour la construction d'une clé de détermination
 
     meilleure_solution, borne_sup = Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unlock, questions_answers)
 """
-function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_caract_species::BitMatrix, question_unlock::Dict{Int, Vector{Int}}, questions_answers::Dict{Int, Vector{Int}})
+function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_caract_species::BitMatrix, question_unlock::Vector{Vector{Int64}}, questions_answers::Vector{Vector{Int64}})
  
     # 1. Initialisation du noeud racine et des variables B&B 
       
-    sol_glouton = glouglouton(df_caract_species, E_initial, Qa_initial, questions_answers, question_unlock)
+    sol_glouton = glouglouton(df_caract_species, copy(E_initial), copy(Qa_initial), questions_answers, question_unlock)
 
     # Calcul initial de la borne supérieure via le glouton
     borne_sup = profondeur_arbre(sol_glouton)
@@ -46,7 +46,7 @@ function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_ca
     ), 
         0
     )
-
+    
     # Liste des noeuds à explorer, soit une file pour largeur soit une pile pour profondeur
     ListeNoeuds = [racine]
      
@@ -56,18 +56,24 @@ function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_ca
         println(compteur)
         compteur+=1
     
-        # 2.1 Sélection d’un noeud selon une stratégie (profondeur, largeur ?) #
+        # 2.1 Sélection d’un noeud selon une stratégie (profondeur, largeur ?) 
+        if compteur % 50 == 0
+            sort!(ListeNoeuds, by = n -> n.borne_inf, rev=true)         
+        end
+        if compteur % 200 == 0
+            sort!(ListeNoeuds, by = n -> n.borne_inf, rev=false)
+        end
+        
         noeud = pop!(ListeNoeuds)  
 
         # 2.2 Calcul de la borne inférieure   #
-        borne_inf = evaluation(noeud)
 
-
+        borne_inf = evaluation(noeud, df_caract_species, questions_answers)
           
         # 2.3 Test afin de savoir si on peut élaguer tels des bucherons gaziers
         if borne_inf >= borne_sup
             # badaboum on élague (en gros on fait R)
-            println("élagage de fifou")
+            #println("élagage de fifou")
             continue
         end
 
@@ -86,21 +92,40 @@ function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_ca
                
             # 2.5 Branchement : création des noeuds fils          #  
             noeud_inter=separation(noeud, questions_answers, question_unlock, df_caract_species)
-            append!(ListeNoeuds, noeud_inter)
-            
-            # 2.6 Mise à jour de la borne sup via glouton sur clé partielle (pas sur de MAJ a chaque fois mais on laisse comme cela pour l'instant)
-            borne_sup_locale, sol_locale = glouton_borne_inf(noeud, df_caract_species, questions_answers, question_unlock)
+            noeuds_to_keep = Noeud[]
 
-            if borne_sup_locale < borne_sup
-                borne_sup = borne_sup_locale
-                meilleure_solution = sol_locale
+            for child in noeud_inter
+                # Calculate Lower Bound for the child
+                child.borne_inf = evaluation(noeud, df_caract_species, questions_answers)
+                
+                # Only keep the child if it has potential to beat the current Upper Bound
+                if child.borne_inf < borne_sup
+                    push!(noeuds_to_keep, child)
+                end
+            end
+            
+            # Add valid children to the list
+            append!(ListeNoeuds, noeuds_to_keep)
+            
+            if compteur % 100 == 0
+                @info "Itération $compteur : Borne inférieure = $(noeud.borne_inf), Borne supérieure = $borne_sup, Taille de la liste des noeuds = $(length(ListeNoeuds))"            
+                # 2.6 Mise à jour de la borne sup via glouton sur clé partielle (pas sur de MAJ a chaque fois mais on laisse comme cela pour l'instant)
+                borne_sup_locale, sol_locale = glouton_borne_inf(deepcopy(noeud), df_caract_species, questions_answers, question_unlock)
+                
+                if borne_sup_locale < borne_sup
+                    borne_sup = borne_sup_locale
+                    meilleure_solution = sol_locale
+                    println("Glouton a trouvé une meilleure solution : Coût $borne_sup")
+                    filter!(n -> n.borne_inf <= borne_sup, ListeNoeuds)
+                end
             end
         end
         # Fin du traitement du noeud -> il est sorti de la liste via selection_noeud!
+        println("Iter: $compteur | Stack: $(length(ListeNoeuds)) | Best: $borne_sup | Current LB: $(noeud.borne_inf)")
     end
 
 
-
+    
     return meilleure_solution, borne_sup
 end
 
