@@ -156,7 +156,7 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
     # 2. Boucle principale du B&B     
     compteur=0
     while !isempty(ListeNoeuds)
-        #println(compteur)
+        println(compteur)
         compteur+=1
     
         # 2.1 Sélection d’un noeud selon une stratégie (profondeur, largeur ?) #
@@ -173,11 +173,11 @@ function Branch_and_Bound(Qa_initial, E_initial, df_caract_species, question_unl
           
         # 2.3 Test afin de savoir si on peut élaguer tels des bucherons gaziers
           
-        if borne_inf >= borne_sup
-            # badaboum on élague (en gros on fait R)
+        #=if borne_inf >= borne_sup
+            # badaboum on élague (en gros on fait rien)
             println("élagage de fifou")
             continue
-        end
+        end=#
 
 
           
