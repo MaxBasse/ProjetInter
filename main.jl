@@ -5,7 +5,7 @@ include("Glouton/fonctions_annexes.jl")
 include("Visualisation/visualisation.jl")
 
 @info "Chargement des données depuis data.json..."
-data = JSON.parsefile("B&B/data.json")
+data = JSON.parsefile("B&B/data_moy_test.json")
 
 #=====Initialisation des vecteurs======#
 @info "Initialisation des vecteurs..."
