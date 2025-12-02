@@ -25,7 +25,7 @@ function simplifie_arbre(noeud)
 end
 
 @info "Chargement des données depuis data.json..."
-data = JSON.parsefile("B&B/data_moy_test.json")
+data = JSON.parsefile("B&B/data.json")
 
 #=====Initialisation des vecteurs======#
 @info "Initialisation des vecteurs..."

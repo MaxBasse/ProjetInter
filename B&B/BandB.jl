@@ -1,5 +1,5 @@
 include("GloutonPartiel.jl")
-include("separation2.jl")
+include("separation.jl")
 include("Evaluation.jl")
 
 """
@@ -53,7 +53,7 @@ function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_ca
     # 2. Boucle principale du B&B     
     compteur=0
     while !isempty(ListeNoeuds)
-        println(compteur)
+        #println(compteur)
         compteur+=1
     
         # 2.1 Sélection d’un noeud selon une stratégie (profondeur, largeur ?) 
@@ -121,7 +121,7 @@ function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_ca
             end
         end
         # Fin du traitement du noeud -> il est sorti de la liste via selection_noeud!
-        #println("Iter: $compteur | Stack: $(length(ListeNoeuds)) | Best: $borne_sup | Current LB: $(noeud.borne_inf)")
+        println("Iter: $compteur | Stack: $(length(ListeNoeuds)) | Best: $borne_sup | Current LB: $(noeud.borne_inf)")
     end
 
 
