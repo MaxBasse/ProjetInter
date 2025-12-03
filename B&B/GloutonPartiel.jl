@@ -194,3 +194,8 @@ function glouton_borne_inf(noeud::Noeud, df_caract_species::BitMatrix, questions
 
     return profondeur_max, cle
 end
+
+
+
+
+
