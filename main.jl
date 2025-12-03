@@ -26,7 +26,7 @@ function simplifie_arbre(noeud)
 end
 
 @info "Chargement des données..."
-data = JSON.parsefile("B&B/data.json")
+data = JSON.parsefile("B&B/data_moy_test.json")
 date = Dates.format(Dates.now(), "yyyy-mm-dd_HH-MM-SS")
 @info "Données chargées avec succès."
 
