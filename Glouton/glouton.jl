@@ -1,10 +1,6 @@
 #include("leodum.jl")
 include("fonctions_annexes.jl")
 
-
-
-using DataFrames
-using Random
 using JSON
 
 """

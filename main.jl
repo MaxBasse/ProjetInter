@@ -4,6 +4,7 @@ include("B&B/BandB.jl")
 include("Glouton/fonctions_annexes.jl")
 include("Visualisation/visualisation.jl")
 
+
 function simplifie_arbre(noeud)
     # Détecter une vraie feuille : aucune branche, ou dictionnaire vide
     if !haskey(noeud, "branches") || isempty(noeud["branches"])
@@ -24,8 +25,10 @@ function simplifie_arbre(noeud)
     )
 end
 
-@info "Chargement des données depuis data.json..."
+@info "Chargement des données..."
 data = JSON.parsefile("B&B/data.json")
+date = Dates.format(Dates.now(), "yyyy-mm-dd_HH-MM-SS")
+@info "Données chargées avec succès."
 
 #=====Initialisation des vecteurs======#
 @info "Initialisation des vecteurs..."
@@ -58,7 +61,7 @@ arbre_json=JSON.json(arbre, 4)
 @info "Algorithme glouton terminé."
 
 @info "Sauvegarde de l'arbre glouton au format JSON..."
-open("arbre_V3.json", "w") do f
+open("Trees/Glouton/arbre_glouton_$date.json", "w") do f
     write(f, arbre_json)
 end
 
@@ -73,13 +76,13 @@ arbre_simplifie = simplifie_arbre(meilleure_solution)
 json_str = JSON.json(arbre_simplifie, 4)
 
 @info "Sauvegarde de l'arbre simplifié au format JSON..."
-open("arbre_simplifie_grand.json", "w") do f
+open("Trees/BandB/arbre_banb_$date.json", "w") do f
     write(f, json_str)
 end
 
 #=====Génération de la visualisation SVG======#
 @info "Génération de la visualisation SVG de l'arbre..."
-generate_botanic_svg("arbre_V1.json", "Visualisation/arbre_V1.svg", v_q, v_c, vect_species)
-generate_botanic_svg("arbre_simplifie_grand.json", "Visualisation/arbre_simplifie_grand.svg", v_q, v_c, vect_species)
+generate_botanic_svg("Trees/Glouton/arbre_glouton_$date.json", "Visualisation/svg/arbre_glouton_$date.svg", v_q, v_c, vect_species)
+generate_botanic_svg("Trees/BandB/arbre_banb_$date.json", "Visualisation/svg/arbre_banb_$date.svg", v_q, v_c, vect_species)
 
 

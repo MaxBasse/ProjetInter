@@ -1,3 +1,6 @@
+using Dates
+using JSON
+
 """
     process_question!(vect_question::Vector{String}, vect_question_carac::Vector{Vector{Int}}, vect_carac::Vector{String}, vect_unlock_q::Vector{Vector{Int}}, q::Dict)
 
