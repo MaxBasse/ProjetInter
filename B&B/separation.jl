@@ -14,7 +14,9 @@ function separation(noeud, questions_answers, question_unlock, df_caract_species
 
     res=Noeud[]
     q_a = feuille["questions_accessibles"]
-    
+    #pour avoir un ordre déterministe
+    sort!(q_a)
+    q_a = q_a[1:min(3, length(q_a))]
     #j'énumère pour chaque question accessible de la feuille
     for q in q_a
         #création de la clé partielle associée
