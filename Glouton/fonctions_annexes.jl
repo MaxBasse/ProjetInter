@@ -105,41 +105,32 @@ end
 
 # fonction score qui minimise le polymorphisme et le nombre de feuille
 function score_evaluation3(df_caract_species, remaining_species, current_question, question_caract)
-
-    #Selection des colonnes et des lignes à compter 
+    
+    # 1. Sélection des colonnes et des lignes
     cols = question_caract[current_question]
-
     rows_to_count = remaining_species
 
-   # Pour chaque colonne, on récupère l'ensemble des espèces positives
-    subset = [ Set(row for row in rows_to_count if df_caract_species[row, col] != 0)
-           for col in cols ]
-
-    # Intersection des ensembles
-    intersection_species = reduce(intersect, subset)
-
-    # Score = nombre d'espèces dans l'intersection
-    score = length(intersection_species)
-
-
+    # 2. Calcul des tailles des sous-ensembles pour chaque réponse
+    # subset_sizes est un vecteur où chaque élément est |Sc|
+    subset_sizes = [sum(df_caract_species[row, col] != 0 for row in rows_to_count) for col in cols]
     
-    #Ne pas choisir les questions qui ne servent à rien
+    # 3. Calcul du score
 
-    if (score == length(remaining_species))
-        #si la question ne partitionne pas les espèces restantes, c'est forcément la (ou une des) pire question donc on la code avec un score de -1
+    # Si la question ne sert à rien (polymorphisme parfait ou aucune espèce restante)
+    if all(s -> s == length(rows_to_count) || s == 0, subset_sizes)
         return -1
     end
-    # on regarde si ya pas de set vide dans subst, si oui et que le score est nul c'est que la question ne sert à rien
-    any_empty_subset = any(length(s) == 0 for s in subset)
 
-    if score == 0 && any_empty_subset
-        return -1   # inutile : un des splits est vide → question inutile
-    end
+    # La métrique "Minimiser le nombre de feuilles" est complexe. 
+    # Une simplification est de minimiser la somme des tailles des sous-ensembles filles
+    # divisés par la taille de l'ensemble parent |S|.
+    # Le critère de score sera la SOMME DES TAILLES DES PARTITIONS
+    # Plus cette somme est petite, plus la partition est pure (beaucoup d'espèces éliminées)
+    
+    # Nous voulons MINIMISER ce score.
+    score_sum = sum(subset_sizes) 
 
-    #println(score)
-    #Je choisis ici de le cardinal de l'intersection entre les noeuds fils qui découlent d'une question
-    return score
-
+    return score_sum
 end
 
 
@@ -187,7 +178,7 @@ function best_question_selection(df_caract_species, remaining_species, accessibl
 
     #Calcul du score pour chaque question accessible
     for question in accessible_questions
-        score[question] = score_evaluation2(df_caract_species, remaining_species, question, question_caract)
+        score[question] = score_evaluation3(df_caract_species, remaining_species, question, question_caract)
         if (score[question]==-1)
             #On met à jour les questions posées et les questions accessibles
             push!(new_asked_questions, question)
