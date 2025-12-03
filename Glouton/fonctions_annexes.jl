@@ -143,89 +143,27 @@ function score_evaluation3(df_caract_species, remaining_species, current_questio
 end
 
 
-"""
-gini_impurity : Calcule l'indice d'impureté de Gini pour un ensemble d'espèces restantes.
-Cet indice est minimisé lorsque l'ensemble est pur (une seule espèce).
-"""
-function gini_impurity(remaining_species_count::Int, species_counts::Dict{Int, Int})
-    if remaining_species_count == 0
-        return 0.0
-    end
-    
-    # Gini = 1 - Somme( (Count_i / Total)^2 )
-    impurity = 1.0
-    for count in values(species_counts)
-        prob = count / remaining_species_count
-        impurity -= prob^2
-    end
-    return impurity
-end
-
-"""
-score_evaluation_gini : Évalue la qualité d'une question en maximisant le GAIN de Gini, 
-ce qui conduit à un arbre avec des feuilles plus pures (idéal pour minimiser les feuilles).
-
-# Arguments
-- `df_caract_species::BitMatrix` : Matrice des espèces (lignes) et des caractéristiques (colonnes).
-- `remaining_species::Vector{Int}` : Espèces encore candidates.
-- `current_question::Int` : Question à évaluer.
-- `question_caract::Vector{Vector{Int}}` : Liste des colonnes correspondant aux réponses de la question.
-
-# Retour
-- `Float64` : Inverse du Gain de Gini (pour que findmin trouve le maximum du gain).
-"""
-function score_evaluation_gini(df_caract_species, remaining_species, current_question, question_caract)
-    rows_to_count = remaining_species
+function score_evaluation_polymorphism(df_caract_species, remaining_species, current_question, question_caract)
     cols = question_caract[current_question]
-    n_total = length(rows_to_count)
-    
-    # 1. Calculer le Gini Parent (Impureté de l'ensemble avant la question)
-    
-    # Déterminer les espèces restantes (hypothèse simplifiée : chaque ID est une 'classe' unique)
-    # Dans une application réelle, vous utiliseriez les counts des VRAIES classes d'espèces.
-    # Ici, nous supposons que chaque ID d'espèce est une classe pour le calcul de l'entropie initiale.
-    parent_species_counts = Dict(s => 1 for s in rows_to_count)
-    parent_impurity = gini_impurity(n_total, parent_species_counts)
-    
-    weighted_child_impurity = 0.0
-    
-    # 2. Parcourir chaque réponse (branche) possible
-    for answer_carac_id in cols
-        # Trouver les espèces qui correspondent à cette réponse
-        child_species = Int[]
-        for sp_id in rows_to_count
-            # Note: Utilise la fonction de vérification d'appartenance à la caractéristique
-            if verif_species_has_caract(df_caract_species, sp_id, [answer_carac_id])
-                push!(child_species, sp_id)
-            end
-        end
-        
-        n_child = length(child_species)
-        
-        # Si le nœud enfant n'est pas vide
-        if n_child > 0
-            # Compter les espèces dans le nœud enfant (ici, 1 par ID)
-            child_counts = Dict(s => 1 for s in child_species)
-            child_impurity = gini_impurity(n_child, child_counts)
-            
-            # Pondération par la taille du nœud enfant
-            weighted_child_impurity += (n_child / n_total) * child_impurity
-        end
-    end
-    
-    # 3. Calculer le Gain de Gini
-    gini_gain = parent_impurity - weighted_child_impurity
-    
-    # 4. Gérer les cas où la question est inutile ou parfaite
-    if gini_gain <= 1e-9 # Gain quasi nul ou négatif (question inutile)
-        return -1.0 # Code pour question inutile dans best_question_selection
-    end
-    
-    # 5. Retourner l'inverse du gain (car best_question_selection utilise findmin)
-    # Minimiser 1/Gain revient à maximiser le Gain
-    return 1.0 / gini_gain
-end
+    rows_to_count = remaining_species
 
+    subset = [ Set(row for row in rows_to_count if df_caract_species[row, col] != 0)
+              for col in cols ]
+
+    intersection_species = reduce(intersect, subset)
+    score = length(intersection_species)
+
+    if (score == length(remaining_species))
+        return -1
+    end
+    
+    any_empty_subset = any(length(s) == 0 for s in subset)
+    if score == 0 && any_empty_subset
+        return -1
+    end
+
+    return score
+end
 
 """
 best_question_selection : sélectionne la meilleure question à poser selon une stratégie basée sur le score d’évaluation

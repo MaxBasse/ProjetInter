@@ -65,7 +65,7 @@ open("Trees/Glouton/arbre_glouton_$date.json", "w") do f
     write(f, arbre_json)
 end
 
-
+"""
 #=====Application de l'algorithme Branch and Bound======#
 @info "Application de l'algorithme Branch and Bound..."
 meilleure_solution, borne_sup =Branch_and_Bound(accessible_questions, remaining_species, species_matrix, v_uq, v_qc)
