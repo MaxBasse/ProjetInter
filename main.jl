@@ -65,7 +65,6 @@ open("Trees/Glouton/arbre_glouton_$date.json", "w") do f
     write(f, arbre_json)
 end
 
-"""
 #=====Application de l'algorithme Branch and Bound======#
 @info "Application de l'algorithme Branch and Bound..."
 meilleure_solution, borne_sup =Branch_and_Bound(accessible_questions, remaining_species, species_matrix, v_uq, v_qc)
@@ -84,5 +83,3 @@ end
 @info "Génération de la visualisation SVG de l'arbre..."
 generate_botanic_svg("Trees/Glouton/arbre_glouton_$date.json", "Visualisation/svg/arbre_glouton_$date.svg", v_q, v_c, vect_species)
 generate_botanic_svg("Trees/BandB/arbre_banb_$date.json", "Visualisation/svg/arbre_banb_$date.svg", v_q, v_c, vect_species)
-
-
