@@ -2,7 +2,7 @@
 Evaluation pour déterminer une borne inf sur le coût d'une clé de détermination
 Le coût sera une métrique choisie telle que le nombre de questions posées, la profondeur maximale, etc...
 """
-function evaluation(n::Noeud)
+function evaluation(n::Noeud, nb_q::Int64, vect_question_carac::Vector{Vector{Int64}})
     # Récupération des feuilles de la clé partielle
     cle_partielle = n.cle_partielle
     feuille_iterator = feuilles_cle_partielle(cle_partielle)
@@ -12,7 +12,7 @@ function evaluation(n::Noeud)
         #if feuille.eval == null continue end
 
         #setdiff
-        remaining_q = setdiff((1:length(vect_question)), feuille["questions_posees"])
+        remaining_q = setdiff((1:nb_q), feuille["questions_posees"])
 
         nombre_especes = length(feuille["especes_restantes"])
 
@@ -25,5 +25,6 @@ function evaluation(n::Noeud)
             cout_max = cout_feuille
         end
     end
+    n.borne_inf = cout_max
     return cout_max
 end
