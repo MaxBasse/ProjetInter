@@ -121,7 +121,7 @@ function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_ca
             end
         end
         # Fin du traitement du noeud -> il est sorti de la liste via selection_noeud!
-        println("Iter: $compteur | Stack: $(length(ListeNoeuds)) | Best: $borne_sup | Current LB: $(noeud.borne_inf)")
+        #println("Iter: $compteur | Stack: $(length(ListeNoeuds)) | Best: $borne_sup | Current LB: $(noeud.borne_inf)")
     end
 
 
