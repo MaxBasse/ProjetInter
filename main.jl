@@ -53,7 +53,7 @@ for q in data["questions"]
     push!(accessible_questions, findfirst(==(q["title_q"]), v_q))
 end
 @info "Vecteurs remplis avec succès."
-
+"""
 #=====Application de l'algorithme glouton======#
 @info "Application de l'algorithme glouton..."
 arbre=glouglouton(species_matrix, copy(remaining_species), copy(accessible_questions), v_qc, v_uq, copy(asked_questions))
@@ -64,7 +64,6 @@ arbre_json=JSON.json(arbre, 4)
 open("Trees/Glouton/arbre_glouton_$date.json", "w") do f
     write(f, arbre_json)
 end
-
 
 #=====Application de l'algorithme Branch and Bound======#
 @info "Application de l'algorithme Branch and Bound..."
@@ -79,10 +78,9 @@ json_str = JSON.json(arbre_simplifie, 4)
 open("Trees/BandB/arbre_banb_$date.json", "w") do f
     write(f, json_str)
 end
-
+"""
 #=====Génération de la visualisation SVG======#
 @info "Génération de la visualisation SVG de l'arbre..."
-generate_botanic_svg("Trees/Glouton/arbre_glouton_$date.json", "Visualisation/svg/arbre_glouton_$date.svg", v_q, v_c, vect_species)
-generate_botanic_svg("Trees/BandB/arbre_banb_$date.json", "Visualisation/svg/arbre_banb_$date.svg", v_q, v_c, vect_species)
-
+generate_botanic_svg("Trees/Glouton/arbre_V2.json", "Visualisation/svg/arbre_V2.svg", v_q, v_c, vect_species)
+#generate_botanic_svg("Trees/BandB/arbre_banb_$date.json", "Visualisation/svg/arbre_banb_$date.svg", v_q, v_c, vect_species)
 
