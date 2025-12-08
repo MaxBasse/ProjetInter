@@ -1,267 +1,153 @@
 <!-- 
-    Dashboard d'Analyse des Clés de Détermination - V2
-    Features: Sélection Algorithme + Données, Barre de progression, Polling Asynchrone
+    Dashboard d'Analyse des Clés de Détermination - Version Autonome HTML/JS
+    Auteur: Projet Interdisciplinaire 
+    Description: Affiche les KPI et la visualisation d'arbres précalculés.
 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Julia Algorithm Dashboard</title>
-    <!-- Tailwind CSS -->
+    <title>Dashboard d'Analyse des Clés de Détermination</title>
+    <!-- Chargement de Tailwind CSS pour un style moderne et responsif -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        html { font-family: 'Inter', system-ui, sans-serif; }
+        /* Définition de la police Inter */
+        html { font-family: 'Inter', sans-serif; }
+        
+        /* Styles spécifiques aux cartes KPI pour s'assurer que flex:0 0 calc(33.333% - 20px) fonctionne bien */
         .kpi-card {
-            flex: 0 0 calc(33.333% - 20px);
-            transition: transform 0.2s, box-shadow 0.2s;
+            flex: 0 0 calc(33.333% - 20px); /* 3 colonnes moins les marges de 10px de chaque côté */
+            transition: transform 0.2s;
         }
         .kpi-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
         }
-        /* Color themes for cards */
-        .border-green { border-color: #10B981; }
-        .border-blue { border-color: #3B82F6; }
-        .border-red { border-color: #EF4444; }
-        .border-amber { border-color: #F59E0B; }
-        .border-purple { border-color: #8B5CF6; }
-        .border-gray { border-color: #374151; }
+
+        /* Styles des couleurs pour la bordure des cartes */
+        .color-green { border-color: #10B981; }
+        .color-blue { border-color: #3B82F6; }
+        .color-red { border-color: #EF4444; }
+        .color-amber { border-color: #F59E0B; }
+        .color-purple { border-color: #8B5CF6; }
+        .color-dark { border-color: #1F2937; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800">
+<body class="bg-gray-50 min-h-screen p-8">
 
-    <!-- HEADER -->
-    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                    Julia Algo Dashboard
-                </h1>
-            </div>
-            <div class="text-sm text-slate-500">Status: <span id="server_status" class="text-green-600 font-medium">Connecté</span></div>
-        </div>
-    </header>
+    <h1 class="text-3xl font-extrabold text-gray-800 text-center mb-10">Dashboard d'Analyse des Clés de Détermination</h1>
+    
+    <!-- Zone de sélection -->
+    <div class="flex justify-center mb-8">
+        <label for="method_select" class="text-lg font-bold text-gray-600 self-center mr-4">Sélectionnez la méthode d'optimisation :</label>
+        <select id="method_select" class="p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-800 w-72">
+            <option value="Minimiser Profondeur">Minimiser Profondeur (Glouton V1)</option>
+            <option value="Minimiser Feuilles">Minimiser Feuilles (Glouton V2)</option>
+            <option value="Branch & Bound">Branch & Bound (BnB)</option>
+        </select>
+    </div>
 
-    <main class="max-w-7xl mx-auto px-4 py-8">
-
-        <!-- SECTION 1: COMMAND CENTER -->
-        <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-6 mb-8">
-            <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                Paramètres de simulation
-            </h2>
-            
-            <div class="flex flex-col md:flex-row gap-6 items-end">
-                
-                <!-- Input: Algorithm -->
-                <div class="flex-1 w-full">
-                    <label for="method_select" class="block text-sm font-medium text-slate-600 mb-2">Algorithme d'optimisation</label>
-                    <select id="method_select" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
-                        <option value="Minimiser Profondeur">Minimiser Profondeur (Glouton)</option>
-                        <option value="Minimiser Feuilles">Minimiser Feuilles (Glouton V2)</option>
-                        <option value="Branch & Bound">Branch & Bound (BnB)</option>
-                    </select>
-                </div>
-
-                <!-- Input: Dataset -->
-                <div class="flex-1 w-full">
-                    <label for="data_select" class="block text-sm font-medium text-slate-600 mb-2">Jeu de données</label>
-                    <select id="data_select" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
-                        <option value="iris.csv">Iris (Fleurs)</option>
-                        <option value="zoo.csv">Zoo (Animaux)</option>
-                        <option value="mushrooms.csv">Champignons (Classification)</option>
-                        <option value="custom_tree.json">Arbre personnalisé (JSON)</option>
-                    </select>
-                </div>
-
-                <!-- Action: Button -->
-                <button id="run_btn" onclick="runJob()" class="w-full md:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
-                    <span id="btn_text">Lancer le calcul</span>
-                    <!-- SVG Spinner -->
-                    <svg id="spinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Progress Bar (Hidden by default) -->
-            <div id="progress_container" class="mt-6 hidden transition-all duration-300">
-                <div class="flex justify-between mb-1">
-                    <span class="text-xs font-semibold text-blue-600 uppercase tracking-wider">Calcul en cours...</span>
-                    <span id="progress_text" class="text-xs font-bold text-blue-600">0%</span>
-                </div>
-                <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-                    <div id="progress_bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 2: RESULTS (KPIs) -->
-        <div id="results_container" class="opacity-100 transition-opacity duration-500">
-            <h3 class="text-xl font-bold text-slate-800 mb-6">Résultats</h3>
-            
-            <div id="kpi_grid" class="flex flex-wrap justify-center gap-4 mb-10">
-                <!-- KPI Cards will be injected here via JS -->
-                <div class="text-slate-400 italic">Lancez une simulation pour voir les résultats.</div>
-            </div>
-
-            <!-- VISUALIZATION -->
-            <div id="viz_section" class="bg-white p-6 rounded-xl shadow-md border border-slate-100 text-center hidden">
-                <h4 class="text-lg font-semibold text-slate-700 mb-4">Visualisation Graphique</h4>
-                <div id="viz_content" class="min-h-[300px] flex items-center justify-center bg-slate-50 rounded-lg border-dashed border-2 border-slate-200">
-                    <span class="text-slate-400">Le graphique apparaîtra ici</span>
-                </div>
-            </div>
-        </div>
-
-    </main>
+    <!-- Conteneur principal pour les KPI et l'Image -->
+    <div id="content_container" class="space-y-10">
+        <!-- Les cartes KPI seront insérées ici -->
+        <div id="kpi_container" class="flex flex-wrap justify-center mx-auto max-w-6xl"></div>
+        
+        <!-- L'image sera insérée ici -->
+        <div id="image_section" class="w-full bg-white p-6 rounded-xl shadow-lg text-center"></div>
+    </div>
 
     <script>
-        // --- CONSTANTS & CONFIG ---
+        // ===============================================
+        //  DONNÉES & LOGIQUE DU DASHBOARD
+        // ===============================================
+
+        // Mappage des KPI avec des icônes et couleurs
         const KPI_INFO = {
-            "leaves": { label: "Nombre de feuilles", icon: "🌿", color: "border-green", unit: "feuilles", text: "text-green-600" },
-            "depth": { label: "Profondeur max", icon: "🌳", color: "border-red", unit: "niveaux", text: "text-red-500" },
-            "nodes": { label: "Noeuds internes", icon: "🔗", color: "border-amber", unit: "noeuds", text: "text-amber-500" },
-            "avg_species": { label: "Espèces / feuille", icon: "📊", color: "border-blue", unit: "moyenne", text: "text-blue-500" },
-            "time": { label: "Temps calcul", icon: "⏱️", color: "border-gray", unit: "secondes", text: "text-slate-600" }
+            "Nombre de feuilles": { icon: "🌿", color: "color-green", unit: "feuilles", textColor: "#10B981" }, 
+            "Espèces moyennes / feuille": { icon: "📊", color: "color-blue", unit: "espèces", textColor: "#3B82F6" }, 
+            "Profondeur max": { icon: "🌳", color: "color-red", unit: "niveaux", textColor: "#EF4444" }, 
+            "Nombre de noeuds internes": { icon: "🔗", color: "color-amber", unit: "noeuds", textColor: "#F59E0B" }, 
+            "Branches moyennes / noeud interne": { icon: "🧭", color: "color-purple", unit: "branches", textColor: "#8B5CF6" },
+            "Temps de calcul (s)": { icon: "⏱️", color: "color-dark", unit: "secondes", textColor: "#1F2937" }
         };
 
-        // --- MAIN LOGIC ---
+        // Données complètes (STUBS)
+        const kpi_eval1 = {
+            "Nombre de feuilles": 98,
+            "Espèces moyennes / feuille": 1.0612244897959184,
+            "Profondeur max": 13, 
+            "Nombre de noeuds internes": 77, 
+            "Branches moyennes / noeud interne": 2.25974025974026,
+            "Temps de calcul (s)": 0.0
+        };
+        const kpi_eval2 = {
+            "Nombre de feuilles": 70,
+            "Espèces moyennes / feuille": 1.0714285714285714,
+            "Profondeur max": 15, 
+            "Nombre de noeuds internes": 59, 
+            "Branches moyennes / noeud interne": 2.16,
+            "Temps de calcul (s)": 0.0
+        };
+        const kpi_eval3 = {
+            "Nombre de feuilles": 22, "Espèces moyennes / feuille": 1.2, "Profondeur max": 7, 
+            "Nombre de noeuds internes": 21, "Branches moyennes / noeud interne": 2.05, "Temps de calcul (s)": 0.0
+        };
 
-        async function runJob() {
-            // 1. Gather Inputs
-            const method = document.getElementById('method_select').value;
-            const dataset = document.getElementById('data_select').value;
-            
-            // 2. Lock UI
-            setUiLoading(true);
+        const methods = {
+            "Minimiser Profondeur": { stats: kpi_eval1, img: "https://i.ibb.co/bj5gNYZC/graph-1.png" },
+            "Minimiser Feuilles": { stats: kpi_eval2, img: "https://i.ibb.co/MDJqTZzG/graph-2.png" },
+            "Branch & Bound": { stats: kpi_eval3, img: "https://i.ibb.co/bj5gNYZC/graph-1.png" } // Même image pour l'uniformité
+        };
 
-            try {
-                // 3. Send Start Command
-                // Sending JSON: { "method": "...", "data": "..." }
-                const response = await fetch('/api/start-job', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ method: method, data: dataset })
-                });
+        /**
+         * Met à jour le contenu du dashboard en fonction de la méthode sélectionnée.
+         * @param {string} selectedMethod 
+         */
+        function updateDashboard(selectedMethod) {
+            const data = methods[selectedMethod];
+            if (!data) return;
 
-                if (!response.ok) throw new Error("Erreur lors du lancement");
+            const kpiContainer = document.getElementById('kpi_container');
+            const imageSection = document.getElementById('image_section');
+            kpiContainer.innerHTML = ''; // Nettoyer l'ancien contenu
 
-                // 4. Start Polling
-                pollStatus();
+            // 1. Génération des Cartes KPI (3 par ligne)
+            for (const [kpiName, kpiValue] of Object.entries(data.stats)) {
+                const info = KPI_INFO[kpiName];
+                
+                // Formater la valeur à 2 décimales pour l'affichage
+                let displayValue = (typeof kpiValue === 'number') ? kpiValue.toFixed(2) : String(kpiValue);
 
-            } catch (error) {
-                console.error(error);
-                alert("Impossible de contacter le serveur Julia.");
-                setUiLoading(false);
+                const cardHTML = `
+                    <div class="kpi-card bg-white p-5 rounded-xl shadow-md transition-all border-t-4 ${info.color} m-2.5">
+                        <div class="text-4xl mb-2" style="color: ${info.textColor};">${info.icon}</div>
+                        <p class="text-sm text-gray-500 mb-1">${kpiName}</p>
+                        <h3 class="text-2xl font-bold text-gray-800">${displayValue}</h3>
+                        <p class="text-xs text-gray-400 mt-1">${info.unit}</p>
+                    </div>
+                `;
+                kpiContainer.insertAdjacentHTML('beforeend', cardHTML);
             }
+
+            // 2. Génération de la Section Image
+            imageSection.innerHTML = `
+                <h3 class="text-xl font-semibold text-gray-700 mb-4">Visualisation de l'Arbre de Détermination</h3>
+                <img src="${data.img}" alt="Graphe pour la méthode ${selectedMethod}" 
+                     class="mx-auto max-w-full h-auto rounded-lg shadow-inner mt-4" style="max-width: 90%;">
+            `;
         }
 
-        async function pollStatus() {
-            try {
-                const response = await fetch('/api/job-status');
-                const job = await response.json();
+        // Événement au changement de sélection
+        document.getElementById('method_select').addEventListener('change', (event) => {
+            updateDashboard(event.target.value);
+        });
 
-                // Update Progress Bar
-                updateProgressBar(job.progress || 0);
-
-                if (job.status === 'completed') {
-                    // JOB DONE
-                    displayResults(job.result);
-                    setUiLoading(false);
-                    // Force progress to 100% visually
-                    updateProgressBar(100);
-                    setTimeout(() => hideProgressBar(), 1000); 
-
-                } else if (job.status === 'error') {
-                    // JOB FAILED
-                    alert("Erreur dans l'algorithme : " + job.error);
-                    setUiLoading(false);
-                    hideProgressBar();
-
-                } else {
-                    // KEEP WAITING (Poll again in 500ms)
-                    setTimeout(pollStatus, 500);
-                }
-
-            } catch (e) {
-                console.error("Polling error:", e);
-                setUiLoading(false);
-            }
-        }
-
-        // --- UI HELPERS ---
-
-        function setUiLoading(isLoading) {
-            const btn = document.getElementById('run_btn');
-            const spinner = document.getElementById('spinner');
-            const btnText = document.getElementById('btn_text');
-            const progressContainer = document.getElementById('progress_container');
-
-            if (isLoading) {
-                btn.disabled = true;
-                btn.classList.add('opacity-75', 'cursor-not-allowed');
-                spinner.classList.remove('hidden');
-                btnText.innerText = "Calcul en cours...";
-                progressContainer.classList.remove('hidden');
-            } else {
-                btn.disabled = false;
-                btn.classList.remove('opacity-75', 'cursor-not-allowed');
-                spinner.classList.add('hidden');
-                btnText.innerText = "Lancer le calcul";
-            }
-        }
-
-        function updateProgressBar(percent) {
-            const bar = document.getElementById('progress_bar');
-            const text = document.getElementById('progress_text');
-            bar.style.width = percent + '%';
-            text.innerText = percent + '%';
-        }
-
-        function hideProgressBar() {
-            document.getElementById('progress_container').classList.add('hidden');
-            // Reset width for next time
-            setTimeout(() => { document.getElementById('progress_bar').style.width = '0%'; }, 300);
-        }
-
-        function displayResults(data) {
-            const container = document.getElementById('kpi_grid');
-            container.innerHTML = ''; // Clear previous
-
-            // Loop through known KPI keys to maintain order
-            Object.keys(KPI_INFO).forEach(key => {
-                if (data[key] !== undefined) {
-                    const info = KPI_INFO[key];
-                    const value = (typeof data[key] === 'number') ? data[key].toFixed(2) : data[key];
-                    
-                    const card = `
-                        <div class="kpi-card bg-white p-6 rounded-xl shadow-sm border-t-4 ${info.color} flex flex-col items-center text-center">
-                            <div class="text-3xl mb-3">${info.icon}</div>
-                            <div class="text-sm font-medium text-slate-500 uppercase tracking-wide">${info.label}</div>
-                            <div class="text-3xl font-extrabold text-slate-800 mt-1">${value}</div>
-                            <div class="text-xs ${info.text} font-medium mt-1">${info.unit}</div>
-                        </div>
-                    `;
-                    container.insertAdjacentHTML('beforeend', card);
-                }
-            });
-
-            // Show Viz Section if image URL is present
-            const vizSection = document.getElementById('viz_section');
-            const vizContent = document.getElementById('viz_content');
-            
-            if (data.image_url) {
-                vizSection.classList.remove('hidden');
-                vizContent.innerHTML = `<img src="${data.image_url}" alt="Tree Visualization" class="max-w-full h-auto rounded shadow-sm">`;
-            } else {
-                // If no image, just hide the section or show placeholder
-                vizSection.classList.remove('hidden');
-                vizContent.innerHTML = `<div class="p-10 text-slate-400">Aucune visualisation graphique retournée par l'algorithme.</div>`;
-            }
-        }
+        // Lancement initial au chargement de la page
+        window.onload = () => {
+            const initialValue = document.getElementById('method_select').value;
+            updateDashboard(initialValue);
+        };
     </script>
 </body>
 </html>

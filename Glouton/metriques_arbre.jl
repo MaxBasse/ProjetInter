@@ -1,7 +1,7 @@
 using JSON
 
 # Charge le JSON depuis un fichier
-tree = JSON.parsefile("Trees/Glouton/arbre_V2.json")
+tree = JSON.parsefile("Trees/Glouton/arbre_glouton_2025-12-03_14-30-56.json")
 tree_Bnb = JSON.parsefile("Trees/BandB/arbre_simplifie_grand.json")
 """
 Analyse récursive de l'arbre

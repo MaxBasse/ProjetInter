@@ -11,7 +11,7 @@ using JSON
 #  CHARGEMENT DES DONNÉES
 # ==========================
 tree_1 = JSON.parsefile("Trees/Glouton/arbre_V1.json")
-tree_2 = JSON.parsefile("Trees/Glouton/arbre_V2.json")
+tree_2 = JSON.parsefile("Trees/Glouton/arbre_glouton_2025-12-03_14-30-56.json")
 tree_3 = JSON.parsefile("Trees/BandB/arbre_simplifie_grand.json")
 
 stats_1 = analyze(tree_1)

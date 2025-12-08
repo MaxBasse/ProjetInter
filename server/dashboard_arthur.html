@@ -1,0 +1,153 @@
+<!-- 
+    Dashboard d'Analyse des Clés de Détermination - Version Autonome HTML/JS
+    Auteur: Projet Interdisciplinaire 
+    Description: Affiche les KPI et la visualisation d'arbres précalculés.
+-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard d'Analyse des Clés de Détermination</title>
+    <!-- Chargement de Tailwind CSS pour un style moderne et responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Définition de la police Inter */
+        html { font-family: 'Inter', sans-serif; }
+        
+        /* Styles spécifiques aux cartes KPI pour s'assurer que flex:0 0 calc(33.333% - 20px) fonctionne bien */
+        .kpi-card {
+            flex: 0 0 calc(33.333% - 20px); /* 3 colonnes moins les marges de 10px de chaque côté */
+            transition: transform 0.2s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Styles des couleurs pour la bordure des cartes */
+        .color-green { border-color: #10B981; }
+        .color-blue { border-color: #3B82F6; }
+        .color-red { border-color: #EF4444; }
+        .color-amber { border-color: #F59E0B; }
+        .color-purple { border-color: #8B5CF6; }
+        .color-dark { border-color: #1F2937; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-8">
+
+    <h1 class="text-3xl font-extrabold text-gray-800 text-center mb-10">Dashboard d'Analyse des Clés de Détermination</h1>
+    
+    <!-- Zone de sélection -->
+    <div class="flex justify-center mb-8">
+        <label for="method_select" class="text-lg font-bold text-gray-600 self-center mr-4">Sélectionnez la méthode d'optimisation :</label>
+        <select id="method_select" class="p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-800 w-72">
+            <option value="Minimiser Profondeur">Minimiser Profondeur (Glouton V1)</option>
+            <option value="Minimiser Feuilles">Minimiser Feuilles (Glouton V2)</option>
+            <option value="Branch & Bound">Branch & Bound (BnB)</option>
+        </select>
+    </div>
+
+    <!-- Conteneur principal pour les KPI et l'Image -->
+    <div id="content_container" class="space-y-10">
+        <!-- Les cartes KPI seront insérées ici -->
+        <div id="kpi_container" class="flex flex-wrap justify-center mx-auto max-w-6xl"></div>
+        
+        <!-- L'image sera insérée ici -->
+        <div id="image_section" class="w-full bg-white p-6 rounded-xl shadow-lg text-center"></div>
+    </div>
+
+    <script>
+        // ===============================================
+        //  DONNÉES & LOGIQUE DU DASHBOARD
+        // ===============================================
+
+        // Mappage des KPI avec des icônes et couleurs
+        const KPI_INFO = {
+            "Nombre de feuilles": { icon: "🌿", color: "color-green", unit: "feuilles", textColor: "#10B981" }, 
+            "Espèces moyennes / feuille": { icon: "📊", color: "color-blue", unit: "espèces", textColor: "#3B82F6" }, 
+            "Profondeur max": { icon: "🌳", color: "color-red", unit: "niveaux", textColor: "#EF4444" }, 
+            "Nombre de noeuds internes": { icon: "🔗", color: "color-amber", unit: "noeuds", textColor: "#F59E0B" }, 
+            "Branches moyennes / noeud interne": { icon: "🧭", color: "color-purple", unit: "branches", textColor: "#8B5CF6" },
+            "Temps de calcul (s)": { icon: "⏱️", color: "color-dark", unit: "secondes", textColor: "#1F2937" }
+        };
+
+        // Données complètes (STUBS)
+        const kpi_eval1 = {
+            "Nombre de feuilles": 98,
+            "Espèces moyennes / feuille": 1.0612244897959184,
+            "Profondeur max": 13, 
+            "Nombre de noeuds internes": 77, 
+            "Branches moyennes / noeud interne": 2.25974025974026,
+            "Temps de calcul (s)": 0.0
+        };
+        const kpi_eval2 = {
+            "Nombre de feuilles": 70,
+            "Espèces moyennes / feuille": 1.0714285714285714,
+            "Profondeur max": 15, 
+            "Nombre de noeuds internes": 59, 
+            "Branches moyennes / noeud interne": 2.16,
+            "Temps de calcul (s)": 0.0
+        };
+        const kpi_eval3 = {
+            "Nombre de feuilles": 22, "Espèces moyennes / feuille": 1.2, "Profondeur max": 7, 
+            "Nombre de noeuds internes": 21, "Branches moyennes / noeud interne": 2.05, "Temps de calcul (s)": 0.0
+        };
+
+        const methods = {
+            "Minimiser Profondeur": { stats: kpi_eval1, img: "C:/Users/rth11/OneDrive/Documents/INSA_Arthur/MA/4MA/projet inter/ProjetInter/Visualisation/svg/arbre_V1.svg },
+            "Minimiser Feuilles": { stats: kpi_eval2, img: "C:/Users/rth11/OneDrive/Documents/INSA_Arthur/MA/4MA/projet inter/ProjetInter/Visualisation/svg/arbre_V2.svg" },
+            "Branch & Bound": { stats: kpi_eval3, img: "C:/Users/rth11/OneDrive/Documents/INSA_Arthur/MA/4MA/projet inter/ProjetInter/Visualisation/svg/arbre_simplifie_grand.svg" } // Même image pour l'uniformité
+        };
+
+        /**
+         * Met à jour le contenu du dashboard en fonction de la méthode sélectionnée.
+         * @param {string} selectedMethod 
+         */
+        function updateDashboard(selectedMethod) {
+            const data = methods[selectedMethod];
+            if (!data) return;
+
+            const kpiContainer = document.getElementById('kpi_container');
+            const imageSection = document.getElementById('image_section');
+            kpiContainer.innerHTML = ''; // Nettoyer l'ancien contenu
+
+            // 1. Génération des Cartes KPI (3 par ligne)
+            for (const [kpiName, kpiValue] of Object.entries(data.stats)) {
+                const info = KPI_INFO[kpiName];
+                
+                // Formater la valeur à 2 décimales pour l'affichage
+                let displayValue = (typeof kpiValue === 'number') ? kpiValue.toFixed(2) : String(kpiValue);
+
+                const cardHTML = `
+                    <div class="kpi-card bg-white p-5 rounded-xl shadow-md transition-all border-t-4 ${info.color} m-2.5">
+                        <div class="text-4xl mb-2" style="color: ${info.textColor};">${info.icon}</div>
+                        <p class="text-sm text-gray-500 mb-1">${kpiName}</p>
+                        <h3 class="text-2xl font-bold text-gray-800">${displayValue}</h3>
+                        <p class="text-xs text-gray-400 mt-1">${info.unit}</p>
+                    </div>
+                `;
+                kpiContainer.insertAdjacentHTML('beforeend', cardHTML);
+            }
+
+            // 2. Génération de la Section Image
+            imageSection.innerHTML = `
+                <h3 class="text-xl font-semibold text-gray-700 mb-4">Visualisation de l'Arbre de Détermination</h3>
+                <img src="${data.img}" alt="Graphe pour la méthode ${selectedMethod}" 
+                     class="mx-auto max-w-full h-auto rounded-lg shadow-inner mt-4" style="max-width: 90%;">
+            `;
+        }
+
+        // Événement au changement de sélection
+        document.getElementById('method_select').addEventListener('change', (event) => {
+            updateDashboard(event.target.value);
+        });
+
+        // Lancement initial au chargement de la page
+        window.onload = () => {
+            const initialValue = document.getElementById('method_select').value;
+            updateDashboard(initialValue);
+        };
+    </script>
+</body>
+</html>
