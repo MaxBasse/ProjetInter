@@ -1,0 +1,931 @@
+{
+    "branches": {
+        "32": {
+            "branches": {
+                "39": {
+                    "branches": {
+                        "40": {
+                            "branches": {
+                                "38": {
+                                    "branches": {
+                                        "27": {
+                                            "especes": [
+                                                17
+                                            ]
+                                        },
+                                        "2": {
+                                            "especes": [
+                                                9
+                                            ]
+                                        }
+                                    },
+                                    "question": 2
+                                },
+                                "33": {
+                                    "branches": {
+                                        "36": {
+                                            "branches": {
+                                                "27": {
+                                                    "branches": {
+                                                        "15": {
+                                                            "branches": {
+                                                                "10": {
+                                                                    "branches": {
+                                                                        "4": {
+                                                                            "especes": [
+                                                                                7,
+                                                                                8
+                                                                            ]
+                                                                        },
+                                                                        "5": {
+                                                                            "especes": [
+                                                                                7
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    "question": 3
+                                                                },
+                                                                "11": {
+                                                                    "especes": [
+                                                                        20
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "question": 5
+                                                        },
+                                                        "14": {
+                                                            "especes": [
+                                                                17
+                                                            ]
+                                                        }
+                                                    },
+                                                    "question": 7
+                                                },
+                                                "2": {
+                                                    "especes": [
+                                                        7,
+                                                        8,
+                                                        20
+                                                    ]
+                                                },
+                                                "3": {
+                                                    "branches": {
+                                                        "10": {
+                                                            "branches": {
+                                                                "4": {
+                                                                    "especes": [
+                                                                        7,
+                                                                        8
+                                                                    ]
+                                                                },
+                                                                "5": {
+                                                                    "especes": [
+                                                                        7
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "question": 3
+                                                        },
+                                                        "11": {
+                                                            "especes": [
+                                                                20
+                                                            ]
+                                                        }
+                                                    },
+                                                    "question": 5
+                                                }
+                                            },
+                                            "question": 2
+                                        },
+                                        "34": {
+                                            "especes": [
+                                                20
+                                            ]
+                                        },
+                                        "37": {
+                                            "branches": {
+                                                "27": {
+                                                    "branches": {
+                                                        "4": {
+                                                            "especes": [
+                                                                5
+                                                            ]
+                                                        },
+                                                        "5": {
+                                                            "especes": [
+                                                                20
+                                                            ]
+                                                        }
+                                                    },
+                                                    "question": 3
+                                                },
+                                                "2": {
+                                                    "especes": [
+                                                        4,
+                                                        20
+                                                    ]
+                                                },
+                                                "3": {
+                                                    "especes": [
+                                                        20
+                                                    ]
+                                                }
+                                            },
+                                            "question": 2
+                                        },
+                                        "35": {
+                                            "especes": [
+                                                23
+                                            ]
+                                        }
+                                    },
+                                    "question": 14
+                                }
+                            },
+                            "question": 13
+                        },
+                        "41": {
+                            "especes": []
+                        },
+                        "45": {
+                            "especes": []
+                        }
+                    },
+                    "question": 16
+                },
+                "51": {
+                    "especes": [
+                        1
+                    ]
+                }
+            },
+            "question": 15
+        },
+        "55": {
+            "branches": {
+                "1": {
+                    "branches": {
+                        "27": {
+                            "branches": {
+                                "9": {
+                                    "branches": {
+                                        "12": {
+                                            "branches": {
+                                                "10": {
+                                                    "especes": [
+                                                        19
+                                                    ]
+                                                },
+                                                "11": {
+                                                    "branches": {
+                                                        "17": {
+                                                            "especes": [
+                                                                15
+                                                            ]
+                                                        },
+                                                        "16": {
+                                                            "branches": {
+                                                                "4": {
+                                                                    "especes": [
+                                                                        23
+                                                                    ]
+                                                                },
+                                                                "5": {
+                                                                    "especes": [
+                                                                        20
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "question": 3
+                                                        }
+                                                    },
+                                                    "question": 8
+                                                }
+                                            },
+                                            "question": 5
+                                        },
+                                        "13": {
+                                            "branches": {
+                                                "15": {
+                                                    "branches": {
+                                                        "17": {
+                                                            "branches": {
+                                                                "26": {
+                                                                    "branches": {
+                                                                        "10": {
+                                                                            "branches": {
+                                                                                "4": {
+                                                                                    "especes": [
+                                                                                        1,
+                                                                                        14,
+                                                                                        18
+                                                                                    ]
+                                                                                },
+                                                                                "5": {
+                                                                                    "especes": [
+                                                                                        1,
+                                                                                        18
+                                                                                    ]
+                                                                                }
+                                                                            },
+                                                                            "question": 3
+                                                                        },
+                                                                        "11": {
+                                                                            "branches": {
+                                                                                "4": {
+                                                                                    "branches": {
+                                                                                        "24": {
+                                                                                            "especes": [
+                                                                                                16
+                                                                                            ]
+                                                                                        },
+                                                                                        "21": {
+                                                                                            "especes": [
+                                                                                                16
+                                                                                            ]
+                                                                                        },
+                                                                                        "20": {
+                                                                                            "especes": [
+                                                                                                1,
+                                                                                                14,
+                                                                                                16
+                                                                                            ]
+                                                                                        },
+                                                                                        "22": {
+                                                                                            "especes": [
+                                                                                                16
+                                                                                            ]
+                                                                                        }
+                                                                                    },
+                                                                                    "question": 9
+                                                                                },
+                                                                                "5": {
+                                                                                    "especes": [
+                                                                                        1
+                                                                                    ]
+                                                                                }
+                                                                            },
+                                                                            "question": 3
+                                                                        }
+                                                                    },
+                                                                    "question": 5
+                                                                },
+                                                                "25": {
+                                                                    "especes": [
+                                                                        14
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "question": 10
+                                                        },
+                                                        "16": {
+                                                            "branches": {
+                                                                "10": {
+                                                                    "branches": {
+                                                                        "24": {
+                                                                            "branches": {
+                                                                                "4": {
+                                                                                    "especes": [
+                                                                                        2,
+                                                                                        3
+                                                                                    ]
+                                                                                },
+                                                                                "5": {
+                                                                                    "especes": [
+                                                                                        2
+                                                                                    ]
+                                                                                }
+                                                                            },
+                                                                            "question": 3
+                                                                        },
+                                                                        "20": {
+                                                                            "branches": {
+                                                                                "4": {
+                                                                                    "especes": [
+                                                                                        1,
+                                                                                        2,
+                                                                                        7,
+                                                                                        8,
+                                                                                        11,
+                                                                                        12,
+                                                                                        22
+                                                                                    ]
+                                                                                },
+                                                                                "5": {
+                                                                                    "especes": [
+                                                                                        1,
+                                                                                        2,
+                                                                                        7
+                                                                                    ]
+                                                                                }
+                                                                            },
+                                                                            "question": 3
+                                                                        },
+                                                                        "22": {
+                                                                            "branches": {
+                                                                                "4": {
+                                                                                    "especes": [
+                                                                                        2,
+                                                                                        3
+                                                                                    ]
+                                                                                },
+                                                                                "5": {
+                                                                                    "especes": [
+                                                                                        2
+                                                                                    ]
+                                                                                }
+                                                                            },
+                                                                            "question": 3
+                                                                        }
+                                                                    },
+                                                                    "question": 9
+                                                                },
+                                                                "11": {
+                                                                    "branches": {
+                                                                        "24": {
+                                                                            "especes": [
+                                                                                6
+                                                                            ]
+                                                                        },
+                                                                        "20": {
+                                                                            "branches": {
+                                                                                "4": {
+                                                                                    "especes": [
+                                                                                        1
+                                                                                    ]
+                                                                                },
+                                                                                "5": {
+                                                                                    "especes": [
+                                                                                        1,
+                                                                                        20
+                                                                                    ]
+                                                                                }
+                                                                            },
+                                                                            "question": 3
+                                                                        }
+                                                                    },
+                                                                    "question": 9
+                                                                }
+                                                            },
+                                                            "question": 5
+                                                        }
+                                                    },
+                                                    "question": 8
+                                                },
+                                                "14": {
+                                                    "branches": {
+                                                        "26": {
+                                                            "branches": {
+                                                                "17": {
+                                                                    "especes": [
+                                                                        14
+                                                                    ]
+                                                                },
+                                                                "19": {
+                                                                    "especes": [
+                                                                        17
+                                                                    ]
+                                                                },
+                                                                "16": {
+                                                                    "branches": {
+                                                                        "10": {
+                                                                            "branches": {
+                                                                                "21": {
+                                                                                    "especes": [
+                                                                                        17
+                                                                                    ]
+                                                                                },
+                                                                                "20": {
+                                                                                    "especes": [
+                                                                                        17,
+                                                                                        22
+                                                                                    ]
+                                                                                },
+                                                                                "22": {
+                                                                                    "especes": [
+                                                                                        17
+                                                                                    ]
+                                                                                }
+                                                                            },
+                                                                            "question": 9
+                                                                        },
+                                                                        "11": {
+                                                                            "especes": [
+                                                                                17
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    "question": 5
+                                                                }
+                                                            },
+                                                            "question": 8
+                                                        },
+                                                        "25": {
+                                                            "especes": [
+                                                                14
+                                                            ]
+                                                        }
+                                                    },
+                                                    "question": 10
+                                                }
+                                            },
+                                            "question": 7
+                                        }
+                                    },
+                                    "question": 6
+                                },
+                                "8": {
+                                    "branches": {
+                                        "10": {
+                                            "especes": [
+                                                13
+                                            ]
+                                        },
+                                        "11": {
+                                            "especes": [
+                                                21
+                                            ]
+                                        }
+                                    },
+                                    "question": 5
+                                }
+                            },
+                            "question": 4
+                        },
+                        "2": {
+                            "especes": [
+                                4,
+                                7,
+                                8,
+                                9,
+                                10,
+                                12,
+                                20,
+                                21,
+                                22,
+                                23
+                            ]
+                        },
+                        "3": {
+                            "branches": {
+                                "10": {
+                                    "branches": {
+                                        "15": {
+                                            "branches": {
+                                                "4": {
+                                                    "especes": [
+                                                        7,
+                                                        8,
+                                                        12,
+                                                        22
+                                                    ]
+                                                },
+                                                "5": {
+                                                    "especes": [
+                                                        7
+                                                    ]
+                                                }
+                                            },
+                                            "question": 3
+                                        },
+                                        "14": {
+                                            "especes": [
+                                                22
+                                            ]
+                                        }
+                                    },
+                                    "question": 7
+                                },
+                                "11": {
+                                    "branches": {
+                                        "9": {
+                                            "branches": {
+                                                "4": {
+                                                    "especes": [
+                                                        23
+                                                    ]
+                                                },
+                                                "5": {
+                                                    "especes": [
+                                                        20
+                                                    ]
+                                                }
+                                            },
+                                            "question": 3
+                                        },
+                                        "8": {
+                                            "especes": [
+                                                21
+                                            ]
+                                        }
+                                    },
+                                    "question": 4
+                                }
+                            },
+                            "question": 5
+                        }
+                    },
+                    "question": 2
+                },
+                "28": {
+                    "especes": []
+                }
+            },
+            "question": 1
+        },
+        "53": {
+            "especes": [
+                15
+            ]
+        },
+        "54": {
+            "branches": {
+                "39": {
+                    "branches": {
+                        "38": {
+                            "branches": {
+                                "40": {
+                                    "branches": {
+                                        "27": {
+                                            "branches": {
+                                                "12": {
+                                                    "especes": [
+                                                        15
+                                                    ]
+                                                },
+                                                "13": {
+                                                    "branches": {
+                                                        "17": {
+                                                            "especes": [
+                                                                14
+                                                            ]
+                                                        },
+                                                        "16": {
+                                                            "branches": {
+                                                                "4": {
+                                                                    "branches": {
+                                                                        "24": {
+                                                                            "especes": [
+                                                                                2
+                                                                            ]
+                                                                        },
+                                                                        "20": {
+                                                                            "especes": [
+                                                                                2,
+                                                                                11,
+                                                                                12
+                                                                            ]
+                                                                        },
+                                                                        "22": {
+                                                                            "especes": [
+                                                                                2
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    "question": 9
+                                                                },
+                                                                "5": {
+                                                                    "especes": [
+                                                                        2
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "question": 3
+                                                        }
+                                                    },
+                                                    "question": 8
+                                                }
+                                            },
+                                            "question": 6
+                                        },
+                                        "2": {
+                                            "especes": [
+                                                12
+                                            ]
+                                        },
+                                        "3": {
+                                            "especes": [
+                                                12
+                                            ]
+                                        }
+                                    },
+                                    "question": 2
+                                },
+                                "41": {
+                                    "especes": [
+                                        14
+                                    ]
+                                },
+                                "45": {
+                                    "especes": [
+                                        14
+                                    ]
+                                }
+                            },
+                            "question": 16
+                        },
+                        "33": {
+                            "branches": {
+                                "36": {
+                                    "branches": {
+                                        "40": {
+                                            "branches": {
+                                                "27": {
+                                                    "branches": {
+                                                        "12": {
+                                                            "branches": {
+                                                                "10": {
+                                                                    "especes": [
+                                                                        19
+                                                                    ]
+                                                                },
+                                                                "11": {
+                                                                    "especes": [
+                                                                        15
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "question": 5
+                                                        },
+                                                        "13": {
+                                                            "branches": {
+                                                                "17": {
+                                                                    "especes": [
+                                                                        14
+                                                                    ]
+                                                                },
+                                                                "16": {
+                                                                    "especes": [
+                                                                        11,
+                                                                        12
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "question": 8
+                                                        }
+                                                    },
+                                                    "question": 6
+                                                },
+                                                "2": {
+                                                    "especes": [
+                                                        12
+                                                    ]
+                                                },
+                                                "3": {
+                                                    "especes": [
+                                                        12
+                                                    ]
+                                                }
+                                            },
+                                            "question": 2
+                                        },
+                                        "41": {
+                                            "especes": [
+                                                14
+                                            ]
+                                        },
+                                        "45": {
+                                            "especes": [
+                                                14
+                                            ]
+                                        }
+                                    },
+                                    "question": 16
+                                },
+                                "35": {
+                                    "branches": {
+                                        "27": {
+                                            "branches": {
+                                                "10": {
+                                                    "branches": {
+                                                        "4": {
+                                                            "branches": {
+                                                                "24": {
+                                                                    "especes": [
+                                                                        2,
+                                                                        3
+                                                                    ]
+                                                                },
+                                                                "20": {
+                                                                    "especes": [
+                                                                        2
+                                                                    ]
+                                                                },
+                                                                "22": {
+                                                                    "especes": [
+                                                                        2,
+                                                                        3
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "question": 9
+                                                        },
+                                                        "5": {
+                                                            "especes": [
+                                                                2
+                                                            ]
+                                                        }
+                                                    },
+                                                    "question": 3
+                                                },
+                                                "11": {
+                                                    "especes": [
+                                                        21
+                                                    ]
+                                                }
+                                            },
+                                            "question": 5
+                                        },
+                                        "2": {
+                                            "especes": [
+                                                21
+                                            ]
+                                        },
+                                        "3": {
+                                            "especes": [
+                                                21
+                                            ]
+                                        }
+                                    },
+                                    "question": 2
+                                }
+                            },
+                            "question": 14
+                        }
+                    },
+                    "question": 13
+                },
+                "51": {
+                    "branches": {
+                        "38": {
+                            "branches": {
+                                "10": {
+                                    "especes": [
+                                        18
+                                    ]
+                                },
+                                "11": {
+                                    "especes": [
+                                        16
+                                    ]
+                                }
+                            },
+                            "question": 5
+                        },
+                        "33": {
+                            "branches": {
+                                "36": {
+                                    "especes": [
+                                        1
+                                    ]
+                                },
+                                "35": {
+                                    "especes": [
+                                        3
+                                    ]
+                                }
+                            },
+                            "question": 14
+                        }
+                    },
+                    "question": 13
+                }
+            },
+            "question": 15
+        },
+        "52": {
+            "branches": {
+                "1": {
+                    "branches": {
+                        "38": {
+                            "branches": {
+                                "27": {
+                                    "especes": [
+                                        2
+                                    ]
+                                },
+                                "2": {
+                                    "especes": [
+                                        10
+                                    ]
+                                }
+                            },
+                            "question": 2
+                        },
+                        "33": {
+                            "branches": {
+                                "36": {
+                                    "especes": [
+                                        1
+                                    ]
+                                },
+                                "37": {
+                                    "especes": [
+                                        24
+                                    ]
+                                },
+                                "35": {
+                                    "branches": {
+                                        "39": {
+                                            "branches": {
+                                                "27": {
+                                                    "branches": {
+                                                        "10": {
+                                                            "branches": {
+                                                                "15": {
+                                                                    "branches": {
+                                                                        "4": {
+                                                                            "branches": {
+                                                                                "24": {
+                                                                                    "especes": [
+                                                                                        2,
+                                                                                        3
+                                                                                    ]
+                                                                                },
+                                                                                "20": {
+                                                                                    "especes": [
+                                                                                        2,
+                                                                                        22
+                                                                                    ]
+                                                                                },
+                                                                                "22": {
+                                                                                    "especes": [
+                                                                                        2,
+                                                                                        3
+                                                                                    ]
+                                                                                }
+                                                                            },
+                                                                            "question": 9
+                                                                        },
+                                                                        "5": {
+                                                                            "especes": [
+                                                                                2
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    "question": 3
+                                                                },
+                                                                "14": {
+                                                                    "especes": [
+                                                                        22
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "question": 7
+                                                        },
+                                                        "11": {
+                                                            "especes": [
+                                                                21
+                                                            ]
+                                                        }
+                                                    },
+                                                    "question": 5
+                                                },
+                                                "2": {
+                                                    "especes": [
+                                                        10,
+                                                        21,
+                                                        22
+                                                    ]
+                                                },
+                                                "3": {
+                                                    "branches": {
+                                                        "10": {
+                                                            "especes": [
+                                                                22
+                                                            ]
+                                                        },
+                                                        "11": {
+                                                            "especes": [
+                                                                21
+                                                            ]
+                                                        }
+                                                    },
+                                                    "question": 5
+                                                }
+                                            },
+                                            "question": 2
+                                        },
+                                        "51": {
+                                            "especes": [
+                                                3
+                                            ]
+                                        }
+                                    },
+                                    "question": 15
+                                }
+                            },
+                            "question": 14
+                        }
+                    },
+                    "question": 13
+                },
+                "28": {
+                    "especes": []
+                }
+            },
+            "question": 1
+        }
+    },
+    "question": 12
+}
