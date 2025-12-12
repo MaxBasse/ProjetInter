@@ -1,0 +1,125 @@
+{
+    "branches": {
+        "14": {
+            "species": [
+                6
+            ]
+        },
+        "1": {
+            "branches": {
+                "4": {
+                    "branches": {
+                        "13": {
+                            "branches": {
+                                "11": {
+                                    "branches": {
+                                        "5": {
+                                            "branches": {
+                                                "15": {
+                                                    "species": [
+                                                        1
+                                                    ]
+                                                },
+                                                "16": {
+                                                    "species": [
+                                                        1
+                                                    ]
+                                                },
+                                                "18": {
+                                                    "species": [
+                                                        1
+                                                    ]
+                                                },
+                                                "17": {
+                                                    "species": [
+                                                        5
+                                                    ]
+                                                },
+                                                "19": {
+                                                    "species": [
+                                                        1
+                                                    ]
+                                                }
+                                            },
+                                            "question": 7
+                                        },
+                                        "6": {
+                                            "species": [
+                                                1
+                                            ]
+                                        }
+                                    },
+                                    "question": 3
+                                },
+                                "10": {
+                                    "branches": {
+                                        "9": {
+                                            "branches": {
+                                                "15": {
+                                                    "species": [
+                                                        3
+                                                    ]
+                                                },
+                                                "17": {
+                                                    "species": [
+                                                        5
+                                                    ]
+                                                },
+                                                "19": {
+                                                    "species": [
+                                                        3
+                                                    ]
+                                                }
+                                            },
+                                            "question": 7
+                                        },
+                                        "8": {
+                                            "species": [
+                                                5
+                                            ]
+                                        }
+                                    },
+                                    "question": 4
+                                }
+                            },
+                            "question": 5
+                        },
+                        "12": {
+                            "species": [
+                                2
+                            ]
+                        }
+                    },
+                    "question": 6
+                },
+                "2": {
+                    "branches": {
+                        "15": {
+                            "species": [
+                                3
+                            ]
+                        },
+                        "16": {
+                            "species": [
+                                4
+                            ]
+                        },
+                        "19": {
+                            "species": [
+                                3
+                            ]
+                        }
+                    },
+                    "question": 7
+                },
+                "3": {
+                    "species": [
+                        3
+                    ]
+                }
+            },
+            "question": 2
+        }
+    },
+    "question": 1
+}

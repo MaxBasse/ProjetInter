@@ -1,5 +1,5 @@
 include("GloutonPartiel.jl")
-include("separation.jl")
+include("separation2.jl")
 include("Evaluation.jl")
 
 """
@@ -34,6 +34,7 @@ function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_ca
 
     # Calcul initial de la borne supérieure via le glouton
     borne_sup = profondeur_arbre(sol_glouton)
+    nbr_feuille_opti = 900 
     meilleure_solution = sol_glouton
     racine = Noeud(
         Dict(
@@ -81,10 +82,16 @@ function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_ca
         if Est_une_cle_determination_totale(noeud)
 
             cout_solution = profondeur_arbre(noeud.cle_partielle)
+            nbr_feuille_solution = nb_feuilles_ambigues(noeud.cle_partielle)
             # Mise à jour de la borne supérieure si amélioration
             if cout_solution < borne_sup
                 borne_sup = cout_solution
                 meilleure_solution = noeud.cle_partielle
+            elseif (cout_solution == borne_sup) && (nbr_feuille_solution < nbr_feuille_opti)
+                borne_sup = cout_solution
+                nbr_feuille_opti = nbr_feuille_solution
+                meilleure_solution = noeud.cle_partielle
+
             end
 
         else
@@ -96,7 +103,7 @@ function Branch_and_Bound(Qa_initial::Vector{Int}, E_initial::Vector{Int}, df_ca
 
             for child in noeud_inter
                 # Calculate Lower Bound for the child
-                child.borne_inf = evaluation(noeud, length(questions_answers), questions_answers)
+                child.borne_inf = evaluation(child, length(questions_answers), questions_answers)
                 
                 # Only keep the child if it has potential to beat the current Upper Bound
                 if child.borne_inf < borne_sup
@@ -166,8 +173,13 @@ function cle_totale_recursive(cle::Dict{Any,Any})::Bool
 
     # Si la clé n'a pas de branches -> c’est une feuille
     if !haskey(cle, "branches") || isempty(cle["branches"])
-        nb = length(cle["especes_restantes"])
-        return nb <= 1
+        if (length(cle["especes_restantes"]) <= 1)   # feuille avec max une espèce
+            return true
+        elseif (cle["questions_accessibles"] == Int[])  # feuille sans questions accessibles
+            return true
+        end
+        return false
+
     end
 
     # Sinon, descente récursive dans chaque sous-branche
@@ -179,3 +191,28 @@ function cle_totale_recursive(cle::Dict{Any,Any})::Bool
 
     return true
 end
+
+
+"""
+Compte le nombre de feuilles ambiguës (feuilles où lengh(especes_restantes) > 1)
+dans une clé de détermination représentée comme un Dict.
+"""
+function nb_feuilles_ambigues(arbre::Dict{Any,Any})::Int  
+
+    # Cas 1 : pas de sous-branches → c’est une feuille
+    if !haskey(arbre, "branches") || isempty(arbre["branches"])
+        if length(arbre["especes_restantes"]) > 1
+            return 1
+        else
+            return 0
+        end
+    end
+
+    # Cas 2 : noeud interne → on somme les feuilles ambiguës de chaque branche
+    total = 0
+    for (_, sous_arbre) in arbre["branches"]
+        total += nb_feuilles_ambigues(sous_arbre)
+    end
+    return total
+end
+
