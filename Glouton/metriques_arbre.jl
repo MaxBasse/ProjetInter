@@ -1,7 +1,7 @@
 using JSON
 
 # Charge le JSON depuis un fichier
-tree = JSON.parsefile("Trees/Glouton/arbre_glouton_2025-12-03_14-30-56.json")
+tree = JSON.parsefile("Trees/Glouton/arbre_V2.json")
 tree_Bnb = JSON.parsefile("Trees/BandB/arbre_simplifie_grand.json")
 """
 Analyse récursive de l'arbre
@@ -29,12 +29,14 @@ function analyze(node; depth=1, path=Int[])
             :max_depth => depth,
             :internal_nodes => 0,
             :branching_factors => Int[],
-            :paths => [(path, node["species"])]
+            :paths => [(path, node["species"])],
+            # --- NOUVELLE METRIQUE : La profondeur de cette feuille ---
+            :total_depth => depth 
+            # --------------------------------------------------------
         )
     end
 
     # NOEUD NON-FEUILLE
-    # On ajoute la question actuelle au chemin si elle existe
     new_path = haskey(node, "question") ? vcat(path, node["question"]) : path
 
     results = [
@@ -50,7 +52,10 @@ function analyze(node; depth=1, path=Int[])
         :branching_factors =>
             [length(node["branches"]);
              vcat([r[:branching_factors] for r in results]...)],
-        :paths => vcat([r[:paths] for r in results]...)
+        :paths => vcat([r[:paths] for r in results]...),
+        # --- NOUVELLE METRIQUE : Somme de la profondeur des feuilles des sous-arbres ---
+        :total_depth => sum(r[:total_depth] for r in results)
+        # -----------------------------------------------------------------------------
     )
 end
 
@@ -120,4 +125,4 @@ println("Profondeur maximale (longueur max)            :", stats[:max_depth])
 println("Nombre total de noeuds internes               :", stats[:internal_nodes])
 println("Branches moyennes par noeud interne           :", sum(stats[:branching_factors])/length(stats[:branching_factors]))
 println("Distribution du nombre d'espèces par feuille  :", stats[:species_per_leaf])
-
+println("Profondeur moyenne des feuilles                :", (stats[:total_depth]/stats[:leaves]))
